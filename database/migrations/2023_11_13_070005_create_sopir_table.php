@@ -16,6 +16,7 @@ class CreateSopirTable extends Migration
             $table->string('password');
             $table->string('role')->default('sopir');
             $table->string('no_hp');
+            $table->decimal('bop_sopir', 50, 0)->nullable()->default('0');
             $table->enum('ketersediaan_sopir',['tersedia','tidak tersedia'])->default('tersedia');
             $table->enum('status_sopir',['aktif','tidak aktif'])->default('aktif');
             $table->timestamps();

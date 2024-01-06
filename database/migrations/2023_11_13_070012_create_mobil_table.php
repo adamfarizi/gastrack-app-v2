@@ -14,6 +14,7 @@ class CreateMobilTable extends Migration
             $table->string('identitas_mobil');
             $table->string('nopol_mobil');
             $table->string('jenis_mobil')->nullable();
+            $table->integer('vit_mobil');
             $table->enum('ketersediaan_mobil',['tersedia','tidak tersedia'])->default('tersedia');
             $table->enum('status_mobil',['aktif','tidak aktif'])->default('aktif');
             $table->timestamps();

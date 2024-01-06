@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('pesanan', function (Blueprint $table) {
             $table->id('id_pesanan');
             $table->dateTime('tanggal_pesanan');
-            $table->integer('jumlah_pesanan');
+            $table->integer('jumlah_bar');
+            $table->integer('jumlah_m3');
             $table->decimal('harga_pesanan', 50, 0);
             $table->unsignedBigInteger('id_transaksi');
             $table->timestamps();

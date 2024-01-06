@@ -15,10 +15,12 @@ class MobilSeeder extends Seeder
             'identitas_mobil' => 'Mitsubishi Lancer',
             'nopol_mobil' => 'AE 1234 BC',
             'jenis_mobil' => 'Pick Up',
+            'vit_mobil' => '50',
         ],[
             'identitas_mobil' => 'Hino Hijau',
             'nopol_mobil' => 'AE 5678 BC',
             'jenis_mobil' => 'Truk',
+            'vit_mobil' => '50',
         ],
         ];
 

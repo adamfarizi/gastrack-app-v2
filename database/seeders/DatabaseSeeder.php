@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             PelangganSeeder::class,
             SopirSeeder::class,
             MobilSeeder::class,
-            MobilSeeder::class,
             GasSeeder::class,
             // TagihanSeeder::class,
             // TransaksiSeeder::class,
