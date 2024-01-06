@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Pesanan extends Model
+{
+    protected $table = 'pesanan';
+    protected $primaryKey = 'id_pesanan';
+    
+    protected $fillable = [
+        'tanggal_pesanan',
+        'jumlah_pesanan',
+        'harga_pesanan',
+        'id_transaksi',
+    ];
+    
+    public function transaksi()
+    {
+        return $this->belongsTo(Transaksi::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function pengiriman()
+    {
+        return $this->belongsTo(Pengiriman::class, 'id_pesanan');
+    }
+}
