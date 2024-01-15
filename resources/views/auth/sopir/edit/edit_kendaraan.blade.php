@@ -153,6 +153,11 @@
                                 <input name="plat" type="text" class="form-control" aria-label="nopol_mobil" 
                                 value="{{ $kendaraan->nopol_mobil }}">
                             </div>
+                            <label>Vit Kendaraan<span class="text-danger">*</span></label>
+                            <div class="input-group input-group-outline mb-3 bg-white">
+                                <input name="vit" type="number" class="form-control" aria-label="vit" 
+                                value="{{ $kendaraan->vit_mobil }}">
+                            </div>
                             <label>Jenis Kendaraan<span class="text-danger">*</span></label>
                             <div class="input-group input-group-outline mb-3 bg-white">
                                 <select class="form-control" id="jenis_kendaraan" name="jenis_kendaraan">

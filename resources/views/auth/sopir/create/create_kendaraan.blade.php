@@ -18,6 +18,11 @@
                         <input name="plat" type="text" class="form-control" placeholder="Masukkan plat kendaraan"
                             aria-label="plat" value="">
                     </div>
+                    <label>Vit Kendaraan <span class="text-danger">*</span></label>
+                    <div class="input-group mb-3 input-group-outline">
+                        <input name="vit" type="number" class="form-control" placeholder="Masukkan vit kendaraan"
+                            aria-label="vit" value="">
+                    </div>
                     <label>Jenis Kendaraan <span class="text-danger">*</span></label>
                     <div class="input-group mb-3 input-group-outline">
                         <select class="form-control px-2" aria-label="Jenis Kendaraan" name="jenis_kendaraan">

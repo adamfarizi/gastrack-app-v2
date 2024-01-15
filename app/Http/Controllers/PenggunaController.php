@@ -43,6 +43,7 @@ class PenggunaController extends Controller
             'email' => 'required|unique:pelanggan',
             'no_hp' => 'required',
             'jadwal_bayar' => 'required',
+            'bop' => 'required',
             'alamat' => 'required',
             'password' => 'required',
             'konfirmasi_password' => 'required|same:password',
@@ -54,6 +55,7 @@ class PenggunaController extends Controller
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'jenis_pembayaran' => $request->jadwal_bayar,
+            'bop_pelanggan' => $request->bop,
             'alamat' => $request->alamat,
             'password' => Hash::make($request->password),
         ]);
@@ -84,6 +86,7 @@ class PenggunaController extends Controller
                 'email' => 'required|email|max:255',
                 'no_hp' => 'required|string|max:15',
                 'jadwal_bayar' => 'required',
+                'bop' => 'required',
                 'alamat' => 'required|string',
             ]);
 
@@ -93,6 +96,7 @@ class PenggunaController extends Controller
             $pelanggan->email = $request->input('email');
             $pelanggan->no_hp = $request->input('no_hp');
             $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
+            $pelanggan->bop_pelanggan = $request->input('bop');
             $pelanggan->alamat = $request->input('alamat');
             $pelanggan->save();
 
@@ -104,6 +108,7 @@ class PenggunaController extends Controller
                 'email' => 'required|email|max:255',
                 'no_hp' => 'required|string|max:15',
                 'jadwal_bayar' => 'required',
+                'bop' => 'required',
                 'alamat' => 'required|string',
                 'old_password' => [
                     'required',
@@ -128,6 +133,7 @@ class PenggunaController extends Controller
             $pelanggan->email = $request->input('email');
             $pelanggan->no_hp = $request->input('no_hp');
             $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
+            $pelanggan->bop_pelanggan = $request->input('bop');
             $pelanggan->alamat = $request->input('alamat');
             $pelanggan->password = Hash::make($request->new_password);
             $pelanggan->save();

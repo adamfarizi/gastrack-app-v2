@@ -182,6 +182,13 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col">
+                                    <label>BOP Pelanggan <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3 input-group-outline">
+                                        <input name="bop" type="number" class="form-control" placeholder="Masukkan bop pelanggan"
+                                            aria-label="bop" value="{{ $pelanggan->bop_pelanggan }}">
+                                    </div>
+                                </div>
                             </div>
                             <label>Alamat <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">

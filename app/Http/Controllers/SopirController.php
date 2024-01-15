@@ -140,12 +140,14 @@ class SopirController extends Controller
         $request->validate([
             'nama' => 'required',
             'plat' => 'required',
+            'vit' => 'required',
             'jenis_kendaraan' => 'required',
         ]);
 
         $kendaraan = new Mobil([
             'identitas_mobil' => $request->nama,
             'nopol_mobil' => $request->plat,
+            'vit_mobil' => $request->vit,
             'jenis_mobil' => $request->jenis_kendaraan,
         ]);
 
@@ -169,12 +171,14 @@ class SopirController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'plat' => 'required|string|max:255',
+            'vit' => 'required|int|max:255',
             'jenis_kendaraan' => 'required|string|max:15',
         ]);
 
         $kendaraan = Mobil::find($id_mobil);
         $kendaraan->identitas_mobil = $request->input('nama');
         $kendaraan->nopol_mobil = $request->input('plat');
+        $kendaraan->vit_mobil = $request->input('vit');
         $kendaraan->jenis_mobil = $request->input('jenis_kendaraan');
         $kendaraan->save();
 
