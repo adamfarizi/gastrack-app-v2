@@ -181,7 +181,7 @@
                                             Pengguna</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            No Hp</th>
+                                            BOP</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Ketersediaan</th>
@@ -202,11 +202,12 @@
                                                     <div class="d-flex flex-column justify-content-center">
                                                         <h6 class="mb-0 text-sm">{{ $sopir->nama }}</h6>
                                                         <p class="text-xs text-secondary mb-0">{{ $sopir->email }}</p>
+                                                        <p class="text-xs text-secondary mb-0">no hp : {{ $sopir->no_hp }}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <p class="text-xs font-weight-bold mb-0">{{ $sopir->no_hp }}</p>
+                                                <p class="text-xs font-weight-bold mb-0">Rp. {{ number_format($sopir->bop_sopir, 0, ',', '.') }}</p>
                                             </td>
                                             <td class="text-center">
                                                 @if ($sopir->ketersediaan_sopir === 'tersedia')
@@ -298,22 +299,22 @@
                                             </td>
                                             <td class="text-center">
                                                 <p class="text-xs font-weight-bold mb-0">{{ $kendaraan->jenis_mobil }}</p>
-                                                <p class="text-xs text-secondary mb-0">T-{{ str_pad($kendaraan->id_mobil, 3, '0', STR_PAD_LEFT) }}</p>
+                                                <p class="text-xs text-secondary mb-0">{{ $kendaraan->vit_mobil }} bar</p>
                                             </td>
                                             <td class="text-center">
                                                 @if ($kendaraan->ketersediaan_mobil === 'tersedia')
-                                                    <span class="badge badge-sm bg-gradient-success">Tersedia</span>
+                                                    <span href class="badge badge-sm bg-gradient-success border-0">Tersedia</span>
                                                 @else
-                                                    <span class="badge badge-sm bg-gradient-danger">Tdk Tersedia</span>
+                                                    <span href class="badge badge-sm bg-gradient-danger border-0">Tdk Tersedia</span>
                                                 @endif
                                             </td>
                                             <td class="text-center">
                                                 <form action="{{ url('/kendaraan/status/'.$kendaraan->id_mobil) }}" method="POST">
                                                     @csrf
                                                     @if ($kendaraan->status_mobil == 'aktif')
-                                                        <button type="submit" href class="badge badge-sm bg-gradient-success border-0">Aktif</button>
+                                                        <button type="submit" href class="badge badge-sm bg-gradient-success border-0">Aktif</button>                                                 
                                                     @else
-                                                        <button type="submit" class="badge badge-sm bg-gradient-danger border-0">Tidak Aktif</button>
+                                                        <button type="submit" href class="badge badge-sm bg-gradient-danger border-0">Tidak Aktif</button>
                                                     @endif
                                                 </form>
                                             </td>

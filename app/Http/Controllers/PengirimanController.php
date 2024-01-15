@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Events\Chart3Event;
+use App\Models\Gas;
 use App\Models\Mobil;
+use App\Models\Pelanggan;
 use App\Models\Pengiriman;
 use App\Models\Pesanan;
 use App\Models\Sopir;
+use App\Models\Tagihan;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
@@ -66,11 +69,12 @@ class PengirimanController extends Controller
     public function updateKirim(Request $request)
     {
         $id_pengiriman = $request->input('id_pengiriman');
+        $jumlah_pesanan = $request->input('jumlah_pesanan');
         $sopir = $request->input('id_kurir');
         $mobil = $request->input('id_mobil');
 
-        if ($mobil === 'Belum Memilih' || $sopir === 'Belum Memilih') {
-            Session::flash('error', 'Sopir dan Mobil harus dipilih!');
+        if ($mobil === 'Belum Memilih' || $sopir === 'Belum Memilih' || $jumlah_pesanan === null) {
+            Session::flash('error', 'Jumlah Pesanan, Sopir, dan Mobil harus dipilih!');
             return response()->json(['error' => true]);
         } else {
             $pengiriman = Pengiriman::find($id_pengiriman);
@@ -79,8 +83,25 @@ class PengirimanController extends Controller
             $pengiriman->id_mobil = $mobil;
             $pengiriman->save();
 
+            $id_pesanan = $pengiriman->id_pesanan;
+            $harga_gas = Gas::sum('harga_gas');
+            $pesanan = Pesanan::where('id_pesanan', $id_pesanan)->first();
+            $pesanan->jumlah_bar = $jumlah_pesanan;
+            $pesanan->harga_pesanan = $jumlah_pesanan * $harga_gas;
+            $pesanan->save();
+
+            $id_transaksi = $pesanan->id_transaksi;
+            $transaksi = Transaksi::where('id_transaksi', $id_transaksi)->first();
+            $id_tagihan = $transaksi->id_tagihan;
+            $tagihan = Tagihan::where('id_tagihan', $id_tagihan)->first();
+            $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + ($jumlah_pesanan * $harga_gas);
+            $tagihan->save();
+
             $sopir = Sopir::find($sopir);
             $sopir->ketersediaan_sopir = 'tidak tersedia';
+            $id_pelanggan = $transaksi->id_pelanggan;
+            $pelanggan = Pelanggan::where('id_pelanggan', $id_pelanggan)->first();
+            $sopir->bop_sopir = $sopir->bop_sopir + $pelanggan->bop_pelanggan;
             $sopir->save();
 
             $mobil = Mobil::find($mobil);

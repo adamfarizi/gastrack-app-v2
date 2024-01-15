@@ -58,7 +58,7 @@ class ApiPembelianController extends Controller
         
         $validator = Validator::make($request->all(), [
             'id_pelanggan' => 'required|exists:pelanggan,id_pelanggan',
-            'jumlah_pesanan' => 'required|integer|min:1',
+            'bukti_pesanan' => 'required|image|mimes:jpeg,jpg,png|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -71,13 +71,11 @@ class ApiPembelianController extends Controller
             $tagihan_terbaru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                 ->orderBy('created_at', 'desc')
                 ->first();
-            $harga_gas = Gas::sum('harga_gas');
             if (!$tagihan_terbaru) {
                 $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
                 $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
                 $tagihan = new Tagihan([
                     'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
-                    'jumlah_tagihan' => $request->input('jumlah_pesanan') * $harga_gas,
                     'status_tagihan' => 'Belum Bayar',
                     'tanggal_pembayaran' => null,
                     'bukti_pembayaran' => null,
@@ -100,11 +98,14 @@ class ApiPembelianController extends Controller
                 $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                     ->latest('created_at')
                     ->first();
+                $file = $request->file('bukti_pesanan');
+                $fileName = $file->getClientOriginalName();
+                $file->move(public_path('img/BuktiPesanan'), $fileName);
                 $pesanan = new Pesanan([
                     'tanggal_pesanan' => $tanggal_sekarang,
-                    'jumlah_pesanan' => $request->input('jumlah_pesanan'),
-                    'harga_pesanan' => $request->input('jumlah_pesanan') * $harga_gas,
                     'id_transaksi' => $transaksi_baru->id_transaksi,
+                    'bukti_pesanan' => $fileName,
+                    'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
                 ]);
                 $pesanan->save();
                 $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
@@ -148,15 +149,16 @@ class ApiPembelianController extends Controller
                         $transaksi_terbaru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                             ->latest('created_at')
                             ->first();
+                        $file = $request->file('bukti_pesanan');
+                        $fileName = $file->getClientOriginalName();
+                        $file->move(public_path('img/BuktiPesanan'), $fileName);
                         $pesanan = new Pesanan([
                             'tanggal_pesanan' => $tanggal_sekarang,
-                            'jumlah_pesanan' => $request->input('jumlah_pesanan'),
-                            'harga_pesanan' => $request->input('jumlah_pesanan') * $harga_gas,
                             'id_transaksi' => $transaksi_terbaru->id_transaksi,
+                            'bukti_pesanan' => $fileName,
+                            'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
                         ]);
                         $pesanan->save();
-                        $tagihan_terbaru->jumlah_tagihan = $tagihan_terbaru->jumlah_tagihan + ($request->input('jumlah_pesanan') * $harga_gas);
-                        $tagihan_terbaru->save();
                         $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_terbaru->id_transaksi)
                             ->latest('created_at')
                             ->first();
@@ -191,7 +193,6 @@ class ApiPembelianController extends Controller
                     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
                     $tagihan = new Tagihan([
                         'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
-                        'jumlah_tagihan' => $request->input('jumlah_pesanan') * $harga_gas,
                         'status_tagihan' => 'Belum Bayar',
                         'tanggal_pembayaran' => null,
                         'bukti_pembayaran' => null,
@@ -214,11 +215,14 @@ class ApiPembelianController extends Controller
                     $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                         ->latest('created_at')
                         ->first();
+                    $file = $request->file('bukti_pesanan');
+                    $fileName = $file->getClientOriginalName();
+                    $file->move(public_path('img/BuktiPesanan'), $fileName);
                     $pesanan = new Pesanan([
                         'tanggal_pesanan' => $tanggal_sekarang,
-                        'jumlah_pesanan' => $request->input('jumlah_pesanan'),
-                        'harga_pesanan' => $request->input('jumlah_pesanan') * $harga_gas,
                         'id_transaksi' => $transaksi_baru->id_transaksi,
+                        'bukti_pesanan' => $fileName,
+                        'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
                     ]);
                     $pesanan->save();
                     $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)

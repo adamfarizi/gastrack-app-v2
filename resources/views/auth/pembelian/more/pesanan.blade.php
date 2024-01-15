@@ -225,7 +225,7 @@
                                                 <p class="text-sm mb-0">jam :
                                                     {{ date('H:i', strtotime($pesananAwal->tanggal_pesanan)) }}</p>
                                             </td>
-                                            <td class="text-center">{{ $pesananAwal->jumlah_pesanan }} bar</td>
+                                            <td class="text-center">{{ $pesananAwal->jumlah_bar }} bar</td>
                                             <td class="text-center">
                                                 Rp. {{ number_format($pesananAwal->harga_pesanan, 0, ',', '.') }}
                                             </td>
@@ -276,7 +276,7 @@
                                                 <p class="text-sm mb-0">jam :
                                                     {{ date('H:i', strtotime($pesananAkhir->tanggal_pesanan)) }}</p>
                                             </td>
-                                            <td class="text-center">{{ $pesananAkhir->jumlah_pesanan }} bar</td>
+                                            <td class="text-center">{{ $pesananAkhir->jumlah_bar }} bar</td>
                                             <td class="text-center">
                                                 Rp. {{ number_format($pesananAkhir->harga_pesanan, 0, ',', '.') }}
                                             </td>
@@ -332,7 +332,7 @@
                                                     <p class="text-sm mb-0">jam :
                                                         {{ date('H:i', strtotime($pesanan->tanggal_pesanan)) }}</p>
                                                 </td>
-                                                <td class="text-center">{{ $pesanan->jumlah_pesanan }} bar</td>
+                                                <td class="text-center">{{ $pesanan->jumlah_bar }} bar</td>
                                                 <td class="text-center">
                                                     Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}
                                                 </td>

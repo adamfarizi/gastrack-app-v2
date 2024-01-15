@@ -416,7 +416,7 @@
                                                                     <p class="text-sm mb-0">jam : {{ date('h:i', strtotime($pesanan->tanggal_pesanan)) }}</p>
                                                                 </td>
                                                                 <td class="text-center">Gas Alam </td>
-                                                                <td class="text-center">{{ $pesanan->jumlah_pesanan }} bar</td>
+                                                                <td class="text-center">{{ $pesanan->jumlah_bar }} bar</td>
                                                                 <td class="text-center">{{ $harga_gas }}</td>
                                                                 <td class="text-center">Rp.{{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</td>
                                                             </tr>

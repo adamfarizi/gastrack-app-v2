@@ -12,8 +12,11 @@ class Pesanan extends Model
     
     protected $fillable = [
         'tanggal_pesanan',
-        'jumlah_pesanan',
+        'jumlah_bar',
+        'jumlah_m3',
         'harga_pesanan',
+        'bukti_pesanan',
+        'deskripsi_pesanan',
         'id_transaksi',
     ];
     
