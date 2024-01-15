@@ -192,7 +192,7 @@
                                     <p class="col fw-bold text-dark mb-0">:    
                                         <span class="row">
                                             @foreach ($pesanans as $pesanan)
-                                                <p class="py-0 my-0 ms-4 fw-light text-second">- Jumlah Pesanan {{ $pesanan->jumlah_pesanan }} bar, harga Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
+                                                <p class="py-0 my-0 ms-4 fw-light text-second">- Jumlah Pesanan {{ $pesanan->jumlah_bar }} bar, harga Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
                                             @endforeach
                                         </span>
                                     </p>

@@ -23,9 +23,9 @@ class BerandaController extends Controller
         $tanggal_sekarang = date('Y-m-d');
         $tanggal_sebelumnya = date('Y-m-d', strtotime('-1 day', strtotime($tanggal_sekarang)));
         $total_pesanan_sekarang = Pesanan::whereDate('tanggal_pesanan', $tanggal_sekarang)
-            ->sum('jumlah_pesanan');
+            ->sum('jumlah_bar');
         $total_pesanan_sebelumnya = Pesanan::whereDate('tanggal_pesanan', $tanggal_sebelumnya)
-            ->sum('jumlah_pesanan');
+            ->sum('jumlah_bar');
         $peningkatan_pesanan = 0;
         if ($total_pesanan_sebelumnya > 0) {
             $peningkatan_pesanan = (($total_pesanan_sekarang - $total_pesanan_sebelumnya) / $total_pesanan_sebelumnya) * 100;
@@ -78,7 +78,7 @@ class BerandaController extends Controller
         $total_pemasukan = number_format($total_tagihan, 0, ',', '.');
 
         // Chart 1
-        $data_pesanan = Pesanan::selectRaw('SUM(jumlah_pesanan) as total_pesanan, DATE_FORMAT(tanggal_pesanan, "%d %b") as hari')
+        $data_pesanan = Pesanan::selectRaw('SUM(jumlah_bar) as total_pesanan, DATE_FORMAT(tanggal_pesanan, "%d %b") as hari')
             ->join('transaksi', 'pesanan.id_transaksi', '=', 'transaksi.id_transaksi')
             ->groupBy('hari')
             ->orderBy('tanggal_pesanan', 'DESC')
@@ -112,15 +112,15 @@ class BerandaController extends Controller
         $label_chart3 = $data_pengiriman->pluck('nama');
 
         // Chart 4
-        $data_pelanggan = Pelanggan::selectRaw('COUNT(pesanan.id_pesanan) as jumlah_pesanan, pelanggan.nama_perusahaan')
+        $data_pelanggan = Pelanggan::selectRaw('COUNT(pesanan.id_pesanan) as jumlah_bar, pelanggan.nama_perusahaan')
             ->join('transaksi', 'pelanggan.id_pelanggan', '=', 'transaksi.id_pelanggan')
             ->join('pesanan', 'transaksi.id_transaksi', '=', 'pesanan.id_transaksi')
             ->whereMonth('pesanan.tanggal_pesanan', '=', now()->month)
             ->groupBy('pelanggan.id_pelanggan', 'pelanggan.nama_perusahaan')
-            ->orderByDesc('jumlah_pesanan')
+            ->orderByDesc('jumlah_bar')
             ->take(10)
             ->get();
-        $data_chart4 = $data_pelanggan->pluck('jumlah_pesanan');
+        $data_chart4 = $data_pelanggan->pluck('jumlah_bar');
         $label_chart4 = $data_pelanggan->pluck('nama_perusahaan');
 
         // Tabel Pembelian

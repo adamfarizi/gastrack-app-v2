@@ -379,7 +379,7 @@
                                             </span>
                                             <div class="timeline-content">
                                                 <h6 class="text-dark text-sm font-weight-bold mb-0">
-                                                    Pesanan dari {{ $transaksi->pelanggan->nama_perusahaan }}, {{ $pesanan->jumlah_pesanan }} bar
+                                                    Pesanan dari {{ $transaksi->pelanggan->nama_perusahaan }}, {{ $pesanan->jumlah_bar }} bar
                                                 </h6>
                                                 <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                                                     - {{ date('d M h:m', strtotime($pesanan->tanggal_pesanan)) }}
@@ -958,10 +958,10 @@
                     const labelIndex = chart1.data.labels.indexOf(e.hari);
                     if (labelIndex !== -1) {
                         chart1.data.datasets[0].data[labelIndex] = parseInt(chart1.data.datasets[0].data[labelIndex]);
-                        chart1.data.datasets[0].data[labelIndex] += parseInt(e.jumlah_pesanan);
+                        chart1.data.datasets[0].data[labelIndex] += parseInt(e.jumlah_bar);
                     } else {
                         chart1.data.labels.push(e.hari);
-                        chart1.data.datasets[0].data.push(e.jumlah_pesanan);
+                        chart1.data.datasets[0].data.push(e.jumlah_bar);
                     }
                     if (chart1.data.labels.length > 7) {
                         chart1.data.labels.shift();

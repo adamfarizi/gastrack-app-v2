@@ -194,6 +194,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Pengguna</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Pemilik</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tagihan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">BOP</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jadwal Bayar</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Alamat</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
@@ -230,6 +231,9 @@
                                             @else
                                                 <p class="text-xs font-weight-bold mb-0">Tidak ada tagihan</p>
                                             @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">Rp.{{ number_format($pelanggan->bop_pelanggan, 0, ',', '.') }}</p>
                                         </td>
                                         <td class="text-center">
                                             @if ($pelanggan->jenis_pembayaran == null)

@@ -20,6 +20,7 @@ class Sopir extends Model implements Authenticatable
         'password',
         'role',
         'no_hp',
+        'bop_sopir',
         'ketersediaan_sopir',
         'status_sopir',
     ];

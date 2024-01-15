@@ -12,7 +12,7 @@ class CreateTagihanTable extends Migration
         Schema::create('tagihan', function (Blueprint $table) {
             $table->id('id_tagihan');
             $table->date('tanggal_jatuh_tempo');
-            $table->decimal('jumlah_tagihan', 50, 0);
+            $table->decimal('jumlah_tagihan', 50, 0)->nullable();
             $table->enum('status_tagihan',['Sudah Bayar','Belum Bayar','Diproses'])->default('Belum Bayar');
             $table->dateTime('tanggal_pembayaran')->nullable();
             $table->string('bukti_pembayaran')->nullable();

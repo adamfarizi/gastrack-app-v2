@@ -222,6 +222,9 @@
                                         Informasi</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Jumlah</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
                                         Kurir</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
@@ -333,16 +336,45 @@
                                     <div class="row">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Jumlah Pesanan</p>
                                         <p class="col text-sm fw-bold text-dark mb-0">: <span
-                                                class="fw-light">{{ $pesanan->jumlah_pesanan }} bar</span></p>
+                                                class="fw-light">{{ $pesanan->jumlah_bar }} bar</span></p>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="row">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Harga Pesanan</p>
                                         <p class="col text-sm fw-bold text-dark mb-0">: <span
-                                                class="fw-light">Rp.{{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}
-                                                </< /span>
+                                            class="fw-light">Rp.{{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}
                                         </p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Bukti Pesanan</p>
+                                        <p class="col text-sm fw-bold text-dark mb-0">: </p>
+                                        <div class="border-radius-lg">
+                                            @if ($pesanan->bukti_pesanan == null)
+                                                <div class="w-100 border-radius-lg" style="background-color: #dee2e6;">
+                                                    <p class="text-white py-9">Gambar Tidak Ada</p>
+                                                </div>
+                                            @else
+                                                <img src="{{ asset('img/BuktiPesanan/'.$pesanan->bukti_pesanan) }}"
+                                                    class="w-80 border-radius-lg mb-3" alt="">
+                                            @endif
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Deskripsi Pesanan</p>
+                                        @if ($pesanan->deskripsi_pesanan == null)
+                                            <p class="col text-sm fw-bold text-dark mb-0">: <span
+                                                class="fw-light">Tidak ada deskripsi
+                                            </p>
+                                        @else
+                                            <p class="col text-sm fw-bold text-dark mb-0">: <span
+                                                class="fw-light">{{ $pesanan->deskripsi_pesanan }}
+                                            </p>
+                                        @endif
                                     </div>
                                 </li>
                             </ul>
@@ -528,7 +560,7 @@
                                 row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
                             }
                             row += '<p class="text-xs text-secondary mb-0">Jumlah  : ' + pengiriman
-                                .pesanan.jumlah_pesanan + ' bar' +
+                                .pesanan.jumlah_bar + ' bar' +
                                 '</p>' +
                                 '</div>' +
                                 '</td>' +
@@ -538,6 +570,12 @@
                                 pengiriman.pesanan.id_pesanan + '">' +
                                 '<p class="text-sm pt-3" style="text-decoration: underline;">Selengkapnya</p>' +
                                 '</a>' +
+                                '</td>' +
+                                '<td class="align-middle text-sm text-center w-15">' +
+                                '<div class="input-group border rounded-2">' +
+                                '<input type="text" class="form-control ms-2" name="jumlah_pesanan" id="jumlah_pesanan_' + pengiriman.id_pengiriman +
+                                '" placeholder="Jumlah Pesanan" required>' +
+                                '</div>' +
                                 '</td>' +
                                 '<td class="align-middle text-sm text-center">' +
                                 '<div class="border rounded-2">' +
@@ -579,6 +617,7 @@
                             $('#btn_kirim_' + pengiriman.id_pengiriman).click(function(event) {
                                 event.preventDefault();
 
+                                var jumlah_pesanan = $('#jumlah_pesanan_' + pengiriman.id_pengiriman).val();
                                 var id_kurir = $('#id_kurir_' + pengiriman.id_pengiriman).val();
                                 var id_mobil = $('#id_mobil_' + pengiriman.id_pengiriman).val();
                                 var pengirimanId = $(this).val();
@@ -589,7 +628,8 @@
                                         _token: '{{ csrf_token() }}',
                                         id_pengiriman: pengirimanId,
                                         id_kurir: id_kurir,
-                                        id_mobil: id_mobil
+                                        id_mobil: id_mobil,
+                                        jumlah_pesanan: jumlah_pesanan,
                                     },
                                     success: function(response) {
                                         location.reload();
@@ -664,7 +704,7 @@
                                         if (namaPelanggan !== '') {
                                             row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
                                         }
-                                        row += '<p class="text-xs text-secondary mb-0">Jumlah  : ' + pengiriman.pesanan.jumlah_pesanan + ' bar' +
+                                        row += '<p class="text-xs text-secondary mb-0">Jumlah  : ' + pengiriman.pesanan.jumlah_bar + ' bar' +
                                         '</p>' +
                                     '</div>' +
                                     '<td>' +

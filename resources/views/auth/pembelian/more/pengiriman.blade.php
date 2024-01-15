@@ -152,7 +152,7 @@
                                             </div>
                                             <div class="col-9 text-dark">
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->nama_perusahaan }}</span></p>
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->pesanan->jumlah_pesanan }} bar</span></p>
+                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->pesanan->jumlah_bar }} bar</span></p>
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->alamat }}</span></p>
                                             </div>
                                         </div>

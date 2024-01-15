@@ -14,6 +14,7 @@ class Mobil extends Model
         'identitas_mobil',
         'nopol_mobil',
         'jenis_mobil',
+        'vit_mobil',
         'ketersediaan_mobil',
         'status_mobil',    
     ];
