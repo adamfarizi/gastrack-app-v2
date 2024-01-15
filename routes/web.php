@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengiriman/data', [PengirimanController::class,'realtimeData']);
     Route::post('/pengiriman/update_kirim/{id}', [PengirimanController::class,'updateKirim']);
 
-    Route::get('/laporan', [LaporanController::class,'index'])->name('laporan');
+    Route::get('/laporan', [LaporanController::class,'index'])->name('Laporan');
 
     Route::get('/sopir&kendaraan', [SopirController::class,'index'])->name('sopir');
     Route::post('/sopir/create', [SopirController::class,'tambah_sopir_action']);

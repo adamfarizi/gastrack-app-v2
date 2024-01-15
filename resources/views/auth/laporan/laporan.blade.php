@@ -129,7 +129,247 @@
     </nav>
 @endsection
 @section('content')
-    <div class="container text-center align-center">
-        <h3 class="py-10 my-5" style="color: #ced4da;">HALAMAN BELUM TERSEDIA</h3>
+    <div class="row">
+        {{-- Tabel Detail Pesanan --}}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title">Detail Penjualan</h4>
+                            <span class="mt-1 ms-3">
+                                <a class="me-2"></a>
+                            </span>
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                        aria-hidden="true"></i></span>
+                                <input type="text" class="form-control ms-2" id="searchInput_detailPenjualan"
+                                    placeholder="Cari  ...">
+                            </div>
+                            <input type="date" class="form-control" id="dateFilter" onchange="filterTableByDate('table_detailPenjualan', 'dateFilter', 'noResultsMessage_detailPenjualan')">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
+                    <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                        <table class="table align-items-center mb-0" id="table_detailPenjualan">
+                            <thead class="sticky-top bg-white z-index-1">
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
+                                    <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Bar</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">M kubik</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Harga</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu Payment</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Payment Methode</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="table_detailPenjualan_body">
+                                @foreach($transaksis as $transaksi)
+                                    @foreach($transaksi->pesanan as $pesanan)
+                                        <tr>
+                                            <td class="text-center">{{ $transaksi->resi_transaksi }}</td>
+                                            <td class="text-center">{{ $transaksi->pelanggan->nama_perusahaan }}</td>
+                                            <td class="ps-5">{{ $transaksi->tanggal_transaksi }}</td>
+                                            <td class="text-center">{{ $transaksi->pelanggan->alamat }}</td>
+                                            <td class="text-center">{{ $pesanan->jumlah_bar }}</td>
+                                            <td class="text-center">{{ $pesanan->jumlah_m3 }}</td>
+                                            <td class="text-center">{{ $pesanan->harga_pesanan }}</td>
+                                            <td class="text-center">{{ $transaksi->tanggal_transaksi }}</td>
+                                            <td class="text-center">Tunai</td>
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                            </tbody>                                                                                                                                                                                          
+                        </table>
+                        <div class="text-center mt-5" id="noResultsMessage_detailPenjualan" style="display: none;">
+                            <p class="fw-light">Pesanan tidak ditemukan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Tabel Laporan Omzet --}}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title">Laporan Omzet</h4>
+                            <span class="mt-1 ms-3">
+                                <a class="me-2"></a>
+                            </span>
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                        aria-hidden="true"></i></span>
+                                <input type="text" class="form-control ms-2" id="searchInput_laporanOmzet"
+                                    placeholder="Cari  ...">
+                            </div>
+                            <input type="date" class="form-control" id="dateFilterOmzet" onchange="filterTableByDate('table_laporanOmzet', 'dateFilterOmzet', 'noResultsMessage_laporanOmzet')">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
+                    <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                        <table class="table align-items-center mb-0" id="table_laporanOmzet">
+                            <thead class="sticky-top bg-white z-index-1">
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
+                                    <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Pesan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Omzet</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="table_laporanOmzet_body">
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-5" id="noResultsMessage_laporanOmzet" style="display: none;">
+                            <p class="fw-light">Pesanan tidak ditemukan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Tabel Laporan BOP --}}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title">Laporan BOP</h4>
+                            <span class="mt-1 ms-3">
+                                <a class="me-2"></a>
+                            </span>
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                        aria-hidden="true"></i></span>
+                                <input type="text" class="form-control ms-2" id="searchInput_laporanBOP"
+                                    placeholder="Cari  ...">
+                            </div>
+                            <input type="date" class="form-control" id="dateFilterBOP" onchange="filterTableByDate('table_laporanBOP', 'dateFilterBOP', 'noResultsMessage_laporanBOP')">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
+                    <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                        <table class="table align-items-center mb-0" id="table_laporanBOP">
+                            <thead class="sticky-top bg-white z-index-1">
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
+                                    <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jam</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sopir</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">BOP</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="table_laporanBOP_body">
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-5" id="noResultsMessage_laporanBOP" style="display: none;">
+                            <p class="fw-light">Pesanan tidak ditemukan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        function setDefaultDate(elementId) {
+            document.getElementById(elementId).valueAsDate = new Date();
+        }
+    
+        // Panggil fungsi untuk mengatur tanggal default
+        setDefaultDate('dateFilter');
+        setDefaultDate('dateFilterOmzet');
+        setDefaultDate('dateFilterBOP');
+    </script>
+    
+    {{-- Filter by Tanggal --}}
+    <script>
+        function filterTableByDate(tableId, dateFilterId, noResultsMessageId) {
+            // Ambil nilai tanggal dari input
+            var selectedDate = document.getElementById(dateFilterId).value;
+    
+            // Saring data sesuai dengan tanggal yang dipilih
+            $("#" + tableId + "_body tr").filter(function() {
+                // Ambil tanggal dari setiap baris
+                var rowDate = $(this).find("td:eq(2)").text(); // Gantilah indeks dengan indeks kolom yang berisi tanggal
+    
+                // Periksa apakah tanggal pada baris cocok dengan tanggal yang dipilih
+                $(this).toggle(rowDate.includes(selectedDate));
+            });
+    
+            // Sembunyikan atau tampilkan pesan jika tidak ada hasil
+            var noResultsMessage = $("#" + noResultsMessageId);
+            if ($("#" + tableId + "_body tr:visible").length === 0) {
+                noResultsMessage.show();
+            } else {
+                noResultsMessage.hide();
+            }
+        }
+    </script>    
+
+    {{-- Search --}}
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#searchInput_detailPenjualan").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#table_detailPenjualan_body tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+
+                var noResultsMessage = $("#noResultsMessage_detailPenjualan");
+                if ($("#table_detailPenjualan_body tr:visible").length === 0) {
+                    noResultsMessage.show();
+                } else {
+                    noResultsMessage.hide();
+                }
+            });
+
+            $("#searchInput_laporanOmzet").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#table_laporanOmzet_body tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+
+                var noResultsMessage = $("#noResultsMessage_laporanOmzet");
+                if ($("#table_laporanOmzet_body tr:visible").length === 0) {
+                    noResultsMessage.show();
+                } else {
+                    noResultsMessage.hide();
+                }
+            });
+
+            $("#searchInput_laporanBOP").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#table_laporanBOP_body tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+
+                var noResultsMessage = $("#noResultsMessage_laporanBOP");
+                if ($("#table_laporanBOP_body tr:visible").length === 0) {
+                    noResultsMessage.show();
+                } else {
+                    noResultsMessage.hide();
+                }
+            });
+        });
+    </script>
+    
 @endsection
