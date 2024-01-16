@@ -292,6 +292,9 @@
                                         Sisa Gas</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Surat Jalan</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
                                         Status</th>
                                 </tr>
                             </thead>
@@ -351,7 +354,7 @@
                                     <div class="row">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Bukti Pesanan</p>
                                         <p class="col text-sm fw-bold text-dark mb-0">: </p>
-                                        <div class="border-radius-lg">
+                                        <div class="border-radius-lg mt-3">
                                             @if ($pesanan->bukti_pesanan == null)
                                                 <div class="w-100 border-radius-lg" style="background-color: #dee2e6;">
                                                     <p class="text-white py-9">Gambar Tidak Ada</p>
@@ -459,6 +462,128 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    {{-- Modal Surat Jalan --}}
+    @foreach ($pengirimans as $pengiriman)
+        <div class="modal fade" id="more-suratjalan-{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" aria-labelledby="modal-default{{ $transaksi->id_transaksi }}"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <img class="ms-2 position-absolute top-50 start-50 translate-middle d-sm-block"
+                        src="{{ asset('assets/img/local/logo7.png') }}" height="150" alt="main_logo"
+                        style="z-index: 0; opacity: 0.3; display:none;">
+                    <div class="modal-header">
+                        <h6 class="modal-title text-uppercase" id="modal-title-default">Surat Jalan {{ $pengiriman->kode_pengiriman }}</h6>
+                    </div>
+                    <div class="modal-body p-2" id="modal-body-content" style="max-height: 500px; overflow-y: auto;">
+                        <div class="border border-2 py-3 px-2">
+                            <div class="row">
+                                <div class="col ms-2">
+                                    <h1>SURAT JALAN</h1>
+                                </div>
+                                <div class="col text-end mt-1 me-2">
+                                    <img class="ms-2" src="{{ asset('assets/img/local/logo5.png') }}"
+                                        height="50" alt="main_logo">
+                                </div>
+                            </div>
+                            <hr class="border border-dark" style="width: 100%">
+                            <div class="row">
+                                <div class="col ms-4">
+                                    @foreach ($transaksis as $index => $transaksi)
+                                        @if ($transaksi->id_transaksi == $pengiriman->pesanan->id_transaksi)
+                                            <h6 class="mb-0">KEPADA :</h6>
+                                            <p class="text-sm">{{ $transaksi->pelanggan->nama_perusahaan }}<br>
+                                                {{ $transaksi->pelanggan->email }}<br>
+                                                {{ $transaksi->pelanggan->no_hp }}<br>
+                                                {{ $transaksi->pelanggan->alamat }}</p>
+                                        @endif
+                                    @endforeach
+                                </div>
+                                <div class="col ms-7">
+                                    <div class="row">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Nomor</p>
+                                        <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
+                                        <p class="col text-sm text-second mb-0">INV-{{ $pengiriman->kode_pengiriman }}</p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Resi</p>
+                                        <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
+                                        <p class="col text-sm text-second mb-0">{{ $pengiriman->pesanan->transaksi->resi_transaksi }}</p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Tanggal</p>
+                                        <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
+                                        <p class="col text-sm text-second mb-0">{{ date('d/m/Y') }}</p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Sopir</p>
+                                        <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
+                                        <p class="col text-sm text-second mb-0">{{ $pengiriman->sopir->nama }}</p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Mobil</p>
+                                        <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
+                                        <p class="col text-sm text-second mb-0">{{ $pengiriman->mobil->nopol_mobil }}</p>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Admin</p>
+                                        <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
+                                        <p class="col text-sm text-second mb-0">{{ Auth::user()->nama }}</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="text-center ms-2">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center">Waktu</th>
+                                                        <th class="text-center">Produk</th>
+                                                        <th class="text-center">Jumlah Permintaan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="text-dark" style="background-color: #e9ecef">
+                                                    @foreach ($pesanans as $index => $pesanan)
+                                                        @if ($pesanan->id_pesanan == $pengiriman->id_pesanan)
+                                                            <tr class="fw-light">
+                                                                <td class="text-center">
+                                                                    <p class="text-sm mb-0">tanggal : {{ date('d/m/Y', strtotime($pesanan->tanggal_pesanan)) }}</p>
+                                                                    <p class="text-sm mb-0">jam : {{ date('h:i', strtotime($pesanan->tanggal_pesanan)) }}</p>
+                                                                </td>
+                                                                <td class="text-center">Gas Alam </td>
+                                                                <td class="text-center">{{ $pengiriman->gas_permintaan }} bar</td>
+                                                            </tr>
+                                                        @endif
+                                                    @endforeach
+                                                </tbody>
+                                            </table>                                                
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col ms-4 text-dark text-center">
+                                        <p class="text-sm fw-bold mb-4">Pengirim</p>
+                                        <p class="text-sm mb-4" style="color: #e9ecef;">TTD</p>
+                                        <p class="text-sm mb-4">{{ $pengiriman->sopir->nama }}</p>
+                                    </div>
+                                    <div class="col ms-10 text-dark text-center">
+                                        <p class="text-sm fw-bold mb-4">Penerima</p>
+                                        <p class="text-sm mb-4" style="color: #e9ecef;">TTD</p>
+                                        <p class="text-sm mb-4">____________________</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary shadow"
+                            data-bs-dismiss="modal">Close</button>
+                        <a href="{{ url('/pengiriman/more/print/'.$pengiriman->id_pengiriman) }}" type="button" class="btn btn-primary">Print Surat Jalan</a>
                     </div>
                 </div>
             </div>
@@ -704,7 +829,7 @@
                                         if (namaPelanggan !== '') {
                                             row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
                                         }
-                                        row += '<p class="text-xs text-secondary mb-0">Jumlah  : ' + pengiriman.pesanan.jumlah_bar + ' bar' +
+                                        row += '<p class="text-xs text-secondary mb-0">Permintaan  : ' + pengiriman.gas_permintaan + ' bar' +
                                         '</p>' +
                                     '</div>' +
                                     '<td>' +
@@ -746,7 +871,12 @@
                                         else{
                                             row += '<p class="text-sm mb-0">Sisa Gas : ' + pengiriman.kapasitas_gas_keluar + ' bar' +'</p>';
                                         }
-                                    row+= '</td>' +                                    
+                                    row+= '</td>' +
+                                    '<td class="align-middle text-center">' +
+                                    '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman + '" data-bs-toggle="modal" data-bs-target="#more-suratjalan-' + pengiriman.id_pengiriman + '">' +
+                                        '<p class="text-sm" style="text-decoration: underline;">Surat Jalan</p>' +
+                                    '</a>' +                                    
+                                    '</td>' +
                                     '<td class="align-middle text-center">' +
                                         statusBadge +
                                     '</td>' +

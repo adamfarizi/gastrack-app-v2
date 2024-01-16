@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengiriman', [PengirimanController::class,'index'])->name('pengiriman');
     Route::get('/pengiriman/data', [PengirimanController::class,'realtimeData']);
     Route::post('/pengiriman/update_kirim/{id}', [PengirimanController::class,'updateKirim']);
+    Route::get('/pengiriman/more/print/{id}', [PengirimanController::class, 'print_suratjalan']);
 
     Route::get('/laporan', [LaporanController::class,'index'])->name('Laporan');
 

@@ -12,6 +12,7 @@ class Pengiriman extends Model
     
     protected $fillable = [
         'kode_pengiriman',
+        'gas_permintaan',
         'waktu_pengiriman',
         'kapasitas_gas_masuk',
         'bukti_gas_masuk',

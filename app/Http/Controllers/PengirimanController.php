@@ -21,11 +21,14 @@ class PengirimanController extends Controller
         $data['title'] = 'Pengiriman';
         $pesanans = Pesanan::all();
         $transaksis = Transaksi::all();
+        $gas = Gas::sum('harga_gas');
+        $harga_gas = number_format($gas, 0, ',', '.');
         $pengirimans = Pengiriman::where('status_pengiriman', 'Dikirim')->get();
 
         return view('auth.pengiriman.pengiriman', [
             'pesanans' => $pesanans,
             'transaksis' => $transaksis,
+            'harga_gas' => $harga_gas,
             'pengirimans' => $pengirimans,
         ], $data);
     }
@@ -81,21 +84,22 @@ class PengirimanController extends Controller
             $pengiriman->status_pengiriman = 'Dikirim';
             $pengiriman->id_sopir = $sopir;
             $pengiriman->id_mobil = $mobil;
+            $pengiriman->gas_permintaan = $jumlah_pesanan;
             $pengiriman->save();
 
             $id_pesanan = $pengiriman->id_pesanan;
             $harga_gas = Gas::sum('harga_gas');
             $pesanan = Pesanan::where('id_pesanan', $id_pesanan)->first();
-            $pesanan->jumlah_bar = $jumlah_pesanan;
-            $pesanan->harga_pesanan = $jumlah_pesanan * $harga_gas;
-            $pesanan->save();
+            // $pesanan->jumlah_bar = $jumlah_pesanan;
+            // $pesanan->harga_pesanan = $jumlah_pesanan * $harga_gas;
+            // $pesanan->save();
 
             $id_transaksi = $pesanan->id_transaksi;
             $transaksi = Transaksi::where('id_transaksi', $id_transaksi)->first();
-            $id_tagihan = $transaksi->id_tagihan;
-            $tagihan = Tagihan::where('id_tagihan', $id_tagihan)->first();
-            $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + ($jumlah_pesanan * $harga_gas);
-            $tagihan->save();
+            // $id_tagihan = $transaksi->id_tagihan;
+            // $tagihan = Tagihan::where('id_tagihan', $id_tagihan)->first();
+            // $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + ($jumlah_pesanan * $harga_gas);
+            // $tagihan->save();
 
             $sopir = Sopir::find($sopir);
             $sopir->ketersediaan_sopir = 'tidak tersedia';
@@ -116,5 +120,24 @@ class PengirimanController extends Controller
             Session::flash('success', 'Pesanan berhasil dikirim!');
             return response()->json(['success' => true]);
         }
+    }
+
+    public function print_suratjalan($id_pengiriman){
+        $data['title'] = 'Print Surat Jalan';
+
+        $pengiriman = Pengiriman::where('id_pengiriman',$id_pengiriman)->first();
+        $id_transaksi = $pengiriman->pesanan->id_transaksi;
+        $transaksi = Transaksi::where('id_transaksi',$id_transaksi)->first();
+        $id_pesanan = $pengiriman->pesanan->id_pesanan;
+        $pesanan = Pesanan::where('id_pesanan', $id_pesanan)->first();
+        $gas = Gas::sum('harga_gas');
+        $harga_gas = number_format($gas, 0, ',', '.');
+
+        return view('auth.pengiriman.more.print', [
+            'pengiriman' => $pengiriman,
+            'transaksi' => $transaksi,
+            'pesanan' => $pesanan,
+            'harga_gas' => $harga_gas,
+        ], $data);
     }
 }

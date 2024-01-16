@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Events\GasKeluarEvent;
 use App\Events\GasMasukEvent;
 use App\Http\Controllers\Controller;
+use App\Models\Gas;
 use App\Models\Pesanan;
 use App\Models\Sopir;
 use App\Models\Pengiriman;
 use App\Http\Resources\PostResource;
+use App\Models\Tagihan;
 use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -167,7 +169,7 @@ class ApiSopirController extends Controller
     {
         // Validasi request
         $request->validate([
-            'kapasitas_gas_keluar' => 'string',
+            'sisa_gas' => 'required|string',
             'bukti_gas_keluar' => 'required|image|mimes:jpeg,jpg,png',
         ]);
     
@@ -184,13 +186,28 @@ class ApiSopirController extends Controller
             ], 422);
         }
 
-        // Perhitungan sisa_gas
-        $sisa_gas = $pengiriman->kapasitas_gas_masuk - $request->kapasitas_gas_keluar;
+        // Perhitungan gas masuk
+        $gas_keluar = $pengiriman->kapasitas_gas_masuk - $request->sisa_gas;
 
         // Update data pengiriman
         $pengiriman->waktu_diterima = now();
-        $pengiriman->kapasitas_gas_keluar = $request->kapasitas_gas_keluar;
-        $pengiriman->sisa_gas = $sisa_gas;
+        $pengiriman->kapasitas_gas_keluar = $gas_keluar;
+        $pengiriman->sisa_gas = $request->sisa_gas;
+
+        // Perhitungan harga gas
+        $id_pesanan = $pengiriman->id_pesanan;
+        $harga_gas = Gas::sum('harga_gas');
+        $pesanan = Pesanan::where('id_pesanan', $id_pesanan)->first();
+        $pesanan->jumlah_bar = $gas_keluar;
+        $pesanan->harga_pesanan =  $gas_keluar  * $harga_gas;
+        $pesanan->save();
+
+        $id_transaksi = $pesanan->id_transaksi;
+        $transaksi = Transaksi::where('id_transaksi', $id_transaksi)->first();
+        $id_tagihan = $transaksi->id_tagihan;
+        $tagihan = Tagihan::where('id_tagihan', $id_tagihan)->first();
+        $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + (  $gas_keluar * $harga_gas);
+        $tagihan->save();
 
         if ($request->hasFile('bukti_gas_keluar')) {
             $file = $request->file('bukti_gas_keluar');
@@ -214,7 +231,7 @@ class ApiSopirController extends Controller
 
         return response()->json([
             'message' => 'Data pengiriman berhasil diupdate',
-            'sisa_gas' => $sisa_gas,
+            'gas_keluar' => $gas_keluar,
         ]);
     }
 

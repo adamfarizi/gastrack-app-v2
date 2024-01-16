@@ -12,6 +12,7 @@ class CreatePengirimanTable extends Migration
         Schema::create('pengiriman', function (Blueprint $table) {
             $table->id('id_pengiriman');
             $table->string('kode_pengiriman');
+            $table->string('gas_permintaan')->nullable();
             $table->dateTime('waktu_pengiriman')->nullable();
             $table->string('kapasitas_gas_masuk')->nullable();
             $table->string('bukti_gas_masuk')->nullable();
