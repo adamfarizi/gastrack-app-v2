@@ -337,16 +337,9 @@
                                 </li>
                                 <li>
                                     <div class="row">
-                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Jumlah Pesanan</p>
+                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Jam Pesanan</p>
                                         <p class="col text-sm fw-bold text-dark mb-0">: <span
-                                                class="fw-light">{{ $pesanan->jumlah_bar }} bar</span></p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="row">
-                                        <p class="col-4 text-sm fw-bold text-dark mb-0">Harga Pesanan</p>
-                                        <p class="col text-sm fw-bold text-dark mb-0">: <span
-                                            class="fw-light">Rp.{{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}
+                                                class="fw-light">{{ date('H:i:s', strtotime($pesanan->tanggal_pesanan)) }}</span>
                                         </p>
                                     </div>
                                 </li>
@@ -684,8 +677,8 @@
                             if (namaPelanggan !== '') {
                                 row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
                             }
-                            row += '<p class="text-xs text-secondary mb-0">Jumlah  : ' + pengiriman
-                                .pesanan.jumlah_bar + ' bar' +
+                            row += '<p class="text-xs text-secondary mb-0">Waktu  : ' + pengiriman
+                                .pesanan.tanggal_pesanan +
                                 '</p>' +
                                 '</div>' +
                                 '</td>' +

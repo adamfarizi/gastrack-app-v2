@@ -17,8 +17,9 @@ return new class extends Migration
             $table->id('id_pesanan');
             $table->dateTime('tanggal_pesanan');
             $table->integer('jumlah_bar')->nullable()->default('0');
-            $table->integer('jumlah_m3')->nullable()->default('0');
+            $table->decimal('jumlah_m3')->nullable()->default('0');
             $table->decimal('harga_pesanan', 50, 0)->nullable()->default('0');
+            $table->decimal('bop_pesanan', 50, 0)->nullable()->default('0');
             $table->string('bukti_pesanan');
             $table->string('deskripsi_pesanan')->nullable();
             $table->unsignedBigInteger('id_transaksi');

@@ -143,53 +143,81 @@
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
                             <div class="input-group mb-3 border rounded-2">
-                                <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                <span class="input-group-text text-body me-2"><i class="fa fa-search"
                                         aria-hidden="true"></i></span>
                                 <input type="text" class="form-control ms-2" id="searchInput_detailPenjualan"
                                     placeholder="Cari  ...">
                             </div>
-                            <input type="date" class="form-control" id="dateFilter" onchange="filterTableByDate('table_detailPenjualan', 'dateFilter', 'noResultsMessage_detailPenjualan')">
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <input type="date" class="form-control ms-2 me-2" id="dateFilter" 
+                                onchange="filterTableByDate('table_detailPenjualan', 'dateFilter', 'noResultsMessage_detailPenjualan')">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
+                <div class="card-body px-3 pt-0 pb-5" style="min-height: 428px;">
                     <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
                         <table class="table align-items-center mb-0" id="table_detailPenjualan">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Resi</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
-                                    <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Bar</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">M kubik</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Pesanan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Harga</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu Payment</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Payment Methode</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
                                 </tr>
                             </thead>
-                            <tbody id="table_detailPenjualan_body">
+                            <tbody id="table_detailPenjualan_body" class="text-dark">
                                 @foreach($transaksis as $transaksi)
                                     @foreach($transaksi->pesanan as $pesanan)
                                         <tr>
-                                            <td class="text-center">{{ $transaksi->resi_transaksi }}</td>
-                                            <td class="text-center">{{ $transaksi->pelanggan->nama_perusahaan }}</td>
-                                            <td class="ps-5">{{ $transaksi->tanggal_transaksi }}</td>
-                                            <td class="text-center">{{ $transaksi->pelanggan->alamat }}</td>
-                                            <td class="text-center">{{ $pesanan->jumlah_bar }}</td>
-                                            <td class="text-center">{{ $pesanan->jumlah_m3 }}</td>
-                                            <td class="text-center">{{ $pesanan->harga_pesanan }}</td>
-                                            <td class="text-center">{{ $transaksi->tanggal_transaksi }}</td>
-                                            <td class="text-center">Tunai</td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->tanggal_pesanan }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                                            </td>
+                                            <td class="text-wrap">
+                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->jumlah_bar }} bar</p>
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->jumlah_m3 }} m3</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0"> Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($transaksi->tagihan->status_tagihan === 'Sudah Bayar' || $transaksi->tagihan->status_tagihan === 'Diproses')
+                                                    <p class="text-sm font-weight-light mb-0">{{ date('d/m/Y', strtotime($transaksi->tagihan->tanggal_pembayaran)) }}</p>
+                                                    <p class="text-sm font-weight-light mb-0">{{ date('H:i:s', strtotime($transaksi->tagihan->tanggal_pembayaran)) }}</p>
+                                                @else
+                                                    <p class="text-sm font-weight-light text-danger mb-0">Belum Bayar</p>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($transaksi->tagihan->status_tagihan === 'Sudah Bayar' || $transaksi->tagihan->status_tagihan === 'Diproses')
+                                                    <p class="text-sm font-weight-light mb-0">Tunai</p>
+                                                @else
+                                                    <p class="text-sm font-weight-light text-danger mb-0">Belum Bayar</p>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 @endforeach
-                            </tbody>                                                                                                                                                                                          
+                            </tbody>                                                                                                                                                                  
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_detailPenjualan" style="display: none;">
                             <p class="fw-light">Pesanan tidak ditemukan.</p>
-                        </div>
+                        </div>                     
                     </div>
                 </div>
             </div>
@@ -212,7 +240,12 @@
                                 <input type="text" class="form-control ms-2" id="searchInput_laporanOmzet"
                                     placeholder="Cari  ...">
                             </div>
-                            <input type="date" class="form-control" id="dateFilterOmzet" onchange="filterTableByDate('table_laporanOmzet', 'dateFilterOmzet', 'noResultsMessage_laporanOmzet')">
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <input type="date" class="form-control ms-2 me-2" id="dateFilterOmzet" 
+                                onchange="filterTableByDate('table_laporanOmzet', 'dateFilterOmzet', 'noResultsMessage_laporanOmzet')">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -221,20 +254,59 @@
                         <table class="table align-items-center mb-0" id="table_laporanOmzet">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Resi</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
-                                    <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Pesan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Bar</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah M3</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Omzet</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
                                 </tr>
                             </thead>
-                            <tbody id="table_laporanOmzet_body">
+                            <tbody id="table_laporanOmzet_body" class="text-dark">
+                                @foreach($transaksis as $transaksi)
+                                    @foreach($transaksi->pesanan as $pesanan)
+                                        <tr>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->tanggal_pesanan }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                                            </td>
+                                            <td class="text-wrap">
+                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->jumlah_bar }} bar</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->jumlah_m3 }} m3</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0"> Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endforeach
                             </tbody>
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_laporanOmzet" style="display: none;">
                             <p class="fw-light">Pesanan tidak ditemukan.</p>
                         </div>
+                    </div>
+                </div>
+                <div class="px-3">
+                    <hr class="mb-0">
+                </div>
+                <div class="card-footer d-flex">
+                    <div class="col">
+                        <p class="ms-5 text-xs text-uppercase fw-bold text-secondary">Total :</p>
+                    </div>
+                    <div class="col">
+                        <p class="text-sm text-end fw-bold text-primary">Rp. {{ number_format($total_omzet, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>
@@ -257,26 +329,90 @@
                                 <input type="text" class="form-control ms-2" id="searchInput_laporanBOP"
                                     placeholder="Cari  ...">
                             </div>
-                            <input type="date" class="form-control" id="dateFilterBOP" onchange="filterTableByDate('table_laporanBOP', 'dateFilterBOP', 'noResultsMessage_laporanBOP')">
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <input type="date" class="form-control ms-2 me-2" id="dateFilterBOP" 
+                                onchange="filterTableByDate('table_laporanBOP', 'dateFilterBOP', 'noResultsMessage_laporanBOP')">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
+                <div class="card-body px-3 pt-0 pb-5" style="min-height: 428px;">
                     <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
                         <table class="table align-items-center mb-0" id="table_laporanBOP">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
-                                    <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jam</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Resi Pengiriman</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal Pengiriman</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sopir</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Mobil</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">BOP</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
                                 </tr>
                             </thead>
-                            <tbody id="table_laporanBOP_body">
+                            <tbody id="table_laporanBOP_body" class="text-dark">
+                                @foreach($pengirimans as $pengiriman)
+                                    <tr>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->kode_pengiriman }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            @if ( $pengiriman->waktu_pengiriman == null)
+                                            <p class="text-sm font-weight-light text-danger mb-0">Pesanan belum dikirim</p>
+                                            @else
+                                            <p class="text-sm font-weight-light mb-0">{{ $pengiriman->waktu_pengiriman }}</p>
+                                            @endif
+                                        </td>
+                                        @php
+                                            $pelangganNama = '';
+                                            $pelangganAlamat = '';
+                                            $pesananBelumDikirim = false;
+                                        @endphp
+                                        @foreach ($pesanans as $pesanan)
+                                            @if ($pesanan->id_pesanan == $pengiriman->pesanan->id_pesanan)
+                                                @php
+                                                    $pelangganNama = $pesanan->transaksi->pelanggan->nama_perusahaan;
+                                                    $pelangganAlamat = $pesanan->transaksi->pelanggan->alamat;
+                                                @endphp
+                                            @endif
+                                        @endforeach
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-light mb-0">{{ $pelangganNama }}</p>
+                                        </td>
+                                        <td class="text-wrap">
+                                            <p class="text-sm font-weight-light mb-0">{{ $pelangganAlamat }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            @if ($pengiriman->sopir)
+                                                <p class="text-sm font-weight-light mb-0">
+                                                    {{ $pengiriman->sopir->nama }}
+                                                </p>
+                                                @else
+                                                <p class="text-sm text-danger font-weight-light mb-0">
+                                                    Pesanan belum dikirim
+                                                </p>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            @if ($pengiriman->mobil)
+                                                <p class="text-sm font-weight-light mb-0">
+                                                    {{ $pengiriman->mobil->nopol_mobil }}
+                                                </p>
+                                                @else
+                                                <p class="text-sm text-danger font-weight-light mb-0">
+                                                    Pesanan belum dikirim
+                                                </p>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-light mb-0">
+                                                Rp. {{ number_format($pengiriman->pesanan->bop_pesanan, 0, ',', '.') }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_laporanBOP" style="display: none;">
@@ -308,7 +444,7 @@
             // Saring data sesuai dengan tanggal yang dipilih
             $("#" + tableId + "_body tr").filter(function() {
                 // Ambil tanggal dari setiap baris
-                var rowDate = $(this).find("td:eq(2)").text(); // Gantilah indeks dengan indeks kolom yang berisi tanggal
+                var rowDate = $(this).find("td:eq(1)").text(); // Gantilah indeks dengan indeks kolom yang berisi tanggal
     
                 // Periksa apakah tanggal pada baris cocok dengan tanggal yang dipilih
                 $(this).toggle(rowDate.includes(selectedDate));

@@ -200,8 +200,14 @@ class ApiSopirController extends Controller
         $pesanan = Pesanan::where('id_pesanan', $id_pesanan)->first();
         $pesanan->jumlah_bar = $gas_keluar;
         $pesanan->harga_pesanan =  $gas_keluar  * $harga_gas;
+
+        // Perhitungan m3
+        $temperature = 21;
+        $FPV = 1.140296223;
+        $pesanan->jumlah_m3 = 1.45 * ($gas_keluar + 1.01325) / 1.01325 * (273 + 27) / (273 + $temperature) * ($FPV ** 2);
         $pesanan->save();
 
+        // Perhitungan tagihan
         $id_transaksi = $pesanan->id_transaksi;
         $transaksi = Transaksi::where('id_transaksi', $id_transaksi)->first();
         $id_tagihan = $transaksi->id_tagihan;

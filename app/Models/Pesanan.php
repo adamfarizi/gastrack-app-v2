@@ -15,6 +15,7 @@ class Pesanan extends Model
         'jumlah_bar',
         'jumlah_m3',
         'harga_pesanan',
+        'bop_pesanan',
         'bukti_pesanan',
         'deskripsi_pesanan',
         'id_transaksi',

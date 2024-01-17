@@ -147,11 +147,13 @@
                                         <div class="row ms-2">
                                             <div class="col px-0">
                                                 <p class="mb-0">- <span class="fw-bold">Pelanggan</span></p>
-                                                <p class="mb-0">- <span class="fw-bold">Jumlah Gas</span></p>
+                                                <p class="mb-0">- <span class="fw-bold">Permintaan Gas</span></p>
+                                                <p class="mb-0">- <span class="fw-bold">Gas Diterima</span></p>
                                                 <p class="mb-0">- <span class="fw-bold">Alamat</span></p>
                                             </div>
                                             <div class="col-9 text-dark">
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->nama_perusahaan }}</span></p>
+                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->gas_permintaan }} bar</span></p>
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->pesanan->jumlah_bar }} bar</span></p>
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->alamat }}</span></p>
                                             </div>

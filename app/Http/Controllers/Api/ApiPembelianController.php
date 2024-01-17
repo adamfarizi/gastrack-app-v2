@@ -105,6 +105,7 @@ class ApiPembelianController extends Controller
                     'tanggal_pesanan' => $tanggal_sekarang,
                     'id_transaksi' => $transaksi_baru->id_transaksi,
                     'bukti_pesanan' => $fileName,
+                    'bop_pesanan' => $pelanggan->bop_pelanggan,
                     'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
                 ]);
                 $pesanan->save();
@@ -149,6 +150,7 @@ class ApiPembelianController extends Controller
                         $transaksi_terbaru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                             ->latest('created_at')
                             ->first();
+                        $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
                         $file = $request->file('bukti_pesanan');
                         $fileName = $file->getClientOriginalName();
                         $file->move(public_path('img/BuktiPesanan'), $fileName);
@@ -156,6 +158,7 @@ class ApiPembelianController extends Controller
                             'tanggal_pesanan' => $tanggal_sekarang,
                             'id_transaksi' => $transaksi_terbaru->id_transaksi,
                             'bukti_pesanan' => $fileName,
+                            'bop_pesanan' => $pelanggan->bop_pelanggan,
                             'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
                         ]);
                         $pesanan->save();
@@ -171,7 +174,6 @@ class ApiPembelianController extends Controller
                         $pengiriman->save();
 
                         // Broadcast
-                        $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
                         $nama_perusahaan = $pelanggan->nama_perusahaan;
                         $jumlah_pesanan = $request->input('jumlah_pesanan');
                         $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
@@ -222,6 +224,7 @@ class ApiPembelianController extends Controller
                         'tanggal_pesanan' => $tanggal_sekarang,
                         'id_transaksi' => $transaksi_baru->id_transaksi,
                         'bukti_pesanan' => $fileName,
+                        'bop_pesanan' => $pelanggan->bop_pelanggan,
                         'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
                     ]);
                     $pesanan->save();
