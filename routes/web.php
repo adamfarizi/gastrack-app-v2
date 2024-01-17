@@ -8,6 +8,7 @@ use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\PenarikanController;
 use App\Http\Controllers\SopirController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kendaraan/edit/{id}', [SopirController::class,'edit_kendaraan_action']);
     Route::post('/kendaraan/status/{id}', [SopirController::class,'edit_kendaraan_status']);
     Route::delete('/kendaraan/delete/{id}', [SopirController::class,'hapus_kendaraan_action']);
+
+    Route::get('/penarikan', [PenarikanController::class,'index'])->name('Penarikan');
 
     Route::get('/pengguna', [PenggunaController::class,'index'])->name('pengguna');
     Route::post('/pengguna/pelanggan/create', [PenggunaController::class,'tambah_pelanggan_action']);

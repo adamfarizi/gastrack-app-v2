@@ -55,6 +55,14 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/penarikan') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-symbols-outlined opacity-10">payments</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Penarikan BOP</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-dark " href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
