@@ -143,10 +143,10 @@
             <div class="card">
                 <div class="card-header pb-0">
                     <div class="row">
-                        <div class="col d-flex">
+                        <div class="col d-flex align-items-center">
                             <h4 class="card-title">Detail Penjualan</h4>
                             <span class="mt-1 ms-3">
-                                <a class="me-2"></a>
+                              <button id="exportDetailPenjualan" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
@@ -235,10 +235,10 @@
             <div class="card">
                 <div class="card-header pb-0">
                     <div class="row">
-                        <div class="col d-flex">
+                        <div class="col d-flex align-items-center">
                             <h4 class="card-title">Laporan Omzet</h4>
                             <span class="mt-1 ms-3">
-                                <a class="me-2"></a>
+                              <button id="exportLaporanOmzet" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
@@ -324,10 +324,10 @@
             <div class="card">
                 <div class="card-header pb-0">
                     <div class="row">
-                        <div class="col d-flex">
+                        <div class="col d-flex align-items-center">
                             <h4 class="card-title">Laporan BOP</h4>
                             <span class="mt-1 ms-3">
-                                <a class="me-2"></a>
+                              <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
@@ -515,5 +515,42 @@
             });
         });
     </script>
+
+    {{-- Export Excel --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fungsi untuk menangani ekspor Excel
+            function exportToExcel(exportButtonId, tableId, fileName) {
+                const exportButton = document.getElementById(exportButtonId);
+                const table = document.getElementById(tableId);
+    
+                if (!table) {
+                    console.error(`Table with ID '${tableId}' not found.`);
+                    return;
+                }
+    
+                exportButton.addEventListener('click', function () {
+                    // Mengonversi seluruh tabel menjadi objek lembar kerja
+                    const ws = XLSX.utils.table_to_sheet(table);
+    
+                    // Membuat buku kerja baru
+                    const wb = XLSX.utils.book_new();
+    
+                    // Menambahkan lembar kerja ke buku kerja
+                    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+    
+                    // Menyimpan file Excel
+                    XLSX.writeFile(wb, fileName);
+                });
+            }
+    
+            // Memanggil fungsi untuk setiap tombol "Export" dengan parameter yang sesuai
+            exportToExcel('exportDetailPenjualan', 'table_detailPenjualan', 'detail_penjualan.xlsx');
+            exportToExcel('exportLaporanOmzet', 'table_laporanOmzet', 'laporan_omzet.xlsx');
+            exportToExcel('exportLaporanBOP', 'table_laporanBOP', 'laporan_BOP.xlsx');
+        });
+    </script>
+    
     
 @endsection
