@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/kendaraan/delete/{id}', [SopirController::class,'hapus_kendaraan_action']);
 
     Route::get('/penarikan', [PenarikanController::class,'index'])->name('Penarikan');
+    Route::post('/penarikan/pengambilan/{id}', [PenarikanController::class,'pengambilan_bop']);
 
     Route::get('/pengguna', [PenggunaController::class,'index'])->name('pengguna');
     Route::post('/pengguna/pelanggan/create', [PenggunaController::class,'tambah_pelanggan_action']);

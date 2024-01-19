@@ -148,7 +148,7 @@
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Total Pesanan</p>
                         <div class="d-flex flex-row-reverse">
-                            <span class="h5 ms-2 text-dark font-weight-bolder">Pesanan</span>
+                            <span class="h5 ms-2 text-dark font-weight-bolder">pesanan</span>
                             <h5 class="mb-0" id="total_pesanan"></h5>
                         </div>
                     </div>
@@ -166,7 +166,7 @@
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Pesanan Diproses</p>
                         <div class="d-flex flex-row-reverse">
-                            <span class="h5 ms-2 text-dark font-weight-bolder">Pesanan</span>
+                            <span class="h5 ms-2 text-dark font-weight-bolder">pesanan</span>
                             <h5 class="mb-0" id="pesanan_diproses"></h5>
                         </div>
                     </div>
@@ -184,7 +184,7 @@
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Pesanan Dikirim</p>
                         <div class="d-flex flex-row-reverse">
-                            <span class="h5 ms-2 text-dark font-weight-bolder">Pesanan</span>
+                            <span class="h5 ms-2 text-dark font-weight-bolder">pesanan</span>
                             <h5 class="mb-0" id="pesanan_dikirim"></h5>
                         </div>
                     </div>
@@ -192,30 +192,27 @@
             </div>
         </div>
     </div>
-    {{-- Tabel proses  --}}
-    <div class="container mt-5">
-        <div class="card bg-white">
-            <div class="card-header pb-0">
-                <div class="row">
-                    <div class="col d-flex">
-                        <h4 class="card-title">Pesanan Diproses</h4>
-                        <span class="mt-1 ms-3">
-                            <a class="me-2"></a>
-                        </span>
-                    </div>
-                    <div class="col-md-2 col-sm-6 ml-auto">
-                        <div class="input-group mb-3 border rounded-2">
-                            <span class="input-group-text text-body me-2"><i class="fas fa-search"
-                                    aria-hidden="true"></i></span>
-                            <input type="text" class="form-control ms-2" id="searchInput_Diproses"
-                                placeholder="Cari Pesanan ...">
+    <div class="row mt-3">
+        {{-- Tabel proses  --}}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title">Pesanan Diproses</h4>
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                        aria-hidden="true"></i></span>
+                                <input type="text" class="form-control ms-2" id="searchInput_Diproses"
+                                    placeholder="Cari Pesanan ...">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="card-body px-0 pt-0 pb-2" style="min-height: 50px;">
-                    <div class="table-responsive p-0" style="max-height: 300px; overflow-y: auto;">
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
                         <table id="table_diproses" class="table align-items-center mb-0">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
@@ -252,31 +249,26 @@
                 </div>
             </div>
         </div>
-    </div>
-    {{-- Tabel dikirim --}}
-    <div class="container mt-5">
-        <div class="card bg-white">
-            <div class="card-header pb-0">
-                <div class="row">
-                    <div class="col d-flex">
-                        <h4 class="card-title">Pesanan Dikirim</h4>
-                        <span class="mt-1 ms-3">
-                            <a class="me-2"></a>
-                        </span>
-                    </div>
-                    <div class="col-md-2 col-sm-6 ml-auto">
-                        <div class="input-group mb-3 border rounded-2">
-                            <span class="input-group-text text-body me-2"><i class="fas fa-search"
-                                    aria-hidden="true"></i></span>
-                            <input type="text" class="form-control ms-2" id="searchInput_Dikirim"
-                                placeholder="Cari Pesanan ...">
+        {{-- Tabel dikirim --}}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title">Pesanan Dikirim</h4>
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                        aria-hidden="true"></i></span>
+                                <input type="text" class="form-control ms-2" id="searchInput_Dikirim"
+                                    placeholder="Cari Pesanan ...">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="card-body px-0 pt-0 pb-2" style="min-height: 50px;">
-                    <div class="table-responsive p-0" style="max-height: 300px; overflow-y: auto;">
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
                         <table id="table_dikirim" class="table align-items-center mb-0">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
@@ -796,7 +788,7 @@
                     if (!data.pengirimans || data.pengirimans.length === 0) {
                         var row =
                             '<tr class="text-dark">' +
-                            '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pengiriman</td>' +
+                            '<td colspan="8" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pengiriman</td>' +
                             '</tr>';
 
                         table.append(row);

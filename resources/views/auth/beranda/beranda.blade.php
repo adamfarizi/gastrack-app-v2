@@ -312,7 +312,7 @@
     </div>
     <div class="row mb-4">
         {{-- Tabel Pembelian --}}
-        <div class="col-lg-8 col-md-6  mb-2">
+        <div class="col-lg-8 col-md-6 mb-2">
             <div class="card">
                 <div class="card-header pb-0">
                     <div class="row">
@@ -330,8 +330,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body px-3 pt-0 mb-4" style="min-height: 428px;">
-                    <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                <div class="card-body px-3 pt-0 mb-5" style="min-height: 480px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 430px; overflow-y: auto;">
                         <table class="table align-items-center mb-0" id="table_pembelian">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
@@ -363,7 +363,7 @@
         </div>
         {{-- Pesanan Hari Ini --}}
         <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
+            <div class="card" style="height: 610px">
                 <div class="card-header pb-0">
                     <h6>Riwayat Pesanan Hari ini</h6>
                     <div class="d-flex">

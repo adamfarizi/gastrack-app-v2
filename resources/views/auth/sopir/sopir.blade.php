@@ -146,7 +146,10 @@
                     </div>
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Total Sopir</p>
-                        <h5 class="mb-0">{{ $total_sopir }} sopir</h5>
+                        <div class="d-flex flex-row-reverse">
+                            <span class="h5 ms-2 text-dark font-weight-bolder">sopir</span>
+                            <h5 class="mb-0" id="total_pesanan">{{ $total_sopir }}</h5>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -161,195 +164,208 @@
                     </div>
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Total Kendaraan</p>
-                        <h5 class="mb-0">{{ $total_kendaraan }} kendaraan</h5>
+                        <div class="d-flex flex-row-reverse">
+                            <span class="h5 ms-2 text-dark font-weight-bolder">kendaraan</span>
+                            <h5 class="mb-0" id="total_pesanan">{{ $total_kendaraan }}</h5>
+                        </div>                    
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="mt-3">
-        <div class="row">
-            {{-- Tabel sopir --}}
-            <div class="col-12 col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header pb-0 d-flex justify-content-between">
-                        <h6>Sopir</h6>
-                        <a type="button" class="btn btn-sm bg-gradient-primary border-end" data-bs-toggle="modal"
-                            data-bs-target="#tambahsopir">
-                            <span> <i class="fa fa-solid fa-plus me-2" style="color: #ffffff;"></i></span>
-                            Tambah Sopir
-                        </a>
-                    </div>
-                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 370px;">
-                        <div class="table-responsive p-0" style="max-height: 350px; overflow-y: auto;">
-                            <table class="table align-items-center mb-0">
-                                <thead class="sticky-top bg-white z-index-1">
-                                    <tr>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Pengguna</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            BOP</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Ketersediaan</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Status</th>
-                                        <th class="text-secondary opacity-7"></th>
-                                    </tr>
-                                </thead>
-                                @foreach ($sopirs as $sopir)
-                                    <tbody class="border-0" id="table-sopir">
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex px-2 py-1">
-                                                    <div class="avatar avatar-sm me-3 bg-dark">
-                                                        <i class="fa fa-solid fa-vest opacity-10"></i>
-                                                    </div>
-                                                    <div class="d-flex flex-column justify-content-center">
-                                                        <h6 class="mb-0 text-sm">{{ $sopir->nama }}</h6>
-                                                        <p class="text-xs text-secondary mb-0">{{ $sopir->email }}</p>
-                                                        <p class="text-xs text-secondary mb-0">no hp : {{ $sopir->no_hp }}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <p class="text-xs font-weight-bold mb-0">Rp. {{ number_format($sopir->bop_sopir, 0, ',', '.') }}</p>
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($sopir->ketersediaan_sopir === 'tersedia')
-                                                    <span class="badge badge-sm bg-gradient-success">Tersedia</span>
-                                                @else
-                                                    <span class="badge badge-sm bg-gradient-danger">Tdk Tersedia</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                <form action="{{ url('/sopir/status/'.$sopir->id_sopir) }}" method="POST">
-                                                    @csrf
-                                                    @if ($sopir->status_sopir == 'aktif')
-                                                        <button type="submit" href class="badge badge-sm bg-gradient-success border-0">Aktif</button>
-                                                    @else
-                                                        <button type="submit" class="badge badge-sm bg-gradient-danger border-0">Tidak Aktif</button>
-                                                    @endif
-                                                </form>
-                                            </td>
-                                            <td class="text-center">
-                                                <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa fa-ellipsis-v text-xs"></i>
-                                                </a>
-                                                <ul class="shadow dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">                                                  
-                                                    <li>
-                                                        <a class="dropdown-item border-radius-md" href="{{ url('/sopir/edit/'. $sopir->id_sopir) }}">
-                                                            <i class="fa fa-solid fa-pen" style="color: #252f40;"></i>
-                                                            <span class="ms-3">Edit</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" class="dropdown-item border-radius-md" data-bs-toggle="modal" data-bs-target="#confirmDeleteSopir">
-                                                            <i class="fa fa-solid fa-trash" style="color: #ea0606;"></i>
-                                                            <span class="ms-3 text-danger">Hapus</span>
-                                                        </a>                                                                                                                                                          
-                                                    </li>
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                @endforeach
-                            </table>
+    <div class="row mt-3">
+        {{-- Tabel sopir --}}
+        <div class="col-12 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title">Sopir</h4>
+                        </div>
+                        <div class="col-md-4 col-sm-6 ml-auto mb-2 text-end">
+                            <a type="button" class="w-auto py-2 btn btn-sm bg-gradient-primary border-end" data-bs-toggle="modal"
+                                data-bs-target="#tambahsopir">
+                                <span> <i class="fa fa-solid fa-plus me-2" style="color: #ffffff;"></i></span>
+                                Tambah Sopir
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div>
-            {{-- Tabel kendaraan --}}
-            <div class="col-12 col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header pb-0 d-flex justify-content-between">
-                        <h6>Kendaraan</h6>
-                        <a type="button" class="btn btn-sm bg-gradient-primary border-end" data-bs-toggle="modal"
-                            data-bs-target="#tambahkendaraan">
-                            <span> <i class="fa fa-solid fa-plus me-2" style="color: #ffffff;"></i></span>
-                            Tambah Kendaraan
-                        </a>
-                    </div>
-                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 370px;">
-                        <div class="table-responsive p-0" style="max-height: 350px; overflow-y: auto;">
-                            <table class="table align-items-center mb-0">
-                                <thead class="sticky-top bg-white z-index-1">
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
+                        <table class="table align-items-center mb-0">
+                            <thead class="sticky-top bg-white z-index-1">
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Pengguna</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        BOP</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Ketersediaan</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Status</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            @foreach ($sopirs as $sopir)
+                                <tbody class="border-0" id="table-sopir">
                                     <tr>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Identitas Kendaraan</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Jenis</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Ketersediaan</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Status</th>
-                                        <th class="text-secondary opacity-7"></th>
-                                    </tr>
-                                </thead>
-                                @foreach ($kendaraans as $kendaraan)
-                                    <tbody class="border-0" id="table-kendaraan">
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex px-2 py-1">
-                                                    <div class="avatar avatar-sm me-3 bg-dark">
-                                                        <i class="material-icons opacity-10">local_shipping</i>
-                                                    </div>
-                                                    <div class="d-flex flex-column justify-content-center">
-                                                        <h6 class="mb-0 text-sm">{{ $kendaraan->nopol_mobil }}</h6>
-                                                        <p class="text-xs text-secondary mb-0">{{ $kendaraan->identitas_mobil }}</p>
-                                                    </div>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div class="avatar avatar-sm me-3 bg-dark">
+                                                    <i class="fa fa-solid fa-vest opacity-10"></i>
                                                 </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <p class="text-xs font-weight-bold mb-0">{{ $kendaraan->jenis_mobil }}</p>
-                                                <p class="text-xs text-secondary mb-0">{{ $kendaraan->vit_mobil }} bar</p>
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($kendaraan->ketersediaan_mobil === 'tersedia')
-                                                    <span href class="badge badge-sm bg-gradient-success border-0">Tersedia</span>
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ $sopir->nama }}</h6>
+                                                    <p class="text-xs text-secondary mb-0">{{ $sopir->email }}</p>
+                                                    <p class="text-xs text-secondary mb-0">no hp : {{ $sopir->no_hp }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">Rp. {{ number_format($sopir->bop_sopir, 0, ',', '.') }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            @if ($sopir->ketersediaan_sopir === 'tersedia')
+                                                <span class="badge badge-sm bg-gradient-success">Tersedia</span>
+                                            @else
+                                                <span class="badge badge-sm bg-gradient-danger">Tdk Tersedia</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <form action="{{ url('/sopir/status/'.$sopir->id_sopir) }}" method="POST">
+                                                @csrf
+                                                @if ($sopir->status_sopir == 'aktif')
+                                                    <button type="submit" href class="badge badge-sm bg-gradient-success border-0">Aktif</button>
                                                 @else
-                                                    <span href class="badge badge-sm bg-gradient-danger border-0">Tdk Tersedia</span>
+                                                    <button type="submit" class="badge badge-sm bg-gradient-danger border-0">Tidak Aktif</button>
                                                 @endif
-                                            </td>
-                                            <td class="text-center">
-                                                <form action="{{ url('/kendaraan/status/'.$kendaraan->id_mobil) }}" method="POST">
-                                                    @csrf
-                                                    @if ($kendaraan->status_mobil == 'aktif')
-                                                        <button type="submit" href class="badge badge-sm bg-gradient-success border-0">Aktif</button>                                                 
-                                                    @else
-                                                        <button type="submit" href class="badge badge-sm bg-gradient-danger border-0">Tidak Aktif</button>
-                                                    @endif
-                                                </form>
-                                            </td>
-                                            <td class="text-center">
-                                                <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa fa-ellipsis-v text-xs"></i>
-                                                </a>
-                                                <ul class="shadow dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">                                                  
-                                                    <li>
-                                                        <a class="dropdown-item border-radius-md" href="{{ url('/kendaraan/edit/'. $kendaraan->id_mobil) }}">
-                                                            <i class="fa fa-solid fa-pen" style="color: #252f40;"></i>
-                                                            <span class="ms-3">Edit</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" class="dropdown-item border-radius-md" data-bs-toggle="modal" data-bs-target="#confirmDeleteKendaraan">
-                                                            <i class="fa fa-solid fa-trash" style="color: #ea0606;"></i>
-                                                            <span class="ms-3 text-danger">Hapus</span>
-                                                        </a>  
-                                                    </li>
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                @endforeach
-                            </table>
+                                            </form>
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa fa-ellipsis-v text-xs"></i>
+                                            </a>
+                                            <ul class="shadow dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">                                                  
+                                                <li>
+                                                    <a class="dropdown-item border-radius-md" href="{{ url('/sopir/edit/'. $sopir->id_sopir) }}">
+                                                        <i class="fa fa-solid fa-pen" style="color: #252f40;"></i>
+                                                        <span class="ms-3">Edit</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" class="dropdown-item border-radius-md" data-bs-toggle="modal" data-bs-target="#confirmDeleteSopir">
+                                                        <i class="fa fa-solid fa-trash" style="color: #ea0606;"></i>
+                                                        <span class="ms-3 text-danger">Hapus</span>
+                                                    </a>                                                                                                                                                          
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endforeach
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Tabel kendaraan --}}
+        <div class="col-12 col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title">Kendaraan</h4>
                         </div>
+                        <div class="col-md-5 col-sm-6 ml-auto mb-2 text-end">
+                            <a type="button" class="py-2 btn btn-sm bg-gradient-primary border-end" data-bs-toggle="modal"
+                                data-bs-target="#tambahkendaraan">
+                                <span> <i class="fa fa-solid fa-plus me-2" style="color: #ffffff;"></i></span>
+                                Tambah Kendaraan
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
+                        <table class="table align-items-center mb-0">
+                            <thead class="sticky-top bg-white z-index-1">
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Identitas Kendaraan</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Jenis</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Ketersediaan</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Status</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            @foreach ($kendaraans as $kendaraan)
+                                <tbody class="border-0" id="table-kendaraan">
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div class="avatar avatar-sm me-3 bg-dark">
+                                                    <i class="material-icons opacity-10">local_shipping</i>
+                                                </div>
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ $kendaraan->nopol_mobil }}</h6>
+                                                    <p class="text-xs text-secondary mb-0">{{ $kendaraan->identitas_mobil }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">{{ $kendaraan->jenis_mobil }}</p>
+                                            <p class="text-xs text-secondary mb-0">{{ $kendaraan->vit_mobil }} bar</p>
+                                        </td>
+                                        <td class="text-center">
+                                            @if ($kendaraan->ketersediaan_mobil === 'tersedia')
+                                                <span href class="badge badge-sm bg-gradient-success border-0">Tersedia</span>
+                                            @else
+                                                <span href class="badge badge-sm bg-gradient-danger border-0">Tdk Tersedia</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <form action="{{ url('/kendaraan/status/'.$kendaraan->id_mobil) }}" method="POST">
+                                                @csrf
+                                                @if ($kendaraan->status_mobil == 'aktif')
+                                                    <button type="submit" href class="badge badge-sm bg-gradient-success border-0">Aktif</button>                                                 
+                                                @else
+                                                    <button type="submit" href class="badge badge-sm bg-gradient-danger border-0">Tidak Aktif</button>
+                                                @endif
+                                            </form>
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa fa-ellipsis-v text-xs"></i>
+                                            </a>
+                                            <ul class="shadow dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">                                                  
+                                                <li>
+                                                    <a class="dropdown-item border-radius-md" href="{{ url('/kendaraan/edit/'. $kendaraan->id_mobil) }}">
+                                                        <i class="fa fa-solid fa-pen" style="color: #252f40;"></i>
+                                                        <span class="ms-3">Edit</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" class="dropdown-item border-radius-md" data-bs-toggle="modal" data-bs-target="#confirmDeleteKendaraan">
+                                                        <i class="fa fa-solid fa-trash" style="color: #ea0606;"></i>
+                                                        <span class="ms-3 text-danger">Hapus</span>
+                                                    </a>  
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endforeach
+                        </table>
                     </div>
                 </div>
             </div>

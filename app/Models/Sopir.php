@@ -34,4 +34,9 @@ class Sopir extends Model implements Authenticatable
     {
         return $this->role === $role;
     }
+
+    public function penarikanbop()
+    {
+        return $this->hasMany(Penarikanbop::class, 'id_sopir');
+    }
 }

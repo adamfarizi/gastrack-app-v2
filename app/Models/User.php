@@ -24,4 +24,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaksi::class, 'id_admin');
     }
+
+    public function penarikanbop()
+    {
+        return $this->hasMany(Penarikanbop::class, 'id_admin');
+    }
 }

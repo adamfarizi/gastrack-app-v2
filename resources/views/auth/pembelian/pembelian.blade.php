@@ -233,8 +233,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
-                        <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                        <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
                             <table class="table align-items-center mb-0" id="table_pembelian">
                                 <thead class="sticky-top bg-white z-index-1">
                                     <tr>
@@ -278,8 +278,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
-                        <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                        <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
                             <table class="table align-items-center mb-0" id="table_riwayat_pembelian">
                                 <thead class="sticky-top bg-white z-index-1">
                                     <tr>

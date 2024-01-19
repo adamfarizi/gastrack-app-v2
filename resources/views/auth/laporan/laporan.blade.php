@@ -146,7 +146,7 @@
                         <div class="col d-flex align-items-center">
                             <h4 class="card-title">Detail Penjualan</h4>
                             <span class="mt-1 ms-3">
-                              <button id="exportDetailPenjualan" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
+                                <button id="exportDetailPenjualan" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
@@ -165,8 +165,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body px-3 pt-0 pb-5" style="min-height: 428px;">
-                    <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
                         <table class="table align-items-center mb-0" id="table_detailPenjualan">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
@@ -181,20 +181,19 @@
                                 </tr>
                             </thead>
                             <tbody id="table_detailPenjualan_body" class="text-dark">
-                                @foreach($transaksis as $transaksi)
-                                    @foreach($transaksi->pesanan as $pesanan)
+                                @foreach($detail_penjualans as $pesanan)
                                         <tr>
                                             <td class="text-center">
-                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
+                                                <p class="text-sm font-weight-bold mb-0">{{ $pesanan->transaksi->resi_transaksi }}</p>
                                             </td>
                                             <td class="text-center">
                                                 <p class="text-sm font-weight-light mb-0">{{ $pesanan->tanggal_pesanan }}</p>
                                             </td>
                                             <td class="text-center">
-                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
                                             </td>
                                             <td class="text-wrap">
-                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->transaksi->pelanggan->alamat }}</p>
                                             </td>
                                             <td class="text-center">
                                                 <p class="text-sm font-weight-light mb-0">{{ $pesanan->jumlah_bar }} bar</p>
@@ -204,29 +203,82 @@
                                                 <p class="text-sm font-weight-light mb-0"> Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
                                             </td>
                                             <td class="text-center">
-                                                @if ($transaksi->tagihan->status_tagihan === 'Sudah Bayar' || $transaksi->tagihan->status_tagihan === 'Diproses')
-                                                    <p class="text-sm font-weight-light mb-0">{{ date('d/m/Y', strtotime($transaksi->tagihan->tanggal_pembayaran)) }}</p>
-                                                    <p class="text-sm font-weight-light mb-0">{{ date('H:i:s', strtotime($transaksi->tagihan->tanggal_pembayaran)) }}</p>
+                                                @if ($pesanan->transaksi->tagihan->status_tagihan === 'Sudah Bayar' || $pesanan->transaksi->tagihan->status_tagihan === 'Diproses')
+                                                    <p class="text-sm font-weight-light mb-0">{{ date('d/m/Y', strtotime($pesanan->transaksi->tagihan->tanggal_pembayaran)) }}</p>
+                                                    <p class="text-sm font-weight-light mb-0">{{ date('H:i:s', strtotime($pesanan->transaksi->tagihan->tanggal_pembayaran)) }}</p>
                                                 @else
                                                     <p class="text-sm font-weight-light text-danger mb-0">Belum Bayar</p>
                                                 @endif
                                             </td>
                                             <td class="text-center">
-                                                @if ($transaksi->tagihan->status_tagihan === 'Sudah Bayar' || $transaksi->tagihan->status_tagihan === 'Diproses')
+                                                @if ($pesanan->transaksi->tagihan->status_tagihan === 'Sudah Bayar' || $pesanan->transaksi->tagihan->status_tagihan === 'Diproses')
                                                     <p class="text-sm font-weight-light mb-0">Tunai</p>
                                                 @else
                                                     <p class="text-sm font-weight-light text-danger mb-0">Belum Bayar</p>
                                                 @endif
                                             </td>
                                         </tr>
-                                    @endforeach
                                 @endforeach
                             </tbody>                                                                                                                                                                  
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_detailPenjualan" style="display: none;">
                             <p class="fw-light">Pesanan tidak ditemukan.</p>
-                        </div>                     
+                        </div>
                     </div>
+                    {{-- Pagination --}}
+                    <div class="pt-4 d-flex">
+                        <div class="col">
+                            <p class="text-sm">Menampilkan {{ $detail_penjualans->firstItem() }} hingga {{ $detail_penjualans->lastItem() }} dari total {{ $detail_penjualans->total() }} data</p>
+                        </div>
+                        <div class="col">
+                            <ul class="pagination pagination-primary justify-content-end">
+                                @php
+                                    $queryParamsDetailPenjualan = ['detail_penjualans' => $detail_penjualans->currentPage()];
+                                    $prevPageUrlDetailPenjualan = $detail_penjualans->previousPageUrl();
+                                    $nextPageUrlDetailPenjualan = $detail_penjualans->nextPageUrl();
+                                @endphp
+                            
+                                @if ($detail_penjualans->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span class="material-icons">keyboard_arrow_left</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $prevPageUrlDetailPenjualan ? $prevPageUrlDetailPenjualan . '&' . http_build_query(request()->except('detail_penjualans')) : '#' }}" aria-label="Previous">
+                                            <span class="material-icons">keyboard_arrow_left</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            
+                                @foreach ($detail_penjualans->getUrlRange(1, $detail_penjualans->lastPage()) as $page => $url)
+                                    <li class="page-item {{ $page == $detail_penjualans->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $url . '&' . http_build_query(request()->except('detail_penjualans')) }}">{{ $page }}</a>
+                                    </li>
+                                @endforeach
+                            
+                                @if ($detail_penjualans->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $nextPageUrlDetailPenjualan ? $nextPageUrlDetailPenjualan . '&' . http_build_query(request()->except('detail_penjualans')) : '#' }}" aria-label="Next">
+                                            <span class="material-icons">keyboard_arrow_right</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span class="material-icons">keyboard_arrow_right</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                            
+                        </div>
+                    </div>                 
                 </div>
             </div>
         </div>
@@ -238,7 +290,7 @@
                         <div class="col d-flex align-items-center">
                             <h4 class="card-title">Laporan Omzet</h4>
                             <span class="mt-1 ms-3">
-                              <button id="exportLaporanOmzet" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
+                                <button id="exportLaporanOmzet" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
@@ -257,8 +309,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body px-3 pt-0 pb-2" style="min-height: 428px;">
-                    <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
                         <table class="table align-items-center mb-0" id="table_laporanOmzet">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
@@ -272,20 +324,19 @@
                                 </tr>
                             </thead>
                             <tbody id="table_laporanOmzet_body" class="text-dark">
-                                @foreach($transaksis as $transaksi)
-                                    @foreach($transaksi->pesanan as $pesanan)
+                                    @foreach($laporan_omzet as $pesanan)
                                         <tr>
                                             <td class="text-center">
-                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
+                                                <p class="text-sm font-weight-bold mb-0">{{ $pesanan->transaksi->resi_transaksi }}</p>
                                             </td>
                                             <td class="text-center">
                                                 <p class="text-sm font-weight-light mb-0">{{ $pesanan->tanggal_pesanan }}</p>
                                             </td>
                                             <td class="text-center">
-                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
                                             </td>
                                             <td class="text-wrap">
-                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
+                                                <p class="text-sm font-weight-light mb-0">{{ $pesanan->transaksi->pelanggan->alamat }}</p>
                                             </td>
                                             <td class="text-center">
                                                 <p class="text-sm font-weight-light mb-0">{{ $pesanan->jumlah_bar }} bar</p>
@@ -298,24 +349,77 @@
                                             </td>
                                         </tr>
                                     @endforeach
-                                @endforeach
                             </tbody>
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_laporanOmzet" style="display: none;">
                             <p class="fw-light">Pesanan tidak ditemukan.</p>
                         </div>
                     </div>
-                </div>
-                <div class="px-3">
-                    <hr class="mb-0">
-                </div>
-                <div class="card-footer d-flex">
-                    <div class="col">
-                        <p class="ms-5 text-xs text-uppercase fw-bold text-secondary">Total :</p>
+                    <div class="px-3">
+                        <hr class="mb-0">
+                        <div class="d-flex mt-3 px-5">
+                            <div class="col">
+                                <p class="text-xs text-uppercase fw-bold text-secondary">Total :</p>
+                            </div>
+                            <div class="col">
+                                <p class="text-sm text-end fw-bold text-primary">Rp. {{ number_format($total_omzet, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col">
-                        <p class="text-sm text-end fw-bold text-primary">Rp. {{ number_format($total_omzet, 0, ',', '.') }}</p>
-                    </div>
+                    {{-- Pagination --}}
+                    <div class="pt-4 d-flex">
+                        <div class="col">
+                            <p class="text-sm">Menampilkan {{ $laporan_omzet->firstItem() }} hingga {{ $laporan_omzet->lastItem() }} dari total {{ $laporan_omzet->total() }} data</p>
+                        </div>
+                        <div class="col">
+                            <ul class="pagination pagination-primary justify-content-end">
+                                @php
+                                    $queryParamsOmzet = ['laporan_omzet' => $laporan_omzet->currentPage()];
+                                    $prevPageUrlOmzet = $laporan_omzet->previousPageUrl();
+                                    $nextPageUrlOmzet = $laporan_omzet->nextPageUrl();
+                                @endphp
+                            
+                                @if ($laporan_omzet->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span class="material-icons">keyboard_arrow_left</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $prevPageUrlOmzet ? $prevPageUrlOmzet . '&' . http_build_query(request()->except('laporan_omzet')) : '#' }}" aria-label="Previous">
+                                            <span class="material-icons">keyboard_arrow_left</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            
+                                @foreach ($laporan_omzet->getUrlRange(1, $laporan_omzet->lastPage()) as $page => $url)
+                                    <li class="page-item {{ $page == $laporan_omzet->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $url . '&' . http_build_query(request()->except('laporan_omzet')) }}">{{ $page }}</a>
+                                    </li>
+                                @endforeach
+                            
+                                @if ($laporan_omzet->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $nextPageUrlOmzet ? $nextPageUrlOmzet . '&' . http_build_query(request()->except('laporan_omzet')) : '#' }}" aria-label="Next">
+                                            <span class="material-icons">keyboard_arrow_right</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span class="material-icons">keyboard_arrow_right</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                            
+                        </div>
+                    </div>                 
                 </div>
             </div>
         </div>
@@ -327,7 +431,7 @@
                         <div class="col d-flex align-items-center">
                             <h4 class="card-title">Laporan BOP</h4>
                             <span class="mt-1 ms-3">
-                              <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
+                                <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
@@ -346,8 +450,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body px-3 pt-0 pb-5" style="min-height: 428px;">
-                    <div class="table-responsive p-0" style="max-height: 450px; overflow-y: auto;">
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height: 380px; max-height: 380px; overflow-y: auto;">
                         <table class="table align-items-center mb-0" id="table_laporanBOP">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
@@ -361,7 +465,7 @@
                                 </tr>
                             </thead>
                             <tbody id="table_laporanBOP_body" class="text-dark">
-                                @foreach($pengirimans as $pengiriman)
+                                @foreach($laporan_bop as $pengiriman)
                                     <tr>
                                         <td class="text-center">
                                             <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->kode_pengiriman }}</p>
@@ -378,19 +482,11 @@
                                             $pelangganAlamat = '';
                                             $pesananBelumDikirim = false;
                                         @endphp
-                                        @foreach ($pesanans as $pesanan)
-                                            @if ($pesanan->id_pesanan == $pengiriman->pesanan->id_pesanan)
-                                                @php
-                                                    $pelangganNama = $pesanan->transaksi->pelanggan->nama_perusahaan;
-                                                    $pelangganAlamat = $pesanan->transaksi->pelanggan->alamat;
-                                                @endphp
-                                            @endif
-                                        @endforeach
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0">{{ $pelangganNama }}</p>
+                                            <p class="text-sm font-weight-light mb-0">{{ $pengiriman->pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
                                         </td>
                                         <td class="text-wrap">
-                                            <p class="text-sm font-weight-light mb-0">{{ $pelangganAlamat }}</p>
+                                            <p class="text-sm font-weight-light mb-0">{{ $pengiriman->pesanan->transaksi->pelanggan->alamat }}</p>
                                         </td>
                                         <td class="text-center">
                                             @if ($pengiriman->sopir)
@@ -425,6 +521,59 @@
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_laporanBOP" style="display: none;">
                             <p class="fw-light">Pesanan tidak ditemukan.</p>
+                        </div>
+                    </div>
+                    {{-- Pagination --}}
+                    <div class="pt-4 d-flex">
+                        <div class="col">
+                            <p class="text-sm">Menampilkan {{ $laporan_bop->firstItem() }} hingga {{ $laporan_bop->lastItem() }} dari total {{ $laporan_bop->total() }} data</p>
+                        </div>
+                        <div class="col">
+                            <ul class="pagination pagination-primary justify-content-end">
+                                @php
+                                    $queryParamsBOP = ['laporan_omzet' => $laporan_bop->currentPage()];
+                                    $prevPageUrlBOP = $laporan_bop->previousPageUrl();
+                                    $nextPageUrlBOP = $laporan_bop->nextPageUrl();
+                                @endphp
+                            
+                                @if ($laporan_bop->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span class="material-icons">keyboard_arrow_left</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $prevPageUrlBOP ? $prevPageUrlBOP . '&' . http_build_query(request()->except('laporan_bop')) : '#' }}" aria-label="Previous">
+                                            <span class="material-icons">keyboard_arrow_left</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            
+                                @foreach ($laporan_bop->getUrlRange(1, $laporan_bop->lastPage()) as $page => $url)
+                                    <li class="page-item {{ $page == $laporan_bop->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $url . '&' . http_build_query(request()->except('laporan_bop')) }}">{{ $page }}</a>
+                                    </li>
+                                @endforeach
+                            
+                                @if ($laporan_bop->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $nextPageUrlBOP ? $nextPageUrlBOP . '&' . http_build_query(request()->except('laporan_bop')) : '#' }}" aria-label="Next">
+                                            <span class="material-icons">keyboard_arrow_right</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span class="material-icons">keyboard_arrow_right</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
                         </div>
                     </div>
                 </div>

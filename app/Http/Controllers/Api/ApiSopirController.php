@@ -6,6 +6,7 @@ use App\Events\GasKeluarEvent;
 use App\Events\GasMasukEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Gas;
+use App\Models\Penarikanbop;
 use App\Models\Pesanan;
 use App\Models\Sopir;
 use App\Models\Pengiriman;
@@ -15,6 +16,9 @@ use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
 
 class ApiSopirController extends Controller
 {
@@ -493,4 +497,46 @@ class ApiSopirController extends Controller
         return $start . $middle . $end;
     }
 
+    public function penarikanbop($id_sopir, Request $request)
+    {
+        $request->validate([
+            'jumlah_penarikan' => 'required|numeric',
+        ]);
+    
+        $jumlah_penarikan = $request->input('jumlah_penarikan');
+        $sopir = Sopir::where('id_sopir', $id_sopir)->first();
+    
+        if ($sopir->bop_sopir < $jumlah_penarikan || $sopir->bop_sopir == 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Saldo anda tidak cukup!',
+            ], 422);
+        } elseif ($jumlah_penarikan <= 9999) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Penarikan minimal Rp.10,000!',
+            ], 422);
+        } else {
+            $sopir->bop_sopir = $sopir->bop_sopir - $jumlah_penarikan;
+            $sopir->save();
+            
+            $kode_penarikan = 'GTK|TRK-' . now()->format('YmdHis') . Str::random(2);
+            $penarikan = new Penarikanbop([
+                'kode_penarikan' => $kode_penarikan,
+                'tanggal_penarikan' => now(),
+                'jumlah_penarikan' => $jumlah_penarikan,
+                'status_penarikan' => 'Belum Tarik',
+                'id_sopir' => $id_sopir, // Menggunakan $id_sopir dari parameter
+            ]);
+            $penarikan->save();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Penarikan berhasil!',
+                'kode_penarikan' => $penarikan->kode_penarikan,
+                'sisa_saldo' => $sopir->bop_sopir,
+            ], 200);
+        }
+    }
+    
 }
