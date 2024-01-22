@@ -201,7 +201,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="6" class="text-center">
-                                            <p class="fw-light mt-5">Penarikan tidak ditemukan.</p>
+                                            <p class="fw-light text-sm mt-5">Penarikan tidak ditemukan.</p>
                                         </td>
                                     </tr>
                                 @endforelse
@@ -288,7 +288,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="6" class="text-center">
-                                            <p class="fw-light mt-5">Penarikan tidak ditemukan.</p>
+                                            <p class="fw-light text-sm mt-5">Penarikan tidak ditemukan.</p>
                                         </td>
                                     </tr>
                                 @endforelse

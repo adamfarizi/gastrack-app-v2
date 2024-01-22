@@ -181,7 +181,7 @@
                                 </tr>
                             </thead>
                             <tbody id="table_detailPenjualan_body" class="text-dark">
-                                @foreach($detail_penjualans as $pesanan)
+                                @forelse($detail_penjualans as $pesanan)
                                         <tr>
                                             <td class="text-center">
                                                 <p class="text-sm font-weight-bold mb-0">{{ $pesanan->transaksi->resi_transaksi }}</p>
@@ -218,7 +218,13 @@
                                                 @endif
                                             </td>
                                         </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <p class="fw-light text-sm mt-5">Pesanan tidak ditemukan.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>                                                                                                                                                                  
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_detailPenjualan" style="display: none;">
@@ -324,7 +330,7 @@
                                 </tr>
                             </thead>
                             <tbody id="table_laporanOmzet_body" class="text-dark">
-                                    @foreach($laporan_omzet as $pesanan)
+                                    @forelse($laporan_omzet as $pesanan)
                                         <tr>
                                             <td class="text-center">
                                                 <p class="text-sm font-weight-bold mb-0">{{ $pesanan->transaksi->resi_transaksi }}</p>
@@ -348,7 +354,13 @@
                                                 <p class="text-sm font-weight-light mb-0"> Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center">
+                                                <p class="fw-light text-sm mt-5">Pesanan tidak ditemukan.</p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
                             </tbody>
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_laporanOmzet" style="display: none;">
@@ -465,7 +477,7 @@
                                 </tr>
                             </thead>
                             <tbody id="table_laporanBOP_body" class="text-dark">
-                                @foreach($laporan_bop as $pengiriman)
+                                @forelse($laporan_bop as $pengiriman)
                                     <tr>
                                         <td class="text-center">
                                             <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->kode_pengiriman }}</p>
@@ -516,7 +528,13 @@
                                             </p>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            <p class="fw-light text-sm mt-5">Pesanan tidak ditemukan.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                         <div class="text-center mt-5" id="noResultsMessage_laporanBOP" style="display: none;">
