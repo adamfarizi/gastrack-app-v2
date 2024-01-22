@@ -99,15 +99,16 @@ class BerandaController extends Controller
 
         // Chart 3
         $now = Carbon::now();
-        $data_pengiriman = Pengiriman::selectRaw('COUNT(*) as jumlah_pengiriman, DATE_FORMAT(pengiriman.created_at, "%b %Y") as bulan, sopir.nama')
+        $data_pengiriman = Pengiriman::selectRaw('sopir.nama, COUNT(*) as jumlah_pengiriman')
             ->join('sopir', 'sopir.id_sopir', '=', 'pengiriman.id_sopir')
-            ->where('pengiriman.status_pengiriman', 'Dikirim')
+            ->whereIn('pengiriman.status_pengiriman', ['Dikirim', 'Diterima'])
             ->whereMonth('pengiriman.created_at', $now->month)
             ->whereYear('pengiriman.created_at', $now->year)
-            ->groupBy('bulan', 'sopir.nama')
-            ->orderBy('pengiriman.created_at', 'ASC')
+            ->groupBy('sopir.nama')
+            ->orderBy('sopir.nama', 'ASC')
             ->take(10)
             ->get();
+
         $data_chart3 = $data_pengiriman->pluck('jumlah_pengiriman');
         $label_chart3 = $data_pengiriman->pluck('nama');
 
