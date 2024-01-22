@@ -287,7 +287,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">
+                                        <td colspan="7" class="text-center">
                                             <p class="fw-light text-sm mt-5">Penarikan tidak ditemukan.</p>
                                         </td>
                                     </tr>
