@@ -327,6 +327,12 @@
                                     placeholder="Cari  ...">
                             </div>
                         </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <input type="date" class="form-control ms-2 me-2" id="dateFilterRiwayatPengiriman" 
+                                onchange="filterTableByDate('table_riwayat_pengiriman', 'dateFilterRiwayatPengiriman', 'noResultsMessage_riwayat_pengiriman')">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
@@ -337,9 +343,10 @@
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Id Pengiriman</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sopir</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Gas Masuk</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Gas Keluar</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Dikirim</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Diterima</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sisa Gas</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Informasi</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Surat Jalan</th>
                                 </tr>
                             </thead>
@@ -358,28 +365,26 @@
                                             <p class="text-sm font-weight-light mb-0">{{ $pengiriman->mobil->nopol_mobil }}</p>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0 mt-2">Dikirim: {{ $pengiriman->waktu_pengiriman }}</p>
-                                            <p class="text-sm font-weight-light mb-0">Gas Masuk: {{ $pengiriman->kapasitas_gas_masuk }}</p>
-                                            <a href="#" type="button" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#more-gas-keluar-{{ $pengiriman->id_pengiriman }}">
-                                                <p class="text-sm" style="text-decoration: underline;">Bukti</p>
+                                            <p class="text-sm font-weight-light mb-0 mt-2">{{ $pengiriman->waktu_pengiriman }}</p>
                                             </a>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0 mt-2">Diterima: {{ $pengiriman->waktu_diterima }}</p>
-                                            <p class="text-sm font-weight-light mb-0">Gas Keluar: {{ $pengiriman->kapasitas_gas_keluar }}</p>
-                                            <a href="#" type="button" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#more-gas-masuk-{{ $pengiriman->id_pengiriman }}">
-                                                <p class="text-sm" style="text-decoration: underline;">Bukti</p>
+                                            <p class="text-sm font-weight-light mb-0 mt-2">{{ $pengiriman->waktu_diterima }}</p>
                                             </a>
                                         </td>
                                         <td class="text-center">
                                             <p class="text-sm font-weight-light mb-0 ">Sisa Gas: {{ $pengiriman->sisa_gas }}</p>
                                         </td>
                                         <td class="text-center">
+                                            <a href="{{ url('/pengiriman/more/info_pengiriman/'.$pengiriman->id_pengiriman) }}">
+                                                <p class="text-sm mb-0" style="text-decoration: underline;">Detail Pengiriman</p>
+                                            </a>                                     
+                                        </td>
+                                        <td class="text-center">
                                             <a href="#" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#more-suratjalan-{{ $pengiriman->id_pengiriman }}">
                                                 <p class="text-sm mb-0" style="text-decoration: underline;">Surat Jalan</p>
                                             </a>                                     
                                         </td>
-                                        
                                     </tr>
                                 @empty
                                     <tr>
@@ -783,6 +788,39 @@
                 }
             });
         });
+    </script>
+    
+    {{-- Filter by Tanggal --}}
+    <script>
+        function setDefaultDate(elementId) {
+            document.getElementById(elementId).valueAsDate = new Date();
+        }
+
+        // Panggil fungsi untuk mengatur tanggal default
+        setDefaultDate('dateFilterRiwayatPengiriman');
+    </script>
+    <script>
+        function filterTableByDate(tableId, dateFilterId, noResultsMessageId) {
+            // Ambil nilai tanggal dari input
+            var selectedDate = document.getElementById(dateFilterId).value;
+
+            // Saring data sesuai dengan tanggal yang dipilih
+            $("#" + tableId + "_body tr").filter(function() {
+                // Ambil tanggal dari setiap baris
+                var rowDate = $(this).find("td:eq(3)").text(); // Gantilah indeks dengan indeks kolom yang berisi tanggal
+
+                // Periksa apakah tanggal pada baris cocok dengan tanggal yang dipilih
+                $(this).toggle(rowDate.includes(selectedDate));
+            });
+
+            // Sembunyikan atau tampilkan pesan jika tidak ada hasil
+            var noResultsMessage = $("#" + noResultsMessageId);
+            if ($("#" + tableId + "_body tr:visible").length === 0) {
+                noResultsMessage.show();
+            } else {
+                noResultsMessage.hide();
+            }
+        }
     </script>
 
     <script>

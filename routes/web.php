@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengiriman/data', [PengirimanController::class,'realtimeData']);
     Route::post('/pengiriman/update_kirim/{id}', [PengirimanController::class,'updateKirim']);
     Route::get('/pengiriman/more/print/{id}', [PengirimanController::class, 'print_suratjalan']);
+    Route::get('/pengiriman/more/info_pengiriman/{id}', [PengirimanController::class, 'detail_pengiriman']);
 
     Route::get('/laporan', [LaporanController::class,'index'])->name('Laporan');
 

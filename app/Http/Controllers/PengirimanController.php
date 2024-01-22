@@ -143,4 +143,31 @@ class PengirimanController extends Controller
             'harga_gas' => $harga_gas,
         ], $data);
     }
+
+    public function detail_pengiriman($id_pesanan)
+    {   
+        $data['title'] = 'Detail Pengiriman';
+        $pengirimans = Pengiriman::where('id_pesanan', $id_pesanan)
+            ->with('pesanan')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
+        $sopirs = Sopir::all();
+        $mobils = Mobil::all();
+    
+        foreach ($pengirimans as $pengiriman) {
+            $sopir = $sopirs->where('id_sopir', $pengiriman->id_sopir)->first();
+            $mobil = $mobils->where('id_mobil', $pengiriman->id_mobil)->first();
+        }
+    
+        // Mengambil pelanggan terkait dengan transaksi terakhir
+        $pelanggan = $pengirimans->last()->pesanan->transaksi->pelanggan;
+
+        return view('auth.pengiriman.more.info_pengiriman', [
+            'pengirimans' => $pengirimans,
+            'pelanggan' => $pelanggan,
+            'sopir' => $sopir,
+            'mobil' => $mobil,
+        ], $data);
+    }
 }
