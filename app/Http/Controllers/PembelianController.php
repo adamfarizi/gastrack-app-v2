@@ -22,14 +22,18 @@ class PembelianController extends Controller
         $pesanans = Pesanan::all();
         $gas = Gas::sum('harga_gas');
         $harga_gas = number_format($gas, 0, ',', '.');
-
         $data_gas = Gas::all();
-
+        $riwayat_transaksis = Transaksi::with('pelanggan', 'tagihan')->whereHas('tagihan', function ($query) {
+            $query->whereIn('status_tagihan', ['Sudah Bayar']);
+        })
+        ->orderBy('created_at','desc')
+        ->paginate(10);
         return view('auth.pembelian.pembelian', [
             'transaksis' => $transaksis,
             'pesanans' => $pesanans,
             'harga_gas' => $harga_gas,
             'data_gas' => $data_gas,
+            'riwayat_transaksis' => $riwayat_transaksis,
         ], $data);
     }
 
@@ -47,11 +51,6 @@ class PembelianController extends Controller
         })
         ->orderBy('created_at','desc')
         ->get();
-        $riwayat_transaksis = Transaksi::with('pelanggan', 'tagihan')->whereHas('tagihan', function ($query) {
-            $query->whereIn('status_tagihan', ['Sudah Bayar']);
-        })
-        ->orderBy('created_at','desc')
-        ->get();
 
         return response()->json([
             'total_transaksi' => $total_transaksi,
@@ -59,7 +58,6 @@ class PembelianController extends Controller
             'pesanan_masuk' => $pesanan_masuk,
             'harga_gas' => $harga_gas,
             'transaksis' => $transaksis,
-            'riwayat_transaksis' => $riwayat_transaksis,
         ]);
     }
 

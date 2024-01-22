@@ -292,11 +292,104 @@
                                         <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="table_riwayat_pembelian_body">
-                                </tbody>
+                                <tbody id="table_riwayat_pembelian_body" class="text-dark">
+                                    @forelse ($riwayat_transaksis as $transaksi)
+                                        <tr>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->tanggal_transaksi }}</p>
+                                            </td>
+                                            <td class="">
+                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->email }}</p>
+                                            </td>
+                                            <td class="text-wrap">
+                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="{{ url('/pembelian/more/pesanan/'.$transaksi->id_transaksi) }}" data-id="" class="badge badge-sm bg-gradient-success text-white">Lihat Pesanan</a>
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($transaksi->tagihan->status_tagihan === 'Belum Bayar')
+                                                    <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>
+                                                @elseif($transaksi->tagihan->status_tagihan === 'Diproses')
+                                                    <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-info text-white">Diproses</a>
+                                                @else
+                                                    <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="#" data-id="{{ $transaksi->id_transaksi }}" class="text-dark" data-bs-toggle="modal" data-bs-target="#rincianModal{{ $transaksi->id_transaksi }}">
+                                                    <p class="pt-3" style="text-decoration:underline;">Invoice</p>
+                                                </a> 
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center">
+                                                <p class="fw-light text-sm mt-5">Penarikan tidak ditemukan.</p>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>                                
                             </table>
                             <div class="text-center mt-5" id="noResultsMessage_riwayat_pembelian" style="display: none;">
                                 <p class="fw-light">Pesanan tidak ditemukan.</p>
+                            </div>
+                        </div>
+                        {{-- Pagination --}}
+                        <div class="pt-4 d-flex">
+                            <div class="col">
+                                <p class="text-sm">Menampilkan {{ $riwayat_transaksis->firstItem() }} hingga {{ $riwayat_transaksis->lastItem() }} dari total {{ $riwayat_transaksis->total() }} data</p>
+                            </div>
+                            <div class="col">
+                                <ul class="pagination pagination-primary justify-content-end">
+                                    @if ($riwayat_transaksis->onFirstPage())
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" aria-label="Previous">
+                                            <span class="material-icons">
+                                                keyboard_arrow_left
+                                            </span>
+                                            <span class="sr-only">Previous</span>
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $riwayat_transaksis->previousPageUrl() }}" aria-label="Previous">
+                                            <span class="material-icons">
+                                                keyboard_arrow_left
+                                            </span>
+                                            <span class="sr-only">Previous</span>
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @foreach ($riwayat_transaksis->getUrlRange(1, $riwayat_transaksis->lastPage()) as $page => $url)
+                                        <li class="page-item {{ $page == $riwayat_transaksis->currentPage() ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                        </li>
+                                    @endforeach
+                                    @if ($riwayat_transaksis->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $riwayat_transaksis->nextPageUrl() }}" aria-label="Next">
+                                            <span class="material-icons">
+                                                keyboard_arrow_right
+                                            </span>
+                                            <span class="sr-only">Next</span>
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" aria-label="Next">
+                                            <span class="material-icons">
+                                                keyboard_arrow_right
+                                            </span>
+                                            <span class="sr-only">Next</span>
+                                            </a>
+                                        </li>
+                                    @endif
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -592,70 +685,70 @@
             });
         }
 
-        function realTime_Riwayat_Pembelian() { 
-            $.ajax({
-                url: '/pembelian/data',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    var table = $('#table_riwayat_pembelian tbody');
-                    table.empty();
-                    if (!data.riwayat_transaksis || data.riwayat_transaksis.length === 0) {
-                        var row =
-                            '<tr class="text-dark">' +
-                            '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pembelian</td>' +
-                            '</tr>';
+        // function realTime_Riwayat_Pembelian() { 
+        //     $.ajax({
+        //         url: '/pembelian/data',
+        //         type: 'GET',
+        //         dataType: 'json',
+        //         success: function(data) {
+        //             var table = $('#table_riwayat_pembelian tbody');
+        //             table.empty();
+        //             if (!data.riwayat_transaksis || data.riwayat_transaksis.length === 0) {
+        //                 var row =
+        //                     '<tr class="text-dark">' +
+        //                     '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pembelian</td>' +
+        //                     '</tr>';
 
-                        table.append(row);
-                    } else {
-                        $.each(data.riwayat_transaksis, function(index, transaksi) {
-                            var statusBadge = getStatusBadge(transaksi);
-                            var dateTimeString = transaksi.tanggal_transaksi;
-                            var formattedDateTime = formatDateTime(dateTimeString);
+        //                 table.append(row);
+        //             } else {
+        //                 $.each(data.riwayat_transaksis, function(index, transaksi) {
+        //                     var statusBadge = getStatusBadge(transaksi);
+        //                     var dateTimeString = transaksi.tanggal_transaksi;
+        //                     var formattedDateTime = formatDateTime(dateTimeString);
 
-                            var row = 
-                            '<tr class="text-dark">' +
-                                '<td class="text-center">' +
-                                    '<p class="text-sm font-weight-bold mb-0">' + transaksi.resi_transaksi + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                    '<p class="text-sm mb-1">tanggal : ' + formattedDateTime.tanggal + '</p>' +
-                                    '<p class="text-sm mb-0">pukul : ' + formattedDateTime.jam + '</p>' +
-                                '</td>' +
-                                '<td>' +
-                                    '<div class="ps-4">' +
-                                        '<h6 class="mb-1 text-sm">' + transaksi.pelanggan.nama_perusahaan + '</h6>' +
-                                        '<p class="text-sm text-secondary mb-0">' + transaksi.pelanggan.email +
-                                        '</p>' +
-                                    '</div>' +
-                                '</td>' +
-                                '<td class="text-wrap" style="max-width: 200px;">' +
-                                    '<p class="text-sm py-1 mb-0">' + transaksi.pelanggan.alamat + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                    '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Lihat Pesanan</a>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                    statusBadge +
-                                '</td>' +
-                                '<td>' +
-                                    '<a href="#" data-id="' + transaksi.id_transaksi + '" class="text-dark" data-bs-toggle="modal" data-bs-target="#rincianModal' + transaksi.id_transaksi + '">' +
-                                        '<p class="pt-3" style="text-decoration:underline;">Invoice</p>' +
-                                    '</a>' +
-                                '</td>' +
-                                '</tr>';
+        //                     var row = 
+        //                     '<tr class="text-dark">' +
+        //                         '<td class="text-center">' +
+        //                             '<p class="text-sm font-weight-bold mb-0">' + transaksi.resi_transaksi + '</p>' +
+        //                         '</td>' +
+        //                         '<td class="text-center">' +
+        //                             '<p class="text-sm mb-1">tanggal : ' + formattedDateTime.tanggal + '</p>' +
+        //                             '<p class="text-sm mb-0">pukul : ' + formattedDateTime.jam + '</p>' +
+        //                         '</td>' +
+        //                         '<td>' +
+        //                             '<div class="ps-4">' +
+        //                                 '<h6 class="mb-1 text-sm">' + transaksi.pelanggan.nama_perusahaan + '</h6>' +
+        //                                 '<p class="text-sm text-secondary mb-0">' + transaksi.pelanggan.email +
+        //                                 '</p>' +
+        //                             '</div>' +
+        //                         '</td>' +
+        //                         '<td class="text-wrap" style="max-width: 200px;">' +
+        //                             '<p class="text-sm py-1 mb-0">' + transaksi.pelanggan.alamat + '</p>' +
+        //                         '</td>' +
+        //                         '<td class="text-center">' +
+        //                             '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Lihat Pesanan</a>' +
+        //                         '</td>' +
+        //                         '<td class="text-center">' +
+        //                             statusBadge +
+        //                         '</td>' +
+        //                         '<td>' +
+        //                             '<a href="#" data-id="' + transaksi.id_transaksi + '" class="text-dark" data-bs-toggle="modal" data-bs-target="#rincianModal' + transaksi.id_transaksi + '">' +
+        //                                 '<p class="pt-3" style="text-decoration:underline;">Invoice</p>' +
+        //                             '</a>' +
+        //                         '</td>' +
+        //                         '</tr>';
 
-                            table.append(row);
-                        });
-                    }
-                    table.show();
+        //                     table.append(row);
+        //                 });
+        //             }
+        //             table.show();
 
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        }
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error(error);
+        //         }
+        //     });
+        // }
 
         function formatDateTime(datetimeString) {
 
@@ -673,7 +766,7 @@
             if (transaksi.tagihan.status_tagihan === 'Belum Bayar') {
                 return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';
             }else if (transaksi.tagihan.status_tagihan === 'Diproses') {
-                return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger position-relative text-white">Belum Bayar<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
+                return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger position-relative text-white">Konfirmasi<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
             } else {
                 return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>"  class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>';
             }
@@ -682,20 +775,20 @@
         $(document).ready(function() {
             realtime_Nav();
             realTime_Pembelian();
-            realTime_Riwayat_Pembelian();
+            // realTime_Riwayat_Pembelian();
         });
 
         document.addEventListener("DOMContentLoaded", function(event) { 
             Echo.channel(`PesananBaru-channel`).listen('PesananBaruEvent', (e) => {
                 realtime_Nav();
                 realTime_Pembelian();
-                realTime_Riwayat_Pembelian();
+                // realTime_Riwayat_Pembelian();
             });
 
             Echo.channel(`BayarTagihan-channel`).listen('BayarTagihanEvent', (e) => {
                 realtime_Nav();
                 realTime_Pembelian();
-                realTime_Riwayat_Pembelian();
+                // realTime_Riwayat_Pembelian();
             });
         });
     </script>

@@ -24,12 +24,15 @@ class PengirimanController extends Controller
         $gas = Gas::sum('harga_gas');
         $harga_gas = number_format($gas, 0, ',', '.');
         $pengirimans = Pengiriman::where('status_pengiriman', 'Dikirim')->get();
+        $riwayat_pengirimans = Pengiriman::where('status_pengiriman', 'Diterima')
+        ->with(['pesanan', 'pesanan.transaksi.pelanggan'])->paginate(10);
 
         return view('auth.pengiriman.pengiriman', [
             'pesanans' => $pesanans,
             'transaksis' => $transaksis,
             'harga_gas' => $harga_gas,
             'pengirimans' => $pengirimans,
+            'riwayat_pengirimans' => $riwayat_pengirimans,
         ], $data);
     }
 

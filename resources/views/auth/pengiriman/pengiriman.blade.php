@@ -137,13 +137,13 @@
 @endsection
 @section('content')
     <div class="row">
-        {{-- Total Pesanan--}}
+        {{-- Total Pesanan --}}
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card p-3 pt-2">
                     <div
                         class="icon icon-lg icon-shape bg-gradient-primary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
-                        <i class="material-symbols-outlined opacity-10">list_alt</i>                    
+                        <i class="material-symbols-outlined opacity-10">list_alt</i>
                     </div>
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Total Pesanan</p>
@@ -308,6 +308,153 @@
                 </div>
             </div>
         </div>
+        {{-- Tabel Riwayat --}}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <h4 class="card-title"> Riwayat Pembelian</h4>
+                            <span class="mt-1 ms-3">
+                                <a class="me-2"></a>
+                            </span>
+                        </div>
+                        <div class="col-md-2 col-sm-6 ml-auto">
+                            <div class="input-group mb-3 border rounded-2">
+                                <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                        aria-hidden="true"></i></span>
+                                <input type="text" class="form-control ms-2" id="searchInput_RiwayatPengiriman"
+                                    placeholder="Cari  ...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
+                        <table class="table align-items-center mb-0" id="table_riwayat_pengiriman">
+                            <thead class="sticky-top bg-white z-index-1">
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Id Pengiriman</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sopir</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Gas Masuk</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Gas Keluar</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sisa Gas</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Surat Jalan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table_riwayat_pengiriman_body" class="text-dark">
+                                @forelse ($riwayat_pengirimans as $pengiriman)
+                                    <tr>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->kode_pengiriman }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
+                                            <p class="text-sm font-weight-light mb-0">{{ $pengiriman->pesanan->transaksi->pelanggan->email }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->sopir->nama }}</p>
+                                            <p class="text-sm font-weight-light mb-0">{{ $pengiriman->mobil->nopol_mobil }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-light mb-0 mt-2">Dikirim: {{ $pengiriman->waktu_pengiriman }}</p>
+                                            <p class="text-sm font-weight-light mb-0">Gas Masuk: {{ $pengiriman->kapasitas_gas_masuk }}</p>
+                                            <a href="#" type="button" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#more-gas-keluar-{{ $pengiriman->id_pengiriman }}">
+                                                <p class="text-sm" style="text-decoration: underline;">Bukti</p>
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-light mb-0 mt-2">Diterima: {{ $pengiriman->waktu_diterima }}</p>
+                                            <p class="text-sm font-weight-light mb-0">Gas Keluar: {{ $pengiriman->kapasitas_gas_keluar }}</p>
+                                            <a href="#" type="button" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#more-gas-masuk-{{ $pengiriman->id_pengiriman }}">
+                                                <p class="text-sm" style="text-decoration: underline;">Bukti</p>
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-light mb-0 ">Sisa Gas: {{ $pengiriman->sisa_gas }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="#" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#more-suratjalan-{{ $pengiriman->id_pengiriman }}">
+                                                <p class="text-sm mb-0" style="text-decoration: underline;">Surat Jalan</p>
+                                            </a>                                     
+                                        </td>
+                                        
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            <p class="fw-light text-sm mt-5">Penarikan tidak ditemukan.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>                        
+                        <div class="text-center mt-5" id="noResultsMessage_riwayat_pengiriman" style="display: none;">
+                            <p class="fw-light">Pesanan tidak ditemukan.</p>
+                        </div>
+                    </div>
+                    {{-- Pagination --}}
+                    <div class="pt-4 d-flex">
+                        <div class="col">
+                            <p class="text-sm">Menampilkan {{ $riwayat_pengirimans->firstItem() }} hingga
+                                {{ $riwayat_pengirimans->lastItem() }} dari total {{ $riwayat_pengirimans->total() }} data
+                            </p>
+                        </div>
+                        <div class="col">
+                            <ul class="pagination pagination-primary justify-content-end">
+                                @if ($riwayat_pengirimans->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span class="material-icons">
+                                                keyboard_arrow_left
+                                            </span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $riwayat_pengirimans->previousPageUrl() }}"
+                                            aria-label="Previous">
+                                            <span class="material-icons">
+                                                keyboard_arrow_left
+                                            </span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @foreach ($riwayat_pengirimans->getUrlRange(1, $riwayat_pengirimans->lastPage()) as $page => $url)
+                                    <li
+                                        class="page-item {{ $page == $riwayat_pengirimans->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                    </li>
+                                @endforeach
+                                @if ($riwayat_pengirimans->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $riwayat_pengirimans->nextPageUrl() }}"
+                                            aria-label="Next">
+                                            <span class="material-icons">
+                                                keyboard_arrow_right
+                                            </span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span class="material-icons">
+                                                keyboard_arrow_right
+                                            </span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Modal Proses --}}
@@ -353,7 +500,7 @@
                                                     <p class="text-white py-9">Gambar Tidak Ada</p>
                                                 </div>
                                             @else
-                                                <img src="{{ asset('img/BuktiPesanan/'.$pesanan->bukti_pesanan) }}"
+                                                <img src="{{ asset('img/BuktiPesanan/' . $pesanan->bukti_pesanan) }}"
                                                     class="w-80 border-radius-lg mb-3" alt="">
                                             @endif
                                         </div>
@@ -363,12 +510,12 @@
                                     <div class="row">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Deskripsi Pesanan</p>
                                         @if ($pesanan->deskripsi_pesanan == null)
-                                            <p class="col text-sm fw-bold text-dark mb-0">: <span
-                                                class="fw-light">Tidak ada deskripsi
+                                            <p class="col text-sm fw-bold text-dark mb-0">: <span class="fw-light">Tidak
+                                                    ada deskripsi
                                             </p>
                                         @else
                                             <p class="col text-sm fw-bold text-dark mb-0">: <span
-                                                class="fw-light">{{ $pesanan->deskripsi_pesanan }}
+                                                    class="fw-light">{{ $pesanan->deskripsi_pesanan }}
                                             </p>
                                         @endif
                                     </div>
@@ -422,8 +569,8 @@
                                 <p class="text-white py-9">Belum ada bukti</p>
                             </div>
                         @else
-                            <img src="{{ asset('img/GasMasuk/'.$pengiriman->bukti_gas_masuk) }}"
-                                class="w-100 rounded" alt="">
+                            <img src="{{ asset('img/GasMasuk/' . $pengiriman->bukti_gas_masuk) }}" class="w-100 rounded"
+                                alt="">
                         @endif
                     </div>
                     <div class="modal-footer">
@@ -449,8 +596,8 @@
                                 <p class="text-white py-9">Belum ada bukti</p>
                             </div>
                         @else
-                            <img src="{{ asset('img/GasKeluar/'.$pengiriman->bukti_gas_keluar) }}"
-                                class="w-100 rounded" alt="">
+                            <img src="{{ asset('img/GasKeluar/' . $pengiriman->bukti_gas_keluar) }}" class="w-100 rounded"
+                                alt="">
                         @endif
                     </div>
                     <div class="modal-footer">
@@ -463,15 +610,16 @@
 
     {{-- Modal Surat Jalan --}}
     @foreach ($pengirimans as $pengiriman)
-        <div class="modal fade" id="more-suratjalan-{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" aria-labelledby="modal-default{{ $transaksi->id_transaksi }}"
-            aria-hidden="true">
+        <div class="modal fade" id="more-suratjalan-{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" 
+            aria-labelledby="modal-default-{{ $pengiriman->id_pengiriman }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <img class="ms-2 position-absolute top-50 start-50 translate-middle d-sm-block"
                         src="{{ asset('assets/img/local/logo7.png') }}" height="150" alt="main_logo"
                         style="z-index: 0; opacity: 0.3; display:none;">
                     <div class="modal-header">
-                        <h6 class="modal-title text-uppercase" id="modal-title-default">Surat Jalan {{ $pengiriman->kode_pengiriman }}</h6>
+                        <h6 class="modal-title text-uppercase" id="modal-title-default">Surat Jalan
+                            {{ $pengiriman->kode_pengiriman }}</h6>
                     </div>
                     <div class="modal-body p-2" id="modal-body-content" style="max-height: 500px; overflow-y: auto;">
                         <div class="border border-2 py-3 px-2">
@@ -480,8 +628,8 @@
                                     <h1>SURAT JALAN</h1>
                                 </div>
                                 <div class="col text-end mt-1 me-2">
-                                    <img class="ms-2" src="{{ asset('assets/img/local/logo5.png') }}"
-                                        height="50" alt="main_logo">
+                                    <img class="ms-2" src="{{ asset('assets/img/local/logo5.png') }}" height="50"
+                                        alt="main_logo">
                                 </div>
                             </div>
                             <hr class="border border-dark" style="width: 100%">
@@ -506,7 +654,8 @@
                                     <div class="row">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Resi</p>
                                         <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
-                                        <p class="col text-sm text-second mb-0">{{ $pengiriman->pesanan->transaksi->resi_transaksi }}</p>
+                                        <p class="col text-sm text-second mb-0">
+                                            {{ $pengiriman->pesanan->transaksi->resi_transaksi }}</p>
                                     </div>
                                     <div class="row">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Tanggal</p>
@@ -545,16 +694,21 @@
                                                         @if ($pesanan->id_pesanan == $pengiriman->id_pesanan)
                                                             <tr class="fw-light">
                                                                 <td class="text-center">
-                                                                    <p class="text-sm mb-0">tanggal : {{ date('d/m/Y', strtotime($pesanan->tanggal_pesanan)) }}</p>
-                                                                    <p class="text-sm mb-0">jam : {{ date('h:i', strtotime($pesanan->tanggal_pesanan)) }}</p>
+                                                                    <p class="text-sm mb-0">tanggal :
+                                                                        {{ date('d/m/Y', strtotime($pesanan->tanggal_pesanan)) }}
+                                                                    </p>
+                                                                    <p class="text-sm mb-0">jam :
+                                                                        {{ date('h:i', strtotime($pesanan->tanggal_pesanan)) }}
+                                                                    </p>
                                                                 </td>
                                                                 <td class="text-center">Gas Alam </td>
-                                                                <td class="text-center">{{ $pengiriman->gas_permintaan }} bar</td>
+                                                                <td class="text-center">{{ $pengiriman->gas_permintaan }}
+                                                                    bar</td>
                                                             </tr>
                                                         @endif
                                                     @endforeach
                                                 </tbody>
-                                            </table>                                                
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -574,9 +728,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary shadow"
-                            data-bs-dismiss="modal">Close</button>
-                        <a href="{{ url('/pengiriman/more/print/'.$pengiriman->id_pengiriman) }}" type="button" class="btn btn-primary">Print Surat Jalan</a>
+                        <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">Close</button>
+                        <a href="{{ url('/pengiriman/more/print/' . $pengiriman->id_pengiriman) }}" type="button"
+                            class="btn btn-primary">Print Surat Jalan</a>
                     </div>
                 </div>
             </div>
@@ -584,7 +738,6 @@
     @endforeach
 @endsection
 @section('js')
-
     {{-- Script search --}}
     <script>
         $(document).ready(function() {
@@ -610,6 +763,20 @@
 
                 var noResultsMessage = $("#noResultsMessage_dikirim");
                 if ($("#table_dikirim_body tr:visible").length === 0) {
+                    noResultsMessage.show();
+                } else {
+                    noResultsMessage.hide();
+                }
+            });
+
+            $("#searchInput_RiwayatPengiriman").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#table_riwayat_pengiriman_body tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+
+                var noResultsMessage = $("#noResultsMessage_riwayat_pengiriman");
+                if ($("#table_riwayat_pengiriman_body tr:visible").length === 0) {
                     noResultsMessage.show();
                 } else {
                     noResultsMessage.hide();
@@ -691,7 +858,8 @@
                                 '</td>' +
                                 '<td class="align-middle text-sm text-center w-15">' +
                                 '<div class="input-group border rounded-2">' +
-                                '<input type="text" class="form-control ms-2" name="jumlah_pesanan" id="jumlah_pesanan_' + pengiriman.id_pengiriman +
+                                '<input type="text" class="form-control ms-2" name="jumlah_pesanan" id="jumlah_pesanan_' +
+                                pengiriman.id_pengiriman +
                                 '" placeholder="Jumlah Pesanan" required>' +
                                 '</div>' +
                                 '</td>' +
@@ -735,7 +903,8 @@
                             $('#btn_kirim_' + pengiriman.id_pengiriman).click(function(event) {
                                 event.preventDefault();
 
-                                var jumlah_pesanan = $('#jumlah_pesanan_' + pengiriman.id_pengiriman).val();
+                                var jumlah_pesanan = $('#jumlah_pesanan_' + pengiriman
+                                    .id_pengiriman).val();
                                 var id_kurir = $('#id_kurir_' + pengiriman.id_pengiriman).val();
                                 var id_mobil = $('#id_mobil_' + pengiriman.id_pengiriman).val();
                                 var pengirimanId = $(this).val();
@@ -816,63 +985,72 @@
                             var statusBadge = getStatusBadge(pengiriman);
                             var row =
                                 '<tr class="text-dark">' +
-                                    '<td class="align-middle font-weight-bold text-sm text-center">' + pengiriman.kode_pengiriman + '</td>' +
-                                    '<td>' +
-                                        '<div class="text-center">';
-                                        if (namaPelanggan !== '') {
-                                            row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
-                                        }
-                                        row += '<p class="text-xs text-secondary mb-0">Permintaan  : ' + pengiriman.gas_permintaan + ' bar' +
-                                        '</p>' +
-                                    '</div>' +
-                                    '<td>' +
-                                        '<div class="text-center">';
-                                        if (namaSopir !== '') {
-                                            row += '<h6 class="mb-1 text-sm">' + namaSopir + '</h6>';
-                                        }
-                                        if (namaMobil !== '') {
-                                            row += '<p class="text-xs text-secondary mb-0">Mobil  : ' + namaMobil + '</p>';
-                                        }
-                                        row += '</div>' +
-                                    '</td>' +
-                                    '<td class="text-center pt-4">' ;
-                                        if (pengiriman.kapasitas_gas_masuk == null) {
-                                            row += '<p class="text-sm mb-0">Gas Masuk : kosong </p>';
-                                        }
-                                        else{
-                                            row += '<p class="text-sm mb-0">Gas Masuk : ' + pengiriman.kapasitas_gas_masuk + ' bar' +'</p>';
-                                        }
-                                        row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman + '" data-bs-toggle="modal" data-bs-target="#more-gas-masuk-' + pengiriman.id_pengiriman + '">' +
-                                            '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
-                                        '</a>' +
-                                    '</td>' +
-                                    '<td class="text-center pt-4">' ;
-                                        if (pengiriman.kapasitas_gas_keluar == null) {
-                                            row += '<p class="text-sm mb-0">Gas Keluar : kosong </p>';
-                                        }
-                                        else{
-                                            row += '<p class="text-sm mb-0">Gas Keluar : ' + pengiriman.kapasitas_gas_keluar + ' bar' +'</p>';
-                                        }
-                                        row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman + '" data-bs-toggle="modal" data-bs-target="#more-gas-keluar-' + pengiriman.id_pengiriman + '">' +
-                                            '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
-                                        '</a>' +
-                                    '</td>' +
-                                    '<td class="text-center">' ;
-                                        if (pengiriman.sisa_gas == null) {
-                                            row += '<p class="text-sm mb-0">tidak tersisa </p>';
-                                        }
-                                        else{
-                                            row += '<p class="text-sm mb-0">Sisa Gas : ' + pengiriman.kapasitas_gas_keluar + ' bar' +'</p>';
-                                        }
-                                    row+= '</td>' +
-                                    '<td class="align-middle text-center">' +
-                                    '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman + '" data-bs-toggle="modal" data-bs-target="#more-suratjalan-' + pengiriman.id_pengiriman + '">' +
-                                        '<p class="text-sm" style="text-decoration: underline;">Surat Jalan</p>' +
-                                    '</a>' +                                    
-                                    '</td>' +
-                                    '<td class="align-middle text-center">' +
-                                        statusBadge +
-                                    '</td>' +
+                                '<td class="align-middle font-weight-bold text-sm text-center">' +
+                                pengiriman.kode_pengiriman + '</td>' +
+                                '<td>' +
+                                '<div class="text-center">';
+                            if (namaPelanggan !== '') {
+                                row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
+                            }
+                            row += '<p class="text-xs text-secondary mb-0">Permintaan  : ' + pengiriman
+                                .gas_permintaan + ' bar' +
+                                '</p>' +
+                                '</div>' +
+                                '<td>' +
+                                '<div class="text-center">';
+                            if (namaSopir !== '') {
+                                row += '<h6 class="mb-1 text-sm">' + namaSopir + '</h6>';
+                            }
+                            if (namaMobil !== '') {
+                                row += '<p class="text-xs text-secondary mb-0">Mobil  : ' + namaMobil +
+                                    '</p>';
+                            }
+                            row += '</div>' +
+                                '</td>' +
+                                '<td class="text-center pt-4">';
+                            if (pengiriman.kapasitas_gas_masuk == null) {
+                                row += '<p class="text-sm mb-0">Gas Masuk : kosong </p>';
+                            } else {
+                                row += '<p class="text-sm mb-0">Gas Masuk : ' + pengiriman
+                                    .kapasitas_gas_masuk + ' bar' + '</p>';
+                            }
+                            row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
+                                '" data-bs-toggle="modal" data-bs-target="#more-gas-masuk-' + pengiriman
+                                .id_pengiriman + '">' +
+                                '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
+                                '</a>' +
+                                '</td>' +
+                                '<td class="text-center pt-4">';
+                            if (pengiriman.kapasitas_gas_keluar == null) {
+                                row += '<p class="text-sm mb-0">Gas Keluar : kosong </p>';
+                            } else {
+                                row += '<p class="text-sm mb-0">Gas Keluar : ' + pengiriman
+                                    .kapasitas_gas_keluar + ' bar' + '</p>';
+                            }
+                            row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
+                                '" data-bs-toggle="modal" data-bs-target="#more-gas-keluar-' +
+                                pengiriman.id_pengiriman + '">' +
+                                '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
+                                '</a>' +
+                                '</td>' +
+                                '<td class="text-center">';
+                            if (pengiriman.sisa_gas == null) {
+                                row += '<p class="text-sm mb-0">tidak tersisa </p>';
+                            } else {
+                                row += '<p class="text-sm mb-0">Sisa Gas : ' + pengiriman
+                                    .kapasitas_gas_keluar + ' bar' + '</p>';
+                            }
+                            row += '</td>' +
+                                '<td class="align-middle text-center">' +
+                                '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
+                                '" data-bs-toggle="modal" data-bs-target="#more-suratjalan-' +
+                                pengiriman.id_pengiriman + '">' +
+                                '<p class="text-sm" style="text-decoration: underline;">Surat Jalan</p>' +
+                                '</a>' +
+                                '</td>' +
+                                '<td class="align-middle text-center">' +
+                                statusBadge +
+                                '</td>' +
                                 '</tr>';
 
                             table.append(row);
@@ -914,6 +1092,7 @@
                 realtime_Nav();
                 realTime_Dikirim();
             });
-        });
+        });    
     </script>
+
 @endsection
