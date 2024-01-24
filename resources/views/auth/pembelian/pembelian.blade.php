@@ -574,7 +574,6 @@
     @endforeach
 @endsection
 @section('js')
-
     {{-- Script search --}}
     <script>
         $(document).ready(function() {
