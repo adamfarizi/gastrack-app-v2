@@ -50,6 +50,11 @@
                         {{ $transaksi->pelanggan->email }}<br>
                         {{ $transaksi->pelanggan->no_hp }}<br>
                         {{ $transaksi->pelanggan->alamat }}</p>
+                    <div class="visible-print text-start">
+                        {!! QrCode::size(100)
+                            ->color(52,71,103)
+                            ->generate($pengiriman->id_pengiriman) !!}
+                    </div>
                 </div>
                 <div class="col ms-7">
                     <div class="row">
