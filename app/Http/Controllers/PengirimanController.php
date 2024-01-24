@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 class PengirimanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $data['title'] = 'Pengiriman';
         $pesanans = Pesanan::all();
@@ -24,8 +24,10 @@ class PengirimanController extends Controller
         $gas = Gas::sum('harga_gas');
         $harga_gas = number_format($gas, 0, ',', '.');
         $pengirimans = Pengiriman::where('status_pengiriman', 'Dikirim')->get();
+
+        $perPage_riwayat = $request->input('perPage_riwayat', 10);
         $riwayat_pengirimans = Pengiriman::where('status_pengiriman', 'Diterima')
-        ->with(['pesanan', 'pesanan.transaksi.pelanggan'])->paginate(10);
+        ->with(['pesanan', 'pesanan.transaksi.pelanggan'])->paginate($perPage_riwayat, ['*'], 'riwayat_pengirimans');
 
         return view('auth.pengiriman.pengiriman', [
             'pesanans' => $pesanans,
@@ -33,6 +35,7 @@ class PengirimanController extends Controller
             'harga_gas' => $harga_gas,
             'pengirimans' => $pengirimans,
             'riwayat_pengirimans' => $riwayat_pengirimans,
+            'perPage_riwayat' => $perPage_riwayat,
         ], $data);
     }
 
