@@ -16,6 +16,7 @@ use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -353,7 +354,7 @@ class ApiSopirController extends Controller
             ], 422);
         }
 
-        $sopir->nama_sopir = $request->input('name');
+        $sopir->nama = $request->input('name');
         $sopir->save();
 
         return response()->json([
@@ -444,6 +445,56 @@ class ApiSopirController extends Controller
             'datauser' => $sopir,
         ], 200);
     }
+
+    public function edit_password(string $id, Request $request)
+    {
+        try {
+            $request->validate([
+                'old_password' => 'required',
+                'new_password' => 'required',
+                'new_password_confirmation' => 'required',
+            ]);
+
+            // Lanjutkan dengan operasi lain jika validasi berhasil
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $e->validator->errors()->all(),
+            ], 422);
+        }
+
+        $old_password = $request->input('old_password');
+        $passwordInDatabase = Sopir::where('id_sopir', $id)->pluck('password')->first();
+
+        if (Hash::check($old_password, $passwordInDatabase)) {
+            $new_password = $request->input('new_password');
+            $new_password_confirmation = $request->input('new_password_confirmation');
+
+            if ($new_password == $new_password_confirmation) {
+                $sopir = Sopir::find($id);
+                $sopir->password = Hash::make($new_password); // Menghash password baru
+                $sopir->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Password berhasil diubah!',
+                    'datauser' => $sopir,
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Konfirmasi password tidak cocok!',
+                ], 422);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Password lama tidak cocok!',
+            ], 422);
+        }
+    }
+
 
     private function hidePhoneNumber($phoneNumber)
     {
