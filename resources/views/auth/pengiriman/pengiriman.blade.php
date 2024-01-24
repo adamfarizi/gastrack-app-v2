@@ -314,10 +314,24 @@
                 <div class="card-header pb-0">
                     <div class="row">
                         <div class="col d-flex">
-                            <h4 class="card-title"> Riwayat Pembelian</h4>
+                            <h4 class="card-title"> Riwayat Pengiriman</h4>
                             <span class="mt-1 ms-3">
                                 <a class="me-2"></a>
                             </span>
+                        </div>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col d-flex align-items-center text-dark">
+                            <span class="text-sm me-2">Menampilkan </span>
+                            <form action="{{ route('pengiriman') }}" method="get" class="form-inline me-2">
+                                <select name="perPage_riwayat" id="perPage_riwayat" class="form-control border rounded px-2" onchange="this.form.submit()">
+                                    <option value="10" {{ $perPage_riwayat == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="50" {{ $perPage_riwayat == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ $perPage_riwayat == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="{{ $riwayat_pengirimans->total() }}" {{ $perPage_riwayat == $riwayat_pengirimans->total() ? 'selected' : '' }}>Semua</option>
+                                </select>
+                            </form>
+                            <span class="text-sm">data</span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
                             <div class="input-group mb-3 border rounded-2">
@@ -381,7 +395,7 @@
                                             </a>                                     
                                         </td>
                                         <td class="text-center">
-                                            <a href="#" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#more-suratjalan-{{ $pengiriman->id_pengiriman }}">
+                                            <a href="#" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#suratJalan{{ $pengiriman->id_pengiriman }}">
                                                 <p class="text-sm mb-0" style="text-decoration: underline;">Surat Jalan</p>
                                             </a>                                     
                                         </td>
@@ -389,14 +403,14 @@
                                 @empty
                                     <tr>
                                         <td colspan="7" class="text-center">
-                                            <p class="fw-light text-sm mt-5">Penarikan tidak ditemukan.</p>
+                                            <p class="fw-light text-sm mt-5">Pengiriman tidak ditemukan.</p>
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>                        
                         <div class="text-center mt-5" id="noResultsMessage_riwayat_pengiriman" style="display: none;">
-                            <p class="fw-light">Pesanan tidak ditemukan.</p>
+                            <p class="fw-light">Pengiriman tidak ditemukan.</p>
                         </div>
                     </div>
                     {{-- Pagination --}}
@@ -614,9 +628,9 @@
     @endforeach
 
     {{-- Modal Surat Jalan --}}
-    @foreach ($pengirimans as $pengiriman)
-        <div class="modal fade" id="more-suratjalan-{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" 
-            aria-labelledby="modal-default-{{ $pengiriman->id_pengiriman }}" aria-hidden="true">
+    @foreach ($pengirimans as $pengirimans)
+        <div class="modal fade" id="suratJalan{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" aria-labelledby="modal-default{{ $pengiriman->id_pengiriman }}"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <img class="ms-2 position-absolute top-50 start-50 translate-middle d-sm-block"
@@ -647,6 +661,11 @@
                                                 {{ $transaksi->pelanggan->email }}<br>
                                                 {{ $transaksi->pelanggan->no_hp }}<br>
                                                 {{ $transaksi->pelanggan->alamat }}</p>
+                                            <div class="visible-print text-start">
+                                                {!! QrCode::size(100)
+                                                    ->color(52,71,103)
+                                                    ->generate($pengiriman->id_pengiriman) !!}
+                                            </div>
                                         @endif
                                     @endforeach
                                 </div>
@@ -1081,7 +1100,7 @@
                             row += '</td>' +
                                 '<td class="align-middle text-center">' +
                                 '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
-                                '" data-bs-toggle="modal" data-bs-target="#more-suratjalan-' +
+                                '" data-bs-toggle="modal" data-bs-target="#suratJalan' +
                                 pengiriman.id_pengiriman + '">' +
                                 '<p class="text-sm" style="text-decoration: underline;">Surat Jalan</p>' +
                                 '</a>' +
@@ -1132,5 +1151,7 @@
             });
         });    
     </script>
-
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @endsection

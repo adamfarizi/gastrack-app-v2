@@ -149,6 +149,20 @@
                                 <button id="exportDetailPenjualan" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
                         </div>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col d-flex align-items-center text-dark">
+                            <span class="text-sm me-2">Menampilkan </span>
+                            <form action="{{ route('Laporan') }}" method="get" class="form-inline me-2">
+                                <select name="perPage_penjualan" id="perPage_penjualan" class="form-control border rounded px-2" onchange="this.form.submit()">
+                                    <option value="10" {{ $perPage_penjualan == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="50" {{ $perPage_penjualan == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ $perPage_penjualan == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="{{ $detail_penjualans->total() }}" {{ $perPage_penjualan == $detail_penjualans->total() ? 'selected' : '' }}>Semua</option>
+                                </select>
+                            </form>
+                            <span class="text-sm">data</span>
+                        </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
                             <div class="input-group mb-3 border rounded-2">
                                 <span class="input-group-text text-body me-2"><i class="fa fa-search"
@@ -232,7 +246,7 @@
                         </div>
                     </div>
                     {{-- Pagination --}}
-                    <div class="pt-4 d-flex">
+                    <div class="pt-4 d-flex">                     
                         <div class="col">
                             <p class="text-sm">Menampilkan {{ $detail_penjualans->firstItem() }} hingga {{ $detail_penjualans->lastItem() }} dari total {{ $detail_penjualans->total() }} data</p>
                         </div>
@@ -298,6 +312,20 @@
                             <span class="mt-1 ms-3">
                                 <button id="exportLaporanOmzet" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
+                        </div>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col d-flex align-items-center text-dark">
+                            <span class="text-sm me-2">Menampilkan </span>
+                            <form action="{{ route('Laporan') }}" method="get" class="form-inline me-2">
+                                <select name="perPage_omzet" id="perPage_omzet" class="form-control border rounded px-2" onchange="this.form.submit()">
+                                    <option value="10" {{ $perPage_omzet == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="50" {{ $perPage_omzet == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ $perPage_omzet == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="{{ $laporan_omzet->total() }}" {{ $perPage_omzet == $laporan_omzet->total() ? 'selected' : '' }}>Semua</option>
+                                </select>
+                            </form>
+                            <span class="text-sm">data</span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
                             <div class="input-group mb-3 border rounded-2">
@@ -445,6 +473,20 @@
                             <span class="mt-1 ms-3">
                                 <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
                             </span>
+                        </div>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col d-flex align-items-center text-dark">
+                            <span class="text-sm me-2">Menampilkan </span>
+                            <form action="{{ route('Laporan') }}" method="get" class="form-inline me-2">
+                                <select name="perPage_bop" id="perPage_bop" class="form-control border rounded px-2" onchange="this.form.submit()">
+                                    <option value="10" {{ $perPage_bop == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="50" {{ $perPage_bop == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ $perPage_bop == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="{{ $laporan_bop->total() }}" {{ $perPage_bop == $laporan_bop->total() ? 'selected' : '' }}>Semua</option>
+                                </select>
+                            </form>
+                            <span class="text-sm">data</span>
                         </div>
                         <div class="col-md-2 col-sm-6 ml-auto">
                             <div class="input-group mb-3 border rounded-2">

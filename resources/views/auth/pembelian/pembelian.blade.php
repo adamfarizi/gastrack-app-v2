@@ -268,6 +268,20 @@
                                     <a class="me-2"></a>
                                 </span>
                             </div>
+                        </div>
+                        <div class="row justify-content-between">
+                            <div class="col-md-6 d-flex align-items-center text-dark">
+                                <span class="text-sm me-2">Menampilkan </span>
+                                <form action="{{ route('pembelian') }}" method="get" class="form-inline me-2">
+                                    <select name="perPage_riwayat" id="perPage_riwayat" class="form-control border rounded px-2" onchange="this.form.submit()">
+                                        <option value="10" {{ $perPage_riwayat == 10 ? 'selected' : '' }}>10</option>
+                                        <option value="50" {{ $perPage_riwayat == 50 ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ $perPage_riwayat == 100 ? 'selected' : '' }}>100</option>
+                                        <option value="{{ $riwayat_transaksis->total() }}" {{ $perPage_riwayat == $riwayat_transaksis->total() ? 'selected' : '' }}>Semua</option>
+                                    </select>
+                                </form>
+                                <span class="text-sm">data</span>
+                            </div>
                             <div class="col-md-2 col-sm-6 ml-auto">
                                 <div class="input-group mb-3 border rounded-2">
                                     <span class="input-group-text text-body me-2"><i class="fas fa-search"
@@ -560,7 +574,6 @@
     @endforeach
 @endsection
 @section('js')
-
     {{-- Script search --}}
     <script>
         $(document).ready(function() {

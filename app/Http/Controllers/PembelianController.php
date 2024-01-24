@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 
 class PembelianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $data['title'] = 'Pembelian';
 
@@ -23,17 +23,19 @@ class PembelianController extends Controller
         $gas = Gas::sum('harga_gas');
         $harga_gas = number_format($gas, 0, ',', '.');
         $data_gas = Gas::all();
+
+        $perPage_riwayat = $request->input('perPage_riwayat', 10);
         $riwayat_transaksis = Transaksi::with('pelanggan', 'tagihan')->whereHas('tagihan', function ($query) {
             $query->whereIn('status_tagihan', ['Sudah Bayar']);
-        })
-        ->orderBy('created_at','desc')
-        ->paginate(10);
+        })->orderBy('created_at', 'desc')->paginate($perPage_riwayat, ['*'], 'riwayat_transaksi');
+        
         return view('auth.pembelian.pembelian', [
             'transaksis' => $transaksis,
             'pesanans' => $pesanans,
             'harga_gas' => $harga_gas,
             'data_gas' => $data_gas,
             'riwayat_transaksis' => $riwayat_transaksis,
+            'perPage_riwayat' => $perPage_riwayat,
         ], $data);
     }
 

@@ -9,19 +9,21 @@ use Illuminate\Support\Facades\Session;
 
 class PenarikanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $data['title'] = 'Penarikan BOP';
 
         $penarikans = Penarikanbop::where('status_penarikan', 'Belum Tarik')
         ->with('sopir','admin')->get();
 
+        $perPage_riwayat = $request->input('perPage_riwayat', 10);
         $riwayat_penarikans = Penarikanbop::where('status_penarikan', 'Sudah Tarik')
-        ->with('sopir','admin')->paginate(10);
+        ->with('sopir','admin')->paginate($perPage_riwayat, ['*'], 'riwayat_penarikans');
 
         return view('auth.penarikan.penarikan',[
             'penarikans' => $penarikans,
             'riwayat_penarikans' => $riwayat_penarikans,
+            'perPage_riwayat' => $perPage_riwayat,
         ], $data);
     }
 
