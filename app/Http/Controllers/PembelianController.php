@@ -27,7 +27,7 @@ class PembelianController extends Controller
         $perPage_riwayat = $request->input('perPage_riwayat', 10);
         $riwayat_transaksis = Transaksi::with('pelanggan', 'tagihan')->whereHas('tagihan', function ($query) {
             $query->whereIn('status_tagihan', ['Sudah Bayar']);
-        })->orderBy('created_at', 'desc')->paginate($perPage_riwayat, ['*'], 'riwayat_transaksi');
+        })->orderBy('created_at', 'desc')->paginate($perPage_riwayat, ['*'], 'riwayat_transaksi')->appends(request()->query());
         
         return view('auth.pembelian.pembelian', [
             'transaksis' => $transaksis,

@@ -18,7 +18,7 @@ class PenarikanController extends Controller
 
         $perPage_riwayat = $request->input('perPage_riwayat', 10);
         $riwayat_penarikans = Penarikanbop::where('status_penarikan', 'Sudah Tarik')
-        ->with('sopir','admin')->paginate($perPage_riwayat, ['*'], 'riwayat_penarikans');
+        ->with('sopir','admin')->paginate($perPage_riwayat, ['*'], 'riwayat_penarikans')->appends(request()->query());
 
         return view('auth.penarikan.penarikan',[
             'penarikans' => $penarikans,

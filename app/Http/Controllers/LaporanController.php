@@ -15,16 +15,16 @@ class LaporanController extends Controller
 
         $perPage_penjualan = $request->input('perPage_penjualan', 10);
         $detail_penjualans = Pesanan::with(['transaksi', 'transaksi.pelanggan', 'transaksi.tagihan'])
-        ->paginate($perPage_penjualan, ['*'], 'detail_penjualans');
+        ->paginate($perPage_penjualan, ['*'], 'detail_penjualans')->appends(request()->query());
 
         $perPage_omzet = $request->input('perPage_omzet', 10);
         $laporan_omzet = Pesanan::with(['transaksi', 'transaksi.pelanggan'])
-        ->paginate($perPage_omzet, ['*'], 'laporan_omzet');
+        ->paginate($perPage_omzet, ['*'], 'laporan_omzet')->appends(request()->query());
 
         $perPage_bop = $request->input('perPage_bop', 10);
         $total_omzet = Pesanan::sum('harga_pesanan');
         $laporan_bop = Pengiriman::with(['pesanan', 'pesanan.transaksi.pelanggan'])
-        ->paginate($perPage_bop, ['*'], 'laporan_bop');
+        ->paginate($perPage_bop, ['*'], 'laporan_bop')->appends(request()->query());
 
         return view('auth.laporan.laporan',[
             'detail_penjualans' => $detail_penjualans,

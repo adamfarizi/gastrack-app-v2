@@ -27,7 +27,7 @@ class PengirimanController extends Controller
 
         $perPage_riwayat = $request->input('perPage_riwayat', 10);
         $riwayat_pengirimans = Pengiriman::where('status_pengiriman', 'Diterima')
-        ->with(['pesanan', 'pesanan.transaksi.pelanggan'])->paginate($perPage_riwayat, ['*'], 'riwayat_pengirimans');
+        ->with(['pesanan', 'pesanan.transaksi.pelanggan'])->paginate($perPage_riwayat, ['*'], 'riwayat_pengirimans')->appends(request()->query());
 
         return view('auth.pengiriman.pengiriman', [
             'pesanans' => $pesanans,
