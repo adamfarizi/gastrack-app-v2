@@ -186,7 +186,7 @@
                                 <tr>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Resi</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Pesanan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Harga</th>
@@ -256,8 +256,17 @@
                                     $queryParamsDetailPenjualan = ['detail_penjualans' => $detail_penjualans->currentPage()];
                                     $prevPageUrlDetailPenjualan = $detail_penjualans->previousPageUrl();
                                     $nextPageUrlDetailPenjualan = $detail_penjualans->nextPageUrl();
+                                    
+                                    // Mendapatkan nomor halaman saat ini
+                                    $currentPage = $detail_penjualans->currentPage();
+                                    
+                                    // Batasan jumlah angka yang ditampilkan
+                                    $maxPagesToShow = 5;
+                                    
+                                    // Mendapatkan rentang angka yang ditampilkan
+                                    $pageRange = $detail_penjualans->getUrlRange(max($currentPage - floor($maxPagesToShow / 2), 1), min($currentPage + floor($maxPagesToShow / 2), $detail_penjualans->lastPage()));
                                 @endphp
-                            
+                                
                                 @if ($detail_penjualans->onFirstPage())
                                     <li class="page-item disabled">
                                         <a class="page-link" href="#" aria-label="Previous">
@@ -273,14 +282,18 @@
                                         </a>
                                     </li>
                                 @endif
-                            
-                                @foreach ($detail_penjualans->getUrlRange(1, $detail_penjualans->lastPage()) as $page => $url)
+                                
+                                @foreach ($pageRange as $page => $url)
                                     <li class="page-item {{ $page == $detail_penjualans->currentPage() ? 'active' : '' }}">
                                         <a class="page-link" href="{{ $url . '&' . http_build_query(request()->except('detail_penjualans')) }}">{{ $page }}</a>
                                     </li>
                                 @endforeach
-                            
+                                
                                 @if ($detail_penjualans->hasMorePages())
+                                    @php
+                                        // Menghitung angka selanjutnya
+                                        $nextPageNumber = $currentPage + 1;
+                                    @endphp
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $nextPageUrlDetailPenjualan ? $nextPageUrlDetailPenjualan . '&' . http_build_query(request()->except('detail_penjualans')) : '#' }}" aria-label="Next">
                                             <span class="material-icons">keyboard_arrow_right</span>
@@ -296,9 +309,9 @@
                                     </li>
                                 @endif
                             </ul>
-                            
                         </div>
-                    </div>                 
+                    </div>
+                               
                 </div>
             </div>
         </div>
@@ -350,7 +363,7 @@
                                 <tr>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Resi</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah Bar</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Jumlah M3</th>
@@ -417,8 +430,17 @@
                                     $queryParamsOmzet = ['laporan_omzet' => $laporan_omzet->currentPage()];
                                     $prevPageUrlOmzet = $laporan_omzet->previousPageUrl();
                                     $nextPageUrlOmzet = $laporan_omzet->nextPageUrl();
+                                    
+                                    // Mendapatkan nomor halaman saat ini
+                                    $currentPage = $laporan_omzet->currentPage();
+                                    
+                                    // Batasan jumlah angka yang ditampilkan
+                                    $maxPagesToShow = 5;
+                                    
+                                    // Mendapatkan rentang angka yang ditampilkan
+                                    $pageRange = $laporan_omzet->getUrlRange(max($currentPage - floor($maxPagesToShow / 2), 1), min($currentPage + floor($maxPagesToShow / 2), $laporan_omzet->lastPage()));
                                 @endphp
-                            
+                                
                                 @if ($laporan_omzet->onFirstPage())
                                     <li class="page-item disabled">
                                         <a class="page-link" href="#" aria-label="Previous">
@@ -434,13 +456,13 @@
                                         </a>
                                     </li>
                                 @endif
-                            
-                                @foreach ($laporan_omzet->getUrlRange(1, $laporan_omzet->lastPage()) as $page => $url)
+                                
+                                @foreach ($pageRange as $page => $url)
                                     <li class="page-item {{ $page == $laporan_omzet->currentPage() ? 'active' : '' }}">
                                         <a class="page-link" href="{{ $url . '&' . http_build_query(request()->except('laporan_omzet')) }}">{{ $page }}</a>
                                     </li>
                                 @endforeach
-                            
+                                
                                 @if ($laporan_omzet->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $nextPageUrlOmzet ? $nextPageUrlOmzet . '&' . http_build_query(request()->except('laporan_omzet')) : '#' }}" aria-label="Next">
@@ -457,9 +479,8 @@
                                     </li>
                                 @endif
                             </ul>
-                            
                         </div>
-                    </div>                 
+                    </div>                                
                 </div>
             </div>
         </div>
@@ -511,7 +532,7 @@
                                 <tr>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Resi Pengiriman</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tanggal Pengiriman</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama Agen</th>
+                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Tujuan</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sopir</th>
                                     <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Mobil</th>
@@ -594,8 +615,17 @@
                                     $queryParamsBOP = ['laporan_omzet' => $laporan_bop->currentPage()];
                                     $prevPageUrlBOP = $laporan_bop->previousPageUrl();
                                     $nextPageUrlBOP = $laporan_bop->nextPageUrl();
+                                    
+                                    // Mendapatkan nomor halaman saat ini
+                                    $currentPage = $laporan_bop->currentPage();
+                                    
+                                    // Batasan jumlah angka yang ditampilkan
+                                    $maxPagesToShow = 5;
+                                    
+                                    // Mendapatkan rentang angka yang ditampilkan
+                                    $pageRange = $laporan_bop->getUrlRange(max($currentPage - floor($maxPagesToShow / 2), 1), min($currentPage + floor($maxPagesToShow / 2), $laporan_bop->lastPage()));
                                 @endphp
-                            
+                                
                                 @if ($laporan_bop->onFirstPage())
                                     <li class="page-item disabled">
                                         <a class="page-link" href="#" aria-label="Previous">
@@ -611,14 +641,18 @@
                                         </a>
                                     </li>
                                 @endif
-                            
-                                @foreach ($laporan_bop->getUrlRange(1, $laporan_bop->lastPage()) as $page => $url)
+                                
+                                @foreach ($pageRange as $page => $url)
                                     <li class="page-item {{ $page == $laporan_bop->currentPage() ? 'active' : '' }}">
                                         <a class="page-link" href="{{ $url . '&' . http_build_query(request()->except('laporan_bop')) }}">{{ $page }}</a>
                                     </li>
                                 @endforeach
-                            
+                                
                                 @if ($laporan_bop->hasMorePages())
+                                    @php
+                                        // Menghitung angka selanjutnya
+                                        $nextPageNumber = $currentPage + 1;
+                                    @endphp
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $nextPageUrlBOP ? $nextPageUrlBOP . '&' . http_build_query(request()->except('laporan_bop')) : '#' }}" aria-label="Next">
                                             <span class="material-icons">keyboard_arrow_right</span>
@@ -636,6 +670,7 @@
                             </ul>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>

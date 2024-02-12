@@ -230,7 +230,7 @@
                                         Jumlah</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Kurir</th>
+                                        Sopir</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
                                         Truk</th>
