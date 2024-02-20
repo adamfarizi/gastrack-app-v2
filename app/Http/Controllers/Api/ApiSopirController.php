@@ -613,6 +613,7 @@ class ApiSopirController extends Controller
                 'success' => true,
                 'message' => 'Penarikan berhasil!',
                 'kode_penarikan' => $penarikan->kode_penarikan,
+                'id_penarikan' => $penarikan->id_penarikan,
                 'sisa_saldo' => $sopir->bop_sopir,
             ], 200);
         }
@@ -621,7 +622,6 @@ class ApiSopirController extends Controller
     public function riwayatpenarikanbop(Request $request, $id_sopir)
     {
         $penarikan = Penarikanbop::where('id_sopir', $id_sopir)
-            ->where('status_penarikan', 'Sudah Tarik')
             ->with('admin')
             ->get();
 
@@ -638,5 +638,24 @@ class ApiSopirController extends Controller
             ], 200);
         }
     }
+
+    public function detailriwayatpenarikanbop(Request $request, $id_riwayat)
+    {
+        $penarikan = Penarikanbop::where('id_penarikan', $id_riwayat)
+            ->get();
+
+        if ($penarikan->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada detail penarikan!',
+            ], 404);
+        } else {
+            return response()->json([
+                'success' => true,
+                'message' => 'Detail penarikan ditemukan!',
+                'data' => $penarikan,
+            ], 200);
+        }
+    } 
 
 }
