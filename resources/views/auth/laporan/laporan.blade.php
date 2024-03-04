@@ -146,7 +146,7 @@
                         <div class="col d-flex align-items-center">
                             <h4 class="card-title">Detail Penjualan</h4>
                             <span class="mt-1 ms-3">
-                                <button id="exportDetailPenjualan" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
+                                <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2" data-bs-toggle="modal" data-bs-target="#exportModalDetail">Export</button>
                             </span>
                         </div>
                     </div>
@@ -245,6 +245,28 @@
                             <p class="fw-light">Pesanan tidak ditemukan.</p>
                         </div>
                     </div>
+                    {{-- Modal --}}
+                    <div class="modal fade" id="exportModalDetail" tabindex="-1" aria-labelledby="exportModalDetailLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exportModalBOPLabel">Export Laporan BOP</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <p>Silakan pilih format untuk mengekspor laporan Detail Penjual:</p>
+                              <div class="d-grid gap-2">
+                                <button id="exportExcel_detail" type="button" class="btn btn-primary">Excel</button>
+                                <button id="exportCSV_detail" type="button" class="btn btn-primary">CSV</button>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Tutup</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                     {{-- Pagination --}}
                     <div class="pt-4 d-flex">                     
                         <div class="col">
@@ -323,7 +345,7 @@
                         <div class="col d-flex align-items-center">
                             <h4 class="card-title">Laporan Omzet</h4>
                             <span class="mt-1 ms-3">
-                                <button id="exportLaporanOmzet" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
+                                <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2" data-bs-toggle="modal" data-bs-target="#exportModalOmzet">Export</button>
                             </span>
                         </div>
                     </div>
@@ -419,6 +441,28 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Modal --}}
+                    <div class="modal fade" id="exportModalOmzet" tabindex="-1" aria-labelledby="exportModalOmzetLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exportModalBOPLabel">Export Laporan BOP</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <p>Silakan pilih format untuk mengekspor laporan Omzet:</p>
+                              <div class="d-grid gap-2">
+                                <button id="exportExcel_omzet" type="button" class="btn btn-primary">Excel</button>
+                                <button id="exportCSV_omzet" type="button" class="btn btn-primary">CSV</button>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Tutup</button>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+
                     {{-- Pagination --}}
                     <div class="pt-4 d-flex">
                         <div class="col">
@@ -492,7 +536,7 @@
                         <div class="col d-flex align-items-center">
                             <h4 class="card-title">Laporan BOP</h4>
                             <span class="mt-1 ms-3">
-                                <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2">Export</button>
+                              <button id="exportLaporanBOP" class="btn btn-primary btn-sm shadow-none me-2" data-bs-toggle="modal" data-bs-target="#exportModalBOP">Export</button>
                             </span>
                         </div>
                     </div>
@@ -604,6 +648,29 @@
                             <p class="fw-light">Pesanan tidak ditemukan.</p>
                         </div>
                     </div>
+
+                    {{-- Modal --}}
+                    <div class="modal fade" id="exportModalBOP" tabindex="-1" aria-labelledby="exportModalBOPLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exportModalBOPLabel">Export Laporan BOP</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <p>Silakan pilih format untuk mengekspor laporan BOP:</p>
+                              <div class="d-grid gap-2">
+                                <button id="exportExcel_BOP" type="button" class="btn btn-primary">Excel</button>
+                                <button id="exportCSV_BOP" type="button" class="btn btn-primary">CSV</button>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Tutup</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                     {{-- Pagination --}}
                     <div class="pt-4 d-flex">
                         <div class="col">
@@ -760,41 +827,232 @@
         });
     </script>
 
-    {{-- Export Excel --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    {{-- Export --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fungsi untuk menangani ekspor Excel
-            function exportToExcel(exportButtonId, tableId, fileName) {
-                const exportButton = document.getElementById(exportButtonId);
-                const table = document.getElementById(tableId);
-    
-                if (!table) {
-                    console.error(`Table with ID '${tableId}' not found.`);
-                    return;
-                }
-    
-                exportButton.addEventListener('click', function () {
-                    // Mengonversi seluruh tabel menjadi objek lembar kerja
-                    const ws = XLSX.utils.table_to_sheet(table);
-    
-                    // Membuat buku kerja baru
-                    const wb = XLSX.utils.book_new();
-    
-                    // Menambahkan lembar kerja ke buku kerja
-                    XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    
-                    // Menyimpan file Excel
-                    XLSX.writeFile(wb, fileName);
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+          // Fungsi untuk mengekspor ke format Excel
+          document.getElementById('exportExcel_detail').addEventListener('click', function() {
+            exportDataToExcel();
+          });
+      
+          // Fungsi untuk mengekspor ke format CSV
+          document.getElementById('exportCSV_detail').addEventListener('click', function() {
+            exportDataToCSV();
+          });
+      
+          // Fungsi untuk mengekspor data ke format Excel
+          function exportDataToExcel() {
+            // Mendapatkan tabel dengan ID
+            var table = document.getElementById('table_detailPenjualan');
+      
+            // Mengonversi tabel HTML ke format Excel
+            var html = table.outerHTML;
+            var uri = 'data:application/vnd.ms-excel;base64,';
+      
+            // Menambahkan metadata Excel
+            var template = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+            template += '<head><meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">';
+            template += '</head><body><table>{table}</table></body></html>';
+      
+            var base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))); };
+            var format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }); };
+      
+            var ctx = { worksheet: 'laporan_detail_penjualan', table: html };
+            var href = uri + base64(format(template, ctx));
+      
+            // Membuat tombol unduh dan mengarahkannya ke file Excel
+            var link = document.createElement("a");
+            link.href = href;
+            link.download = "laporan_detail_penjualan.xls";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+      
+          // Fungsi untuk mengekspor data ke format CSV
+          function exportDataToCSV() {
+            // Mendapatkan tabel dengan ID
+            var table = document.getElementById('table_detailPenjualan');
+            var rows = table.querySelectorAll("tr");
+      
+            // Inisialisasi string CSV dengan header kolom
+            var csv = "Resi,Tanggal,Pelanggan,Tujuan,Jumlah Pesanan,Harga,Waktu Payment,Payment Methode\n";
+      
+            // Loop melalui setiap baris tabel, mendapatkan data dari setiap kolom, dan menambahkannya ke string CSV
+            for (var i = 1; i < rows.length; i++) {
+              var cells = rows[i].querySelectorAll("td");
+              for (var j = 0; j < cells.length; j++) {
+                csv += cells[j].innerText.replace(",", "") + ",";
+              }
+              csv += "\n";
             }
-    
-            // Memanggil fungsi untuk setiap tombol "Export" dengan parameter yang sesuai
-            exportToExcel('exportDetailPenjualan', 'table_detailPenjualan', 'detail_penjualan.xlsx');
-            exportToExcel('exportLaporanOmzet', 'table_laporanOmzet', 'laporan_omzet.xlsx');
-            exportToExcel('exportLaporanBOP', 'table_laporanBOP', 'laporan_BOP.xlsx');
+      
+            // Membuat objek blob CSV
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      
+            // Membuat link untuk unduhan CSV
+            var link = document.createElement("a");
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "laporan_detail_penjualan.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
         });
     </script>
     
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Fungsi untuk mengekspor ke format Excel
+          document.getElementById('exportExcel_omzet').addEventListener('click', function() {
+            exportDataToExcel();
+          });
+      
+          // Fungsi untuk mengekspor ke format CSV
+          document.getElementById('exportCSV_omzet').addEventListener('click', function() {
+            exportDataToCSV();
+          });
+      
+          // Fungsi untuk mengekspor data ke format Excel
+          function exportDataToExcel() {
+            // Mendapatkan tabel dengan ID
+            var table = document.getElementById('table_laporanOmzet');
+      
+            // Mengonversi tabel HTML ke format Excel
+            var html = table.outerHTML;
+            var uri = 'data:application/vnd.ms-excel;base64,';
+      
+            // Menambahkan metadata Excel
+            var template = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+            template += '<head><meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">';
+            template += '</head><body><table>{table}</table></body></html>';
+      
+            var base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))); };
+            var format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }); };
+      
+            var ctx = { worksheet: 'laporan_bop', table: html };
+            var href = uri + base64(format(template, ctx));
+      
+            // Membuat tombol unduh dan mengarahkannya ke file Excel
+            var link = document.createElement("a");
+            link.href = href;
+            link.download = "laporan_omzet.xls";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+      
+          // Fungsi untuk mengekspor data ke format CSV
+          function exportDataToCSV() {
+            // Mendapatkan tabel dengan ID
+            var table = document.getElementById('table_laporanOmzet');
+            var rows = table.querySelectorAll("tr");
+      
+            // Inisialisasi string CSV dengan header kolom
+            var csv = "Resi,Tanggal,Pelanggan,Tujuan,Jumlah Bar,Jumlah M3,Omzet\n";
+      
+            // Loop melalui setiap baris tabel, mendapatkan data dari setiap kolom, dan menambahkannya ke string CSV
+            for (var i = 1; i < rows.length; i++) {
+              var cells = rows[i].querySelectorAll("td");
+              for (var j = 0; j < cells.length; j++) {
+                csv += cells[j].innerText.replace(",", "") + ",";
+              }
+              csv += "\n";
+            }
+      
+            // Membuat objek blob CSV
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      
+            // Membuat link untuk unduhan CSV
+            var link = document.createElement("a");
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "laporan_omset.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        });
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Fungsi untuk mengekspor ke format Excel
+          document.getElementById('exportExcel_BOP').addEventListener('click', function() {
+            exportDataToExcel();
+          });
+      
+          // Fungsi untuk mengekspor ke format CSV
+          document.getElementById('exportCSV_BOP').addEventListener('click', function() {
+            exportDataToCSV();
+          });
+      
+          // Fungsi untuk mengekspor data ke format Excel
+          function exportDataToExcel() {
+            // Mendapatkan tabel dengan ID
+            var table = document.getElementById('table_laporanBOP');
+      
+            // Mengonversi tabel HTML ke format Excel
+            var html = table.outerHTML;
+            var uri = 'data:application/vnd.ms-excel;base64,';
+      
+            // Menambahkan metadata Excel
+            var template = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+            template += '<head><meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">';
+            template += '</head><body><table>{table}</table></body></html>';
+      
+            var base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))); };
+            var format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }); };
+      
+            var ctx = { worksheet: 'laporan_bop', table: html };
+            var href = uri + base64(format(template, ctx));
+      
+            // Membuat tombol unduh dan mengarahkannya ke file Excel
+            var link = document.createElement("a");
+            link.href = href;
+            link.download = "laporan_bop.xls";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+      
+          // Fungsi untuk mengekspor data ke format CSV
+          function exportDataToCSV() {
+            // Mendapatkan tabel dengan ID
+            var table = document.getElementById('table_laporanBOP');
+            var rows = table.querySelectorAll("tr");
+      
+            // Inisialisasi string CSV dengan header kolom
+            var csv = "Resi Pengiriman,Tanggal Pengiriman,Pelanggan,Tujuan,Sopir,Mobil,BOP\n";
+      
+            // Loop melalui setiap baris tabel, mendapatkan data dari setiap kolom, dan menambahkannya ke string CSV
+            for (var i = 1; i < rows.length; i++) {
+              var cells = rows[i].querySelectorAll("td");
+              for (var j = 0; j < cells.length; j++) {
+                csv += cells[j].innerText.replace(",", "") + ",";
+              }
+              csv += "\n";
+            }
+      
+            // Membuat objek blob CSV
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      
+            // Membuat link untuk unduhan CSV
+            var link = document.createElement("a");
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "laporan_bop.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        });
+    </script>
     
 @endsection

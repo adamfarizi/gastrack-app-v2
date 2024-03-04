@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengiriman;
 use App\Models\Pesanan;
 use Illuminate\Http\Request;
+use Mpdf\Mpdf;
 use App\Models\Transaksi;
 
 class LaporanController extends Controller
@@ -36,4 +37,5 @@ class LaporanController extends Controller
             'perPage_bop' => $perPage_bop,  
         ], $data);
     }
+
 }

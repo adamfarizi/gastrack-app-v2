@@ -52,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengiriman/more/info_pengiriman/{id}', [PengirimanController::class, 'detail_pengiriman']);
 
     Route::get('/laporan', [LaporanController::class,'index'])->name('Laporan');
-
+    
     Route::get('/sopir&kendaraan', [SopirController::class,'index'])->name('sopir');
     Route::post('/sopir/create', [SopirController::class,'tambah_sopir_action']);
     Route::get('/sopir/edit/{id}', [SopirController::class,'edit_sopir']);
