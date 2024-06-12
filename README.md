@@ -1,4 +1,4 @@
-<p align="center"><img src="{{ asset('assets/local/logo5.png') }}" width="400" alt="GASTRACK Logo"></p>
+<p align="center"><img src="public/assets/img/local/logo5.png" width="400" alt="GASTRACK Logo"></p>
 
 # Tentang GASTRACK
 
