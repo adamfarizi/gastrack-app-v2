@@ -16,3 +16,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/public/img/BuktiPembayaran/*
+/public/img/BuktiPesanan/*
+/public/img/GasKeluar/*
+/public/img/GasMasuk/*
