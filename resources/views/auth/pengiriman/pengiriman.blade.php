@@ -387,7 +387,7 @@
                                             </a>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0 ">Sisa Gas: {{ $pengiriman->sisa_gas }}</p>
+                                            <p class="text-sm font-weight-light mb-0 ">Sisa Gas: {{ $pengiriman->sisa_gas }} bar</p>
                                         </td>
                                         <td class="text-center">
                                             <a href="{{ url('/pengiriman/more/info_pengiriman/'.$pengiriman->id_pengiriman) }}">

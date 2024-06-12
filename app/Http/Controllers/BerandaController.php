@@ -70,7 +70,6 @@ class BerandaController extends Controller
 
     public function realtimeData()
     {
-
         $total_pelanggan = Pelanggan::count();
         $total_transaksi = Transaksi::count();
         $total_pesanan = Pesanan::count();
@@ -78,21 +77,29 @@ class BerandaController extends Controller
         $total_pemasukan = number_format($total_tagihan, 0, ',', '.');
 
         // Chart 1
-        $data_pesanan = Pesanan::selectRaw('SUM(jumlah_bar) as total_pesanan, DATE_FORMAT(tanggal_pesanan, "%d %b") as hari')
+        $data_pesanan = Pesanan::select(
+            Pesanan::raw('SUM(jumlah_bar) as total_pesanan'),
+            Pesanan::raw('DATE_FORMAT(tanggal_pesanan, "%d %b") as hari'),
+            Pesanan::raw('MAX(tanggal_pesanan) as max_tanggal')
+        )
             ->join('transaksi', 'pesanan.id_transaksi', '=', 'transaksi.id_transaksi')
             ->groupBy('hari')
-            ->orderBy('tanggal_pesanan', 'DESC')
-            ->take(7)
+            ->orderBy('max_tanggal', 'DESC')
+            ->limit(7)
             ->get();
         $data_chart1 = $data_pesanan->pluck('total_pesanan');
         $label_chart1 = $data_pesanan->pluck('hari');
 
         // Chart 2
-        $data_pemasukan = Tagihan::selectRaw('SUM(CASE WHEN status_tagihan = "Sudah Bayar" THEN jumlah_tagihan ELSE 0 END) as jumlah_tagihan, DATE_FORMAT(tanggal_pembayaran, "%b %Y") as bulan')
+        $data_pemasukan = Tagihan::select(
+            Tagihan::raw('SUM(CASE WHEN status_tagihan = "Sudah Bayar" THEN jumlah_tagihan ELSE 0 END) as jumlah_tagihan'),
+            Tagihan::raw('DATE_FORMAT(tanggal_pembayaran, "%d %Y") as bulan'),
+            Tagihan::raw('MAX(tanggal_pembayaran) as max_tanggal')
+        )
             ->where('status_tagihan', 'Sudah Bayar')
             ->groupBy('bulan')
-            ->orderBy('tanggal_pembayaran', 'ASC')
-            ->take(10)
+            ->orderBy('max_tanggal', 'ASC')
+            ->limit(10)
             ->get();
         $data_chart2 = $data_pemasukan->pluck('jumlah_tagihan');
         $label_chart2 = $data_pemasukan->pluck('bulan');
@@ -108,7 +115,6 @@ class BerandaController extends Controller
             ->orderBy('sopir.nama', 'ASC')
             ->take(10)
             ->get();
-
         $data_chart3 = $data_pengiriman->pluck('jumlah_pengiriman');
         $label_chart3 = $data_pengiriman->pluck('nama');
 
