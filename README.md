@@ -4,7 +4,7 @@
 
 Gastrack adalah sebuah inovatif platform terintegrasi yang dirancang untuk memberikan kemudahan dalam manajemen, monitoring, dan tracking pengiriman gas alam. Dengan menggabungkan teknologi canggih dan kebutuhan industri yang spesifik, Gastrack tidak hanya menyediakan solusi praktis bagi perusahaan gas alam, tetapi juga memastikan efisiensi operasional yang optimal.Keunggulan platform web ini mencakup:
 
-- Pesanan Realtime: Gastrack menyajikan informasi pesanan secara langsung dan real-time kepada pengguna, memastikan transparansi dan akurasi dalam setiap langkah pengiriman.
+- <bold>Pesanan Realtime: </bold>Gastrack menyajikan informasi pesanan secara langsung dan real-time kepada pengguna, memastikan transparansi dan akurasi dalam setiap langkah pengiriman.
 
 - Platform Web untuk Admin, Mobile untuk Kurir dan Pelanggan: Dengan struktur platform yang terbagi antara web untuk admin dan aplikasi mobile untuk kurir dan pelanggan, Gastrack menawarkan fleksibilitas dan kemudahan akses bagi semua pihak terlibat dalam proses pengiriman.
 
