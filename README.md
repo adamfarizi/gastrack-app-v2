@@ -12,7 +12,7 @@ Gastrack adalah sebuah inovatif platform terintegrasi yang dirancang untuk membe
 
 - Tampilan Mudah dan Menarik untuk Pengguna: Antarmuka Gastrack didesain dengan tampilan yang intuitif, mudah dipahami, dan menarik bagi pengguna. Hal ini membantu memudahkan navigasi dan penggunaan platform, meningkatkan pengalaman pengguna secara keseluruhan.
 
-- Dengan fitur-fitur tersebut, Gastrack tidak hanya menyediakan kemudahan dalam manajemen dan tracking pengiriman gas alam, tetapi juga memprioritaskan pengalaman pengguna yang optimal serta memastikan efisiensi dan ketepatan dalam setiap proses pengiriman.
+Dengan fitur-fitur tersebut, Gastrack tidak hanya menyediakan kemudahan dalam manajemen dan tracking pengiriman gas alam, tetapi juga memprioritaskan pengalaman pengguna yang optimal serta memastikan efisiensi dan ketepatan dalam setiap proses pengiriman.
 
 
 ## Catatan Perintah untuk Menjalankan Website GASTRACK
