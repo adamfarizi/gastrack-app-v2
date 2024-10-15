@@ -83,9 +83,9 @@ class BerandaController extends Controller
             Pesanan::raw('MAX(tanggal_pesanan) as max_tanggal')
         )
             ->join('transaksi', 'pesanan.id_transaksi', '=', 'transaksi.id_transaksi')
-            ->groupBy('hari')
-            ->orderBy('max_tanggal', 'DESC')
-            ->limit(7)
+            ->groupBy('tanggal_pesanan')
+            ->orderBy('tanggal_pesanan', 'DESC')
+            ->take(7)
             ->get();
         $data_chart1 = $data_pesanan->pluck('total_pesanan');
         $label_chart1 = $data_pesanan->pluck('hari');
@@ -97,9 +97,9 @@ class BerandaController extends Controller
             Tagihan::raw('MAX(tanggal_pembayaran) as max_tanggal')
         )
             ->where('status_tagihan', 'Sudah Bayar')
-            ->groupBy('bulan')
-            ->orderBy('max_tanggal', 'ASC')
-            ->limit(10)
+            ->groupBy('status_tagihan','tanggal_pembayaran')
+            ->orderBy('tanggal_pembayaran', 'ASC')
+            ->take(10)
             ->get();
         $data_chart2 = $data_pemasukan->pluck('jumlah_tagihan');
         $label_chart2 = $data_pemasukan->pluck('bulan');
