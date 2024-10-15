@@ -244,12 +244,11 @@ class ApiSopirController extends Controller
         $pengiriman->kapasitas_gas_keluar = $gas_keluar;
         $pengiriman->sisa_gas = $request->sisa_gas;
 
-        // Perhitungan harga gas
+        // Perhitungan bar
         $id_pesanan = $pengiriman->id_pesanan;
         $harga_gas = Gas::sum('harga_gas');
         $pesanan = Pesanan::where('id_pesanan', $id_pesanan)->first();
         $pesanan->jumlah_bar = $gas_keluar;
-        $pesanan->harga_pesanan = $gas_keluar * $harga_gas;
 
         // Perhitungan m3
         $specific_gravity = 0.75;
@@ -282,14 +281,20 @@ class ApiSopirController extends Controller
         $heating_quantity = $volume_std * $heating_value;
 
         $pesanan->jumlah_m3 = $m3;
-        $pesanan->save();
+        
+        // Perhitungan harga gas m3
+        $pesanan->harga_pesanan = round($pesanan->jumlah_m3, 2) * $harga_gas;
+        $pesanan->save();   
 
         // Perhitungan tagihan
         $id_transaksi = $pesanan->id_transaksi;
         $transaksi = Transaksi::where('id_transaksi', $id_transaksi)->first();
         $id_tagihan = $transaksi->id_tagihan;
         $tagihan = Tagihan::where('id_tagihan', $id_tagihan)->first();
-        $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + ($gas_keluar * $harga_gas);
+        // bar
+        // $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + ($gas_keluar * $harga_gas);
+        // m3
+        $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + (round($pesanan->jumlah_m3, 2) * $harga_gas);
         $tagihan->save();
 
         if ($request->hasFile('bukti_gas_keluar')) {

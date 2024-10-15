@@ -154,7 +154,7 @@
                                             <div class="col-9 text-dark">
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->nama_perusahaan }}</span></p>
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->gas_permintaan }} bar</span></p>
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->pesanan->jumlah_bar }} bar</span></p>
+                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->pesanan->jumlah_bar }} bar / {{ $pengiriman->pesanan->jumlah_m3 }} m<sup>3</sup></span></p>
                                                 <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->alamat }}</span></p>
                                             </div>
                                         </div>
@@ -220,7 +220,7 @@
                                             <p class="">- <span class="fw-bold">Bukti Gas Keluar</span></p>
                                         </div>
                                         <div class="col-9 text-dark">
-                                            <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->kapasitas_gas_keluar }} bar</span></p>
+                                            <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->kapasitas_gas_keluar }} bar / {{ $pengiriman->pesanan->jumlah_m3 }} m<sup>3</sup></span></p>
                                             <p class="mb-0 fw-bold">: <span class="fw-light">{{ date('d/m/Y H:i', strtotime($pengiriman->waktu_diterima)) }}</span></p>
                                             <p class="mb-0 fw-bold">: </p>
                                         </div>

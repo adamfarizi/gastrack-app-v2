@@ -199,7 +199,7 @@
                         <p class="text-sm mb-0 text-capitalize">Harga Gas</p>
                         <div class="d-flex">
                             <h5 class="mb-0" id="harga_gas"></h5>
-                            <span class="h5 ms-2 text-dark font-weight-bolder">/ bar</span>
+                            <span class="h5 ms-2 text-dark font-weight-bolder">/ m<sup>3</sup></span>
                         </div>
                     </div>
                     <div class="col-4 py-1 mt-4 mb-3 ps-4 text-center">
@@ -531,7 +531,7 @@
                                                                     <p class="text-sm mb-0">jam : {{ date('h:i', strtotime($pesanan->tanggal_pesanan)) }}</p>
                                                                 </td>
                                                                 <td class="text-center">Gas Alam </td>
-                                                                <td class="text-center">{{ $pesanan->jumlah_bar }} bar</td>
+                                                                <td class="text-center">{{ $pesanan->jumlah_bar }} bar / {{ $pesanan->jumlah_m3 }} m<sup>3</sup></td>
                                                                 <td class="text-center">{{ $harga_gas }}</td>
                                                                 <td class="text-center">Rp.{{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</td>
                                                             </tr>
