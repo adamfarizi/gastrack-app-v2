@@ -9,7 +9,8 @@
     <link rel="icon" type="image/png" href="{{ asset('../assets/img/local/logo1.png') }}">
     <title>GasTrack admin | @yield('title', $title)</title>
     <!-- Fonts and icons -->
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
     <!-- Nucleo Icons -->
     <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
@@ -19,9 +20,14 @@
     <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    {{-- Commented because it make the app lagging --}}
+    {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+     --}}
+    <link rel="stylesheet" href="{{ asset('assets/css/material-symbols-outlined-font.css')}}" />
+
     <!-- CSS Files -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.css?v=3.1.0') }}" rel="stylesheet" />
@@ -29,7 +35,7 @@
     <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-    <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+    <!--<script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>-->
     @vite('resources/css/app.css')
 </head>
 
@@ -41,46 +47,52 @@
             {{-- Notifikasi --}}
             @if (Auth::check())
                 <div class="position-fixed top-2 end-1 d-flex flex-column" style="z-index: 100;" id="container_notif">
-                    <div class="toast fade show p-2 bg-white mb-2" role="alert" style="display: none;" aria-live="assertive" id="pesanan_baru" aria-atomic="true">
+                    <div class="toast fade show p-2 bg-white mb-2" role="alert" style="display: none;"
+                        aria-live="assertive" id="pesanan_baru" aria-atomic="true">
                         <div class="toast-header border-0">
                             <i class="material-icons text-primary me-2">inventory</i>
                             <span class="me-auto font-weight-bold">Pesanan Masuk!</span>
                             <i class="material-icons text-sm text-secondary me-1">schedule</i>
                             <small class="text-body">sekarang</small>
-                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast"
+                                aria-label="Close"></i>
                         </div>
                         <hr class="horizontal dark m-0">
                         <div class="toast-body">
                             <p class="text-sm text-secondary">
-                                Pesanan dari 
+                                Pesanan dari
                                 <span class="text-primary" id="nama_perusahaan_1"></span>
                             </p>
                         </div>
                     </div>
-                    <div class="toast fade show p-2 bg-white mb-2" role="alert" style="display: none;" aria-live="assertive" id="tagihan_dibayar" aria-atomic="true">
+                    <div class="toast fade show p-2 bg-white mb-2" role="alert" style="display: none;"
+                        aria-live="assertive" id="tagihan_dibayar" aria-atomic="true">
                         <div class="toast-header border-0">
                             <i class="material-icons text-info me-2">monetization_on</i>
                             <span class="me-auto font-weight-bold">Pesanan Dibayar!</span>
                             <i class="material-icons text-sm text-secondary me-1">schedule</i>
                             <small class="text-body">sekarang</small>
-                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast"
+                                aria-label="Close"></i>
                         </div>
                         <hr class="horizontal dark m-0">
                         <div class="toast-body">
                             <p class="text-sm text-secondary">
-                                Tagihan dari 
+                                Tagihan dari
                                 <span class="text-info" id="nama_perusahaan_2"></span>
                                 telah dibayar
                             </p>
                         </div>
                     </div>
-                    <div class="toast fade show p-2 bg-white mb-2" role="alert" style="display: none;" aria-live="assertive" id="pesanan_diterima" aria-atomic="true">
+                    <div class="toast fade show p-2 bg-white mb-2" role="alert" style="display: none;"
+                        aria-live="assertive" id="pesanan_diterima" aria-atomic="true">
                         <div class="toast-header border-0">
                             <i class="material-symbols-outlined text-warning me-2">deployed_code_account</i>
                             <span class="me-auto font-weight-bold">Pesanan Diterima!</span>
                             <i class="material-icons text-sm text-secondary me-1">schedule</i>
                             <small class="text-body">sekarang</small>
-                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast"
+                                aria-label="Close"></i>
                         </div>
                         <hr class="horizontal dark m-0">
                         <div class="toast-body">
@@ -94,13 +106,15 @@
             @endif
             <div class="position-fixed top-2 end-1 d-flex flex-column" style="z-index: 100;">
                 @if (session('success'))
-                    <div class="toast fade show p-2 bg-white mb-2" role="alert" aria-live="assertive" id="successToast" aria-atomic="true">
+                    <div class="toast fade show p-2 bg-white mb-2" role="alert" aria-live="assertive"
+                        id="successToast" aria-atomic="true">
                         <div class="toast-header border-0">
                             <i class="material-icons text-success me-2">check</i>
                             <span class="me-auto font-weight-bold">Success!</span>
                             <i class="material-icons text-sm text-secondary me-1">schedule</i>
                             <small class="text-body">sekarang</small>
-                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast"
+                                aria-label="Close"></i>
                         </div>
                         <hr class="horizontal dark m-0">
                         <div class="toast-body">
@@ -109,13 +123,15 @@
                     </div>
                 @endif
                 @if (session('error'))
-                    <div class="toast fade show p-2 bg-white mb-2" role="alert" aria-live="assertive" id="dangerToast" aria-atomic="true">
+                    <div class="toast fade show p-2 bg-white mb-2" role="alert" aria-live="assertive"
+                        id="dangerToast" aria-atomic="true">
                         <div class="toast-header border-0">
                             <i class="material-icons text-danger me-2">campaign</i>
                             <span class="me-auto text-gradient text-danger font-weight-bold">Peringatan !</span>
                             <i class="material-icons text-sm text-secondary me-1">schedule</i>
                             <small class="text-body">sekarang</small>
-                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                            <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast"
+                                aria-label="Close"></i>
                         </div>
                         <hr class="horizontal dark m-0">
                         <div class="toast-body">
@@ -125,17 +141,19 @@
                 @endif
                 @if ($errors->any())
                     @foreach ($errors->all() as $err)
-                        <div class="toast fade show p-2 bg-white mb-2" role="alert" aria-live="assertive" id="dangerToast" aria-atomic="true">
+                        <div class="toast fade show p-2 bg-white mb-2" role="alert" aria-live="assertive"
+                            id="dangerToast" aria-atomic="true">
                             <div class="toast-header border-0">
                                 <i class="material-icons text-danger me-2">campaign</i>
                                 <span class="me-auto text-gradient text-danger font-weight-bold">Peringatan !</span>
                                 <i class="material-icons text-sm text-secondary me-1">schedule</i>
                                 <small class="text-body">sekarang</small>
-                                <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast" aria-label="Close"></i>
+                                <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast"
+                                    aria-label="Close"></i>
                             </div>
                             <hr class="horizontal dark m-0">
                             <div class="toast-body">
-                                {{$err}}
+                                {{ $err }}
                             </div>
                         </div>
                     @endforeach
@@ -470,11 +488,11 @@
         }
 
         // Event listener
-        document.addEventListener("DOMContentLoaded", function(event) { 
+        document.addEventListener("DOMContentLoaded", function(event) {
             Echo.channel(`PesananBaru-channel`).listen('PesananBaruEvent', (e) => {
                 const container = document.getElementById('container_notif');
                 const newToast = pesananMasukElement(e.nama_perusahaan);
-                
+
                 // Tambahkan elemen toast baru ke dalam container
                 container.appendChild(newToast);
                 newToast.style.display = 'block';
@@ -483,7 +501,7 @@
             Echo.channel(`BayarTagihan-channel`).listen('BayarTagihanEvent', (e) => {
                 const container = document.getElementById('container_notif');
                 const newToast = tagihanDibayarElement(e.nama_perusahaan);
-                
+
                 // Tambahkan elemen toast baru ke dalam container
                 container.appendChild(newToast);
                 newToast.style.display = 'block';
@@ -492,7 +510,7 @@
             Echo.channel(`GasKeluar-channel`).listen('GasKeluarEvent', (e) => {
                 const container = document.getElementById('container_notif');
                 const newToast = pesananDiterimaElement(e.nama_perusahaan);
-                
+
                 // Tambahkan elemen toast baru ke dalam container
                 container.appendChild(newToast);
                 newToast.style.display = 'block';
