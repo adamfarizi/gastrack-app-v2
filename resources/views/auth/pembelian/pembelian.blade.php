@@ -192,7 +192,7 @@
             </div>
         </div>
         {{-- Harga Gas --}}
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        {{-- <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card px-3 pt-1 d-flex flex-row">
                     <div class="col-8 pt-2 pb-2">
@@ -208,7 +208,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
     <div class="mt-3">
         <div class="row">
