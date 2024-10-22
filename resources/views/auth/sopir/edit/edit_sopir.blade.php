@@ -55,13 +55,35 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/penarikan') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-symbols-outlined opacity-10">payments</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Penarikan BOP</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Master Pengguna
+                    </h6>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-dark" href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
-                        <span class="nav-link-text ms-1">Pengguna</span>
+                        <span class="nav-link-text ms-1">Pelanggan</span>
                     </a>
                 </li>
+                @if (Auth::user()->role == 'Super Admin')
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url('/pengguna_admin') }}">
+                            <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">group</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Admin</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Halaman Pengguna
                     </h6>

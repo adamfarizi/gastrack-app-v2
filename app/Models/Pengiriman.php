@@ -14,6 +14,8 @@ class Pengiriman extends Model
         'kode_pengiriman',
         'gas_permintaan',
         'waktu_pengiriman',
+        'bukti_nota_pengisian',
+        'bukti_nota_sopir',
         'kapasitas_gas_masuk',
         'bukti_gas_masuk',
         'waktu_diterima',

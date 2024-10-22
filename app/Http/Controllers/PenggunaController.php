@@ -34,6 +34,7 @@ class PenggunaController extends Controller
             'admins' => $admins,
         ], $data);
     }
+    
 
     public function tambah_pelanggan_action(Request $request)
     {
@@ -86,6 +87,7 @@ class PenggunaController extends Controller
                 'email' => 'required|email|max:255',
                 'no_hp' => 'required|string|max:15',
                 'jadwal_bayar' => 'required',
+                'harga_pelanggan' => 'required',
                 'bop' => 'required',
                 'alamat' => 'required|string',
             ]);
@@ -96,6 +98,7 @@ class PenggunaController extends Controller
             $pelanggan->email = $request->input('email');
             $pelanggan->no_hp = $request->input('no_hp');
             $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
+            $pelanggan->harga_pelanggan = $request->input('harga_pelanggan');
             $pelanggan->bop_pelanggan = $request->input('bop');
             $pelanggan->alamat = $request->input('alamat');
             $pelanggan->save();
@@ -108,6 +111,7 @@ class PenggunaController extends Controller
                 'email' => 'required|email|max:255',
                 'no_hp' => 'required|string|max:15',
                 'jadwal_bayar' => 'required',
+                'harga_pelanggan' => 'required',
                 'bop' => 'required',
                 'alamat' => 'required|string',
                 'old_password' => [
@@ -133,6 +137,7 @@ class PenggunaController extends Controller
             $pelanggan->email = $request->input('email');
             $pelanggan->no_hp = $request->input('no_hp');
             $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
+            $pelanggan->harga_pelanggan = $request->input('harga_pelanggan');
             $pelanggan->bop_pelanggan = $request->input('bop');
             $pelanggan->alamat = $request->input('alamat');
             $pelanggan->password = Hash::make($request->new_password);
@@ -165,6 +170,24 @@ class PenggunaController extends Controller
         $pelanggan->delete();
 
         return redirect()->back()->with('success', 'Data berhasil dihapus !');
+    }
+
+    public function index_admin()
+    {
+        $data['title'] = 'Pengguna Admin';
+
+        $total_pelanggan = Pelanggan::count();
+        $total_admin = User::count();
+        $total_pengguna = $total_pelanggan + $total_admin;
+
+        $admins = User::where('role', 'Admin')->get();
+
+        return view('auth.pengguna.pengguna_admin', [
+            'total_pelanggan' => $total_pelanggan,
+            'total_admin' => $total_admin,
+            'total_pengguna' => $total_pengguna,
+            'admins' => $admins,
+        ], $data);
     }
 
     public function tambah_admin_action(Request $request)
@@ -213,7 +236,7 @@ class PenggunaController extends Controller
             $admin->email = $request->input('email');
             $admin->save();
 
-            return redirect()->route('pengguna')->with('success', 'Data berhasil diubah !');
+            return redirect()->route('pengguna_admin')->with('success', 'Data berhasil diubah !');
         } else {
             $request->validate([
                 'nama' => 'required|string|max:255',
@@ -241,7 +264,7 @@ class PenggunaController extends Controller
             $admin->password = Hash::make($request->new_password);
             $admin->save();
 
-            return redirect()->route('pengguna')->with('success', 'Data berhasil diubah !');
+            return redirect()->route('pengguna_admin')->with('success', 'Data berhasil diubah !');
         }
     }
 

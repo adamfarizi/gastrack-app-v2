@@ -24,6 +24,7 @@ class Pelanggan extends Model implements Authenticatable
         'koordinat',
         'no_hp',
         'bop_pelanggan',
+        'harga_pelanggan',
         'jenis_pembayaran',
         'status',
     ];

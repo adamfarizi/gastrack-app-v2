@@ -62,14 +62,28 @@
                         <span class="nav-link-text ms-1">Penarikan BOP</span>
                     </a>
                 </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Master Pengguna
+                    </h6>
+                </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/pengguna') }}">
+                    <a class="nav-link text-dark" href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
-                        <span class="nav-link-text ms-1">Pengguna</span>
+                        <span class="nav-link-text ms-1">Pelanggan</span>
                     </a>
                 </li>
+                @if (Auth::user()->role == 'Super Admin')
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url('/pengguna_admin') }}">
+                            <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">group</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Admin</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Halaman Pengguna
                     </h6>
@@ -138,7 +152,7 @@
 @section('content')
     <div class="row">
         {{-- Total Transaksi --}}
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card p-3 pt-2">
                     <div
@@ -156,7 +170,7 @@
             </div>
         </div>
         {{-- Total Pesanan --}}
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card p-3 pt-2">
                     <div
@@ -174,7 +188,7 @@
             </div>
         </div>
         {{-- Total Pesanan Masuk --}}
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card p-3 pt-2">
                     <div
@@ -234,17 +248,17 @@
                         </div>
                     </div>
                     <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                        {{-- Pembelian --}}
                         <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
                             <table class="table align-items-center mb-0" id="table_pembelian">
                                 <thead class="sticky-top bg-white z-index-1">
                                     <tr>
                                         <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No. Resi</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu</th>
                                         <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
                                         <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Alamat</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pesanan</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Status</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
+                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No WA/Handphone</th>
+                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Status Pesanan</th>
+                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Detail</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table_pembelian_body">
@@ -254,156 +268,137 @@
                                 <p class="fw-light">Pesanan tidak ditemukan.</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            {{-- Tabel Riwayat --}}
-            <div class="col-12 mb-4">
-                <div class="card">
-                    <div class="card-header pb-0">
-                        <div class="row">
-                            <div class="col d-flex">
-                                <h4 class="card-title"> Riwayat Pembelian</h4>
-                                <span class="mt-1 ms-3">
-                                    <a class="me-2"></a>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row justify-content-between">
-                            <div class="col-md-6 d-flex align-items-center text-dark">
-                                <span class="text-sm me-2">Menampilkan </span>
-                                <form action="{{ route('pembelian') }}" method="get" class="form-inline me-2">
-                                    <select name="perPage_riwayat" id="perPage_riwayat" class="form-control border rounded px-2" onchange="this.form.submit()">
-                                        <option value="10" {{ $perPage_riwayat == 10 ? 'selected' : '' }}>10</option>
-                                        <option value="50" {{ $perPage_riwayat == 50 ? 'selected' : '' }}>50</option>
-                                        <option value="100" {{ $perPage_riwayat == 100 ? 'selected' : '' }}>100</option>
-                                        <option value="{{ $riwayat_transaksis->total() }}" {{ $perPage_riwayat == $riwayat_transaksis->total() ? 'selected' : '' }}>Semua</option>
-                                    </select>
-                                </form>
-                                <span class="text-sm">data</span>
-                            </div>
-                            <div class="col-md-2 col-sm-6 ml-auto">
-                                <div class="input-group mb-3 border rounded-2">
-                                    <span class="input-group-text text-body me-2"><i class="fas fa-search"
-                                            aria-hidden="true"></i></span>
-                                    <input type="text" class="form-control ms-2" id="searchInput_Riwayat"
-                                        placeholder="Cari  ...">
+                        {{-- Riwayat --}}
+                        <div>
+                            {{-- Search --}}
+                            <div class="row justify-content-between">
+                                <div class="col-md-6 d-flex align-items-center text-dark">
+                                    <span class="text-sm me-2">Menampilkan </span>
+                                    <form action="{{ route('pembelian') }}" method="get" class="form-inline me-2">
+                                        <select name="perPage_riwayat" id="perPage_riwayat" class="form-control border rounded px-2" onchange="this.form.submit()">
+                                            <option value="10" {{ $perPage_riwayat == 10 ? 'selected' : '' }}>10</option>
+                                            <option value="50" {{ $perPage_riwayat == 50 ? 'selected' : '' }}>50</option>
+                                            <option value="100" {{ $perPage_riwayat == 100 ? 'selected' : '' }}>100</option>
+                                            <option value="{{ $riwayat_transaksis->total() }}" {{ $perPage_riwayat == $riwayat_transaksis->total() ? 'selected' : '' }}>Semua</option>
+                                        </select>
+                                    </form>
+                                    <span class="text-sm">data</span>
+                                </div>
+                                <div class="col-md-2 col-sm-6 ml-auto">
+                                    <div class="input-group mb-3 border rounded-2">
+                                        <span class="input-group-text text-body me-2"><i class="fas fa-search"
+                                                aria-hidden="true"></i></span>
+                                        <input type="text" class="form-control ms-2" id="searchInput_Riwayat"
+                                            placeholder="Cari  ...">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
-                        <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
-                            <table class="table align-items-center mb-0" id="table_riwayat_pembelian">
-                                <thead class="sticky-top bg-white z-index-1">
-                                    <tr>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No. Resi</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu</th>
-                                        <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Alamat</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pesanan</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Status</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table_riwayat_pembelian_body" class="text-dark">
-                                    @forelse ($riwayat_transaksis as $transaksi)
+                            <div class="table-responsive p-0" style="min-height:100px; max-height: 380px; overflow-y: auto;">
+                                <table class="table align-items-center mb-0" id="table_riwayat_pembelian">
+                                    <thead class="sticky-top bg-white z-index-1">
                                         <tr>
-                                            <td class="text-center">
-                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
-                                            </td>
-                                            <td class="text-center">
-                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->tanggal_transaksi }}</p>
-                                            </td>
-                                            <td class="">
-                                                <p class="text-sm font-weight-bold mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
-                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->email }}</p>
-                                            </td>
-                                            <td class="text-wrap">
-                                                <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="{{ url('/pembelian/more/pesanan/'.$transaksi->id_transaksi) }}" data-id="" class="badge badge-sm bg-gradient-success text-white">Lihat Pesanan</a>
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($transaksi->tagihan->status_tagihan === 'Belum Bayar')
-                                                    <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>
-                                                @elseif($transaksi->tagihan->status_tagihan === 'Diproses')
-                                                    <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-info text-white">Diproses</a>
-                                                @else
-                                                    <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="#" data-id="{{ $transaksi->id_transaksi }}" class="text-dark" data-bs-toggle="modal" data-bs-target="#rincianModal{{ $transaksi->id_transaksi }}">
-                                                    <p class="pt-3" style="text-decoration:underline;">Invoice</p>
-                                                </a> 
-                                            </td>
+                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No. Resi</th>
+                                            <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
+                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Alamat</th>
+                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No WA/Handphone</th>
+                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Status Pesanan</th>
+                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Detail</th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="7" class="text-center">
-                                                <p class="fw-light text-sm mt-5">Penarikan tidak ditemukan.</p>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>                                
-                            </table>
-                            <div class="text-center mt-5" id="noResultsMessage_riwayat_pembelian" style="display: none;">
-                                <p class="fw-light">Pesanan tidak ditemukan.</p>
+                                    </thead>
+                                    <tbody id="table_riwayat_pembelian_body" class="text-dark">
+                                        @forelse ($riwayat_transaksis as $transaksi)
+                                            <tr>
+                                                <td class="text-center">
+                                                    <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
+                                                </td>
+                                                <td class="">
+                                                    <p class="text-sm font-weight-bold mb-0">{{ $transaksi->pelanggan->nama_pemilik }}</p>
+                                                    <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                                                </td>
+                                                <td class="text-wrap">
+                                                    <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
+                                                </td>
+                                                <td class="">
+                                                    <p class="text-sm mb-1">{{ $transaksi->pelanggan->no_hp }}</p>
+                                                </td>
+                                                <td class="text-center">
+                                                    @if ($transaksi->tagihan->status_tagihan === 'Belum Bayar')
+                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>
+                                                    @elseif($transaksi->tagihan->status_tagihan === 'Diproses')
+                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-info text-white">Diproses</a>
+                                                    @else
+                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center">
+                                                    <a href="{{ url('/pembelian/more/pesanan/'.$transaksi->id_transaksi) }}" data-id="" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7" class="text-center">
+                                                    <p class="fw-light text-sm mt-5">Riwayat Pembelian tidak ditemukan.</p>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>                                
+                                </table>
+                                <div class="text-center mt-5" id="noResultsMessage_riwayat_pembelian" style="display: none;">
+                                    <p class="fw-light">Pesanan tidak ditemukan.</p>
+                                </div>
                             </div>
-                        </div>
-                        {{-- Pagination --}}
-                        <div class="pt-4 d-flex">
-                            <div class="col">
-                                <p class="text-sm">Menampilkan {{ $riwayat_transaksis->firstItem() }} hingga {{ $riwayat_transaksis->lastItem() }} dari total {{ $riwayat_transaksis->total() }} data</p>
-                            </div>
-                            <div class="col">
-                                <ul class="pagination pagination-primary justify-content-end">
-                                    @if ($riwayat_transaksis->onFirstPage())
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="Previous">
-                                            <span class="material-icons">
-                                                keyboard_arrow_left
-                                            </span>
-                                            <span class="sr-only">Previous</span>
-                                            </a>
-                                        </li>
-                                    @else
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ $riwayat_transaksis->previousPageUrl() }}" aria-label="Previous">
-                                            <span class="material-icons">
-                                                keyboard_arrow_left
-                                            </span>
-                                            <span class="sr-only">Previous</span>
-                                            </a>
-                                        </li>
-                                    @endif
-                                    @foreach ($riwayat_transaksis->getUrlRange(1, $riwayat_transaksis->lastPage()) as $page => $url)
-                                        <li class="page-item {{ $page == $riwayat_transaksis->currentPage() ? 'active' : '' }}">
-                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                                        </li>
-                                    @endforeach
-                                    @if ($riwayat_transaksis->hasMorePages())
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ $riwayat_transaksis->nextPageUrl() }}" aria-label="Next">
-                                            <span class="material-icons">
-                                                keyboard_arrow_right
-                                            </span>
-                                            <span class="sr-only">Next</span>
-                                            </a>
-                                        </li>
-                                    @else
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="Next">
-                                            <span class="material-icons">
-                                                keyboard_arrow_right
-                                            </span>
-                                            <span class="sr-only">Next</span>
-                                            </a>
-                                        </li>
-                                    @endif
-                                </ul>
+                            {{-- Pagination --}}
+                            <div class="pt-4 d-flex">
+                                <div class="col">
+                                    <p class="text-sm">Menampilkan {{ $riwayat_transaksis->firstItem() }} hingga {{ $riwayat_transaksis->lastItem() }} dari total {{ $riwayat_transaksis->total() }} data</p>
+                                </div>
+                                <div class="col">
+                                    <ul class="pagination pagination-primary justify-content-end">
+                                        @if ($riwayat_transaksis->onFirstPage())
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#" aria-label="Previous">
+                                                <span class="material-icons">
+                                                    keyboard_arrow_left
+                                                </span>
+                                                <span class="sr-only">Previous</span>
+                                                </a>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ $riwayat_transaksis->previousPageUrl() }}" aria-label="Previous">
+                                                <span class="material-icons">
+                                                    keyboard_arrow_left
+                                                </span>
+                                                <span class="sr-only">Previous</span>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @foreach ($riwayat_transaksis->getUrlRange(1, $riwayat_transaksis->lastPage()) as $page => $url)
+                                            <li class="page-item {{ $page == $riwayat_transaksis->currentPage() ? 'active' : '' }}">
+                                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                            </li>
+                                        @endforeach
+                                        @if ($riwayat_transaksis->hasMorePages())
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ $riwayat_transaksis->nextPageUrl() }}" aria-label="Next">
+                                                <span class="material-icons">
+                                                    keyboard_arrow_right
+                                                </span>
+                                                <span class="sr-only">Next</span>
+                                                </a>
+                                            </li>
+                                        @else
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#" aria-label="Next">
+                                                <span class="material-icons">
+                                                    keyboard_arrow_right
+                                                </span>
+                                                <span class="sr-only">Next</span>
+                                                </a>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -659,14 +654,10 @@
                                 '<td class="text-center">' +
                                     '<p class="text-sm font-weight-bold mb-0">' + transaksi.resi_transaksi + '</p>' +
                                 '</td>' +
-                                '<td class="text-center">' +
-                                    '<p class="text-sm mb-1">tanggal : ' + formattedDateTime.tanggal + '</p>' +
-                                    '<p class="text-sm mb-0">pukul : ' + formattedDateTime.jam + '</p>' +
-                                '</td>' +
                                 '<td>' +
                                     '<div class="ps-4">' +
-                                        '<h6 class="mb-1 text-sm">' + transaksi.pelanggan.nama_perusahaan + '</h6>' +
-                                        '<p class="text-sm text-secondary mb-0">' + transaksi.pelanggan.email +
+                                        '<h6 class="mb-1 text-sm">' + transaksi.pelanggan.nama_pemilik + '</h6>' +
+                                        '<p class="text-sm text-secondary mb-0">' + transaksi.pelanggan.nama_perusahaan +
                                         '</p>' +
                                     '</div>' +
                                 '</td>' +
@@ -674,15 +665,13 @@
                                     '<p class="text-sm py-1 mb-0">' + transaksi.pelanggan.alamat + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                    '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Lihat Pesanan</a>' +
+                                    '<p class="text-sm mb-1">' + transaksi.pelanggan.no_hp + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
                                     statusBadge +
                                 '</td>' +
-                                '<td>' +
-                                    '<a href="#" data-id="' + transaksi.id_transaksi + '" class="text-dark" data-bs-toggle="modal" data-bs-target="#rincianModal' + transaksi.id_transaksi + '">' +
-                                        '<p class="pt-3" style="text-decoration:underline;">Invoice</p>' +
-                                    '</a>' +
+                                '<td class="text-center">' +
+                                    '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>' +
                                 '</td>' +
                                 '</tr>';
 

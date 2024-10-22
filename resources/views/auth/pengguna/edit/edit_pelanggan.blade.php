@@ -55,13 +55,35 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/penarikan') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-symbols-outlined opacity-10">payments</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Penarikan BOP</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Master Pengguna
+                    </h6>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
-                        <span class="nav-link-text ms-1">Pengguna</span>
+                        <span class="nav-link-text ms-1">Pelanggan</span>
                     </a>
                 </li>
+                @if (Auth::user()->role == 'Super Admin')
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url('/pengguna_admin') }}">
+                            <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">group</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Admin</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Halaman Pengguna
                     </h6>
@@ -144,14 +166,14 @@
                             method="POST">
                             @csrf
                             <div class="row">
-                                <div class="col">
+                                <div class="col-md-6">
                                     <label>Nama Perusahaan</label>
                                     <div class="input-group input-group-outline mb-3 bg-white">
                                         <input name="nama_perusahaan" type="text" class="form-control" aria-label="nama"
                                             value="{{ $pelanggan->nama_perusahaan }}">
                                     </div>
                                 </div>
-                                <div class="col">
+                                <div class="col-md-6">
                                     <label>Nama Pemilik</label>
                                     <div class="input-group input-group-outline mb-3 bg-white">
                                         <input name="nama_pemilik" type="text" class="form-control" aria-label="nama"
@@ -165,14 +187,14 @@
                                     value="{{ $pelanggan->email }}">
                             </div>
                             <div class="row">
-                                <div class="col">
+                                <div class="col-md-3">
                                     <label>No Hp <span class="text-danger">*</span></label>
                                     <div class="input-group mb-3 input-group-outline">
                                         <input name="no_hp" type="number" class="form-control" placeholder="Masukkan nomor hp"
                                             aria-label="no_hp" value="{{ $pelanggan->no_hp }}">
                                     </div>
                                 </div>
-                                <div class="col">
+                                <div class="col-md-3">
                                     <label>Jadwal Bayar <span class="text-danger">*</span></label>
                                     <div class="input-group mb-3 input-group-outline">
                                         <select class="form-control px-2" aria-label="Jadwal Bayar" name="jadwal_bayar">
@@ -182,7 +204,14 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col">
+                                <div class="col-md-3">
+                                    <label>Harga Pelanggan <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3 input-group-outline">
+                                        <input name="harga_pelanggan" type="number" class="form-control" placeholder="Masukkan bop pelanggan"
+                                            aria-label="harga" value="{{ $pelanggan->harga_pelanggan }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
                                     <label>BOP Pelanggan <span class="text-danger">*</span></label>
                                     <div class="input-group mb-3 input-group-outline">
                                         <input name="bop" type="number" class="form-control" placeholder="Masukkan bop pelanggan"

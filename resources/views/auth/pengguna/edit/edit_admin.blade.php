@@ -55,13 +55,35 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/pengguna') }}">
+                    <a class="nav-link text-dark " href="{{ url('/penarikan') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-symbols-outlined opacity-10">payments</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Penarikan BOP</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Master Pengguna
+                    </h6>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
                         <span class="nav-link-text ms-1">Pengguna</span>
                     </a>
                 </li>
+                @if (Auth::user()->role == 'Super Admin')
+                    <li class="nav-item">
+                        <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/pengguna_admin') }}">
+                            <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">group</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Admin</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Halaman Pengguna
                     </h6>
@@ -92,7 +114,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark">Pengguna</a></li>
+                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark">Pengguna Admin</a></li>
                     <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Admin</li>                                                </ol>
                 </ol>
                 <h6 class="font-weight-bolder mb-0">Admin</h6>

@@ -14,6 +14,16 @@ class Pesanan extends Model
         'tanggal_pesanan',
         'jumlah_bar',
         'jumlah_m3',
+
+        // Perhitungan
+        'spesific_gravity',
+        'CO2',
+        'N2',
+        'heating_value',
+        'temperature',
+        'tube_volume',
+        'lwc',
+
         'harga_pesanan',
         'bop_pesanan',
         'bukti_pesanan',

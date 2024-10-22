@@ -39,7 +39,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pembelian/data', [PembelianController::class,'realtimeData']);
     Route::post('/pembelian/tambah_data', [PembelianController::class, 'create']);
     Route::get('/pembelian/more/pesanan/{id}', [PembelianController::class, 'detail_pesanan']);
+    //? Pembelian Baru
+    Route::get('/pembelian/more/pesanan/{id}/data', [PembelianController::class, 'realtimeDataPesanan']);
+    Route::get('/pembelian/more/pesanan/{id}/export_excel', [PembelianController::class, 'exportExcel']);
+    Route::get('/pembelian/more/pesanan/{id}/export_pdf', [PembelianController::class, 'exportPDF']);
     Route::get('/pembelian/more/pesanan/pengiriman/{id}', [PembelianController::class, 'detail_pengiriman']);
+    Route::put('/pembelian/more/pesanan/pengiriman/{id}/hitung_m3', [PembelianController::class, 'hitung_m3']);
+    Route::put('/pembelian/more/pesanan/pengiriman/{id}/hitung_harga', [PembelianController::class, 'hitung_harga']);
+    //? Pembelian Baru
     Route::get('/pembelian/more/tagihan/{id}', [PembelianController::class, 'detail_tagihan']);
     Route::post('/pembelian/more/tagihan/{id}', [PembelianController::class, 'konfirmasi_pembayaran']);
     Route::get('/pembelian/more/print/{id}', [PembelianController::class, 'print_invoice']);
@@ -74,6 +81,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pengguna/pelanggan/edit/{id}', [PenggunaController::class,'edit_pelanggan_action']);
     Route::post('/pengguna/pelanggan/status/{id}', [PenggunaController::class,'edit_pelanggan_status']);
     Route::delete('/pengguna/pelanggan/delete/{id}', [PenggunaController::class,'hapus_pelanggan_action']);
+    //? Penguna Baru
+    Route::get('/pengguna_admin', [PenggunaController::class,'index_admin'])->name('pengguna_admin');
+    //? Pengguna Baru
     Route::post('/pengguna/admin/create', [PenggunaController::class,'tambah_admin_action']);
     Route::get('/pengguna/admin/edit/{id}', [PenggunaController::class,'edit_admin']);
     Route::post('/pengguna/admin/edit/{id}', [PenggunaController::class,'edit_admin_action']);

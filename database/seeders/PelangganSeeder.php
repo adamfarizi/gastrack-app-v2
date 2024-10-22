@@ -20,6 +20,7 @@ class PelangganSeeder extends Seeder
                 'alamat' => 'Jl. Merdeka No. 123, Kelurahan Bahagia, Kecamatan Sentosa, Kota Fiktif A',
                 'no_hp' => '088111222321',
                 'bop_pelanggan' => '50000',
+                'harga_pelanggan' => '100000',
                 'jenis_pembayaran' => '2',
             ],[
                 'nama_perusahaan' => 'PT. Sinar Patihan',
@@ -30,6 +31,7 @@ class PelangganSeeder extends Seeder
                 'alamat' => 'Jl. Singosari No. 2, Kelurahan Patihan, Kecamatan Manguharjo, Kota Madiun',
                 'no_hp' => '088112232321',
                 'bop_pelanggan' => '60000',
+                'harga_pelanggan' => '150000',
                 'jenis_pembayaran' => '3',
             ],    
         ];

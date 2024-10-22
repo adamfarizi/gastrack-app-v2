@@ -55,19 +55,41 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/pengguna') }}">
+                    <a class="nav-link text-dark " href="{{ url('/penarikan') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-symbols-outlined opacity-10">payments</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Penarikan BOP</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Master Pengguna
+                    </h6>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
-                        <span class="nav-link-text ms-1">Pengguna</span>
+                        <span class="nav-link-text ms-1">Pelanggan</span>
                     </a>
                 </li>
+                @if (Auth::user()->role == 'Super Admin')
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url('/pengguna_admin') }}">
+                            <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">group</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Admin</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Halaman Pengguna
                     </h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ url('/profil/'.Auth::user()->id_admin) }}">
+                    <a class="nav-link text-dark" href="{{ url('/profil/' . Auth::user()->id_admin) }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">person</i>
                         </div>
@@ -130,110 +152,319 @@
     </nav>
 @endsection
 @section('content')
-    @foreach ($pengirimans as $pengiriman)
-        <div class="row">
-            <div class="col-12 mb-4">
-                <div class="card pb-4">
-                    <div class="card-header pb-0">
-                        <h4 class="text-primary">Detail Pengiriman</h4>
-                        <hr>
-                    </div>
-                    <div class="card-body px-3 pt-0 pb-2 text-dark">
-                        <div class="border rounded p-3 mb-3">
-                            <h5 class="ms-2">Resi Pengiriman : <span class="fw-light">{{ $pengiriman->kode_pengiriman }}</span></h5>
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card pb-4">
+                <div class="card-header pb-0">
+                    <h4 class="text-primary">Detail Pengiriman</h4>
+                    <hr>
+                </div>
+                <div class="card-body px-3 pt-0 pb-2 text-dark">
+                    {{-- Header --}}
+                    <div class="row mx-2">
+                        <div class="mb-3 col-md-6">
+                            @php
+                                // Daftar nama hari dan bulan dalam Bahasa Indonesia
+                                $namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                                // Mengubah string tanggal ke timestamp
+                                $timestamp = strtotime($pengiriman->pesanan->tanggal_pesanan);
+                                // Mengambil nama hari dan tanggal
+                                $hari = $namaHari[date('w', $timestamp)];
+                            @endphp
                             <div class="row">
-                                <div class="col mx-2">
-                                    <div class="">
-                                        <div class="row ms-2">
-                                            <div class="col px-0">
-                                                <p class="mb-0">- <span class="fw-bold">Pelanggan</span></p>
-                                                <p class="mb-0">- <span class="fw-bold">Permintaan Gas</span></p>
-                                                <p class="mb-0">- <span class="fw-bold">Gas Diterima</span></p>
-                                                <p class="mb-0">- <span class="fw-bold">Alamat</span></p>
+                                <p class="col-4 fw-bold text-dark mb-0">Resi Pengiriman</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $pengiriman->kode_pengiriman }}</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <p class="col-4 fw-bold text-dark mb-0">Hari</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $hari }}</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <p class="col-4 fw-bold text-dark mb-0">Tanggal</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ \Carbon\Carbon::parse($pengiriman->pesanan->tanggal_pesanan)->format('d-M-Y') }}</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <p class="col-4 fw-bold text-dark mb-0">Sopir</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $pengiriman->sopir->nama ?? 'Belum Dikirim' }}</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <p class="col-4 fw-bold text-dark mb-0">Nopol Mobil</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $pengiriman->mobil->nopol_mobil ?? 'Belum Dikirim' }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mb-3 col-md-5">
+                            <div class="row">
+                                <p class="col-3 fw-bold text-dark mb-0">Pelanggan</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $pengiriman->pesanan->transaksi->pelanggan->nama_pemilik }}
+                                        / {{ $pengiriman->pesanan->transaksi->pelanggan->nama_perusahaan }}</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <p class="col-3 fw-bold text-dark mb-0">Email</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $pengiriman->pesanan->transaksi->pelanggan->email }}
+                                        </< /span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <p class="col-3 fw-bold text-dark mb-0">No Hp</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $pengiriman->pesanan->transaksi->pelanggan->no_hp }}</span>
+                                </p>
+                            </div>
+                            <div class="row">
+                                <p class="col-3 fw-bold text-dark mb-0">Alamat</p>
+                                <p class="col fw-bold text-dark mb-0">: <span
+                                        class="ms-1 col fw-light text-second">{{ $pengiriman->pesanan->transaksi->pelanggan->alamat }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Perhitungan --}}
+                    <div class="row mx-2">
+                        <div class="border rounded col mt-2 p-3">
+                            {{-- Rumus Standar --}}
+                            <div>
+                                <form id="auto-submit-form"
+                                    action="{{ url('/pembelian/more/pesanan/pengiriman/' . $pengiriman->id_pengiriman . '/hitung_m3') }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <h6>Input Data of Gas Spesification and Actual P-V-T <span
+                                            class="text-sm text-dark text-light opacity-7"> ( Hitung ulang ketika mengganti
+                                            salah satu data ! )</span></h6>
+                                    <div class="row mb-4">
+                                        <div class="col-md-2">
+                                            <label class="form-label">Specific Gravity <span
+                                                    style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" step="0.01" class="form-control"
+                                                    name="spesific_gravity"
+                                                    value="{{ $pengiriman->pesanan->spesific_gravity ?? 0.75 }}" required>
                                             </div>
-                                            <div class="col-9 text-dark">
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->nama_perusahaan }}</span></p>
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->gas_permintaan }} bar</span></p>
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->pesanan->jumlah_bar }} bar / {{ $pengiriman->pesanan->jumlah_m3 }} m<sup>3</sup></span></p>
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pelanggan->alamat }}</span></p>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">CO2 <span style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" step="0.01" class="form-control" name="CO2"
+                                                    value="{{ $pengiriman->pesanan->CO2 ?? 1.0 }}" required>
+                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">N2 <span style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" step="0.01" class="form-control" name="N2"
+                                                    value="{{ $pengiriman->pesanan->N2 ?? 1.0 }}" required>
+                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Heating Value <span
+                                                    style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" step="0.00001" class="form-control"
+                                                    name="heating_value"
+                                                    value="{{ $pengiriman->pesanan->heating_value ?? 1001.48361 }}"
+                                                    required>
+                                                <span class="input-group-text m-0 p-0 me-2 mt-2 opacity-5">BTU / SCF</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Temperature <span
+                                                    style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" step="0.01" class="form-control"
+                                                    name="temperature"
+                                                    value="{{ $pengiriman->pesanan->temperature ?? 21 }}" required>
+                                                <span
+                                                    class="input-group-text m-0 p-0 me-3 mt-2 opacity-5"><sup>o</sup>C</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Tube Volume <span
+                                                    style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" step="0.01" class="form-control"
+                                                    name="tube_volume"
+                                                    value="{{ $pengiriman->pesanan->tube_volume ?? 1450 }}" required>
+                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">liter</span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col mx-2">
-                                    <div class="">
-                                        <div class="row ms-2">
-                                            <div class="col px-0">
-                                                <p class="mb-0">- <span class="fw-bold">Identitas Sopir</span></p>
-                                                <p class="mb-0">- <span class="fw-bold">Identitas Mobil</span></p>
-                                                <p class="mb-0">- <span class="fw-bold">Sisa Gas</span></p>
-                                            </div>
-                                            <div class="col-9 text-dark">
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $sopir->nama }}</span></p>
-                                                <p class="mb-0 fw-bold">: <span class="fw-light">{{ $mobil->identitas_mobil }} ({{ $mobil->nopol_mobil }})</span></p>
-                                                @if ($pengiriman->sisa_gas === null)
-                                                    <p class="mb-0 fw-bold">: <span class="fw-light">tidak tersisa</span></p>
-                                                @else
-                                                    <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->sisa_gas }} bar</span></p>
-                                                @endif
+                                </form>
+                                <form
+                                    action="{{ url('/pembelian/more/pesanan/pengiriman/' . $pengiriman->id_pengiriman . '/hitung_harga') }}"
+                                    method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <h6>Tekanan</h6>
+                                    <div class="row mb-4">
+                                        <div class="col-md-auto"">
+                                            <label class="form-label">Gas Masuk <span style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" class="form-control" name="gas_masuk"
+                                                    value="{{ $pengiriman->kapasitas_gas_masuk ?? 0 }}" required>
+                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
                                             </div>
                                         </div>
+                                        <div class="col-md-auto"">
+                                            <label class="form-label">Gas Akhir <span style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" class="form-control" name="sisa_gas"
+                                                    value="{{ $pengiriman->sisa_gas ?? 0 }}" required>
+                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-auto"">
+                                            <label class="form-label">Selisih Gas</label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" class="form-control" name="gas_keluar"
+                                                    value="{{ $pengiriman->kapasitas_gas_keluar ?? 0 }}" readonly>
+                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-auto"">
+                                            <label class="form-label">LWC <span style="color: red">*</span></label>
+                                            <div class="input-group input-group-outline">
+                                                <input type="number" class="form-control" name="lwc"
+                                                    value="{{ $pengiriman->pesanan->lwc }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-auto d-flex align-items-end">
+                                            {{-- Fitur foto haru ada semua --}}
+                                            @if (is_null($pengiriman->bukti_nota_pengisian) ||
+                                                    is_null($pengiriman->bukti_nota_sopir) ||
+                                                    is_null($pengiriman->bukti_gas_masuk) ||
+                                                    is_null($pengiriman->bukti_gas_keluar))
+                                                <button class="btn btn-icon btn-3 btn-primary m-0" type="submit"
+                                                    disabled>
+                                                    <span class="btn-inner--icon">+</span>
+                                                    <span class="btn-inner--text">Hitung</span>
+                                                </button>
+                                            @else
+                                                <button class="btn btn-icon btn-3 btn-primary m-0" type="submit">
+                                                    <span class="btn-inner--icon">+</span>
+                                                    <span class="btn-inner--text">Hitung</span>
+                                                </button>
+                                            @endif
+
+                                            {{-- <button class="btn btn-icon btn-3 btn-primary m-0" type="submit">
+                                                <span class="btn-inner--icon">+</span>
+                                                <span class="btn-inner--text">Hitung</span>
+                                            </button> --}}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            {{-- Harga Gas --}}
+                            <h6>Harga Pesanan</h6>
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <label class="form-label">Volume LWC/m<sup>3</sup></label>
+                                    <div class="input-group input-group-outline">
+                                        <input type="number" class="form-control" name="jumlah_m3"
+                                            value="{{ $pengiriman->pesanan->jumlah_m3 ?? 0 }}" readonly>
+                                        <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">m<sup>3</sup></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label"></label>
+                                    <div class="input-group row text-center">
+                                        <p class="col-1 mt-3">x</p>
+                                        <p class="col-5 mt-3">Rp
+                                            {{ number_format($pengiriman->pesanan->transaksi->pelanggan->harga_pelanggan, 0, ',', '.') }}
+                                        </p>
+                                        <p class="col-1 mt-3">=</p>
+                                        <p class="col-5 mt-3"><strong>Rp
+                                                {{ number_format($pengiriman->pesanan->harga_pesanan, 0, ',', '.') }}</strong>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row px-1">
-                            <div class="border rounded col mx-2 p-3">
-                                <div class="mb-2">
-                                    <h5>Gas Masuk</h5>
-                                    <div class="row ms-2">
-                                        <div class="col px-0">
-                                            <p class="mb-0">- <span class="fw-bold">Gas Masuk</span></p>
-                                            <p class="mb-0">- <span class="fw-bold">Waktu Dikirim</span></p>
-                                            <p class="">- <span class="fw-bold">Bukti Gas Masuk</span></p>
-                                        </div>
-                                        <div class="col-9 text-dark">
-                                            <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->kapasitas_gas_masuk }} bar</span></p>
-                                            <p class="mb-0 fw-bold">: <span class="fw-light">{{ date('d/m/Y H:i', strtotime($pengiriman->waktu_pengiriman)) }}</span></p>
-                                            <p class="mb-0 fw-bold">: </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-2 text-center">
-                                    @if ($pengiriman->bukti_gas_masuk == null)
-                                        <div class="w-100 rounded" style="background-color: #dee2e6;">
-                                            <p class="text-white py-9">Belum ada bukti</p>
+                    </div>
+
+                    {{-- Bukti --}}
+                    <div class="row mx-2">
+                        <div class="border rounded col mt-2 p-3">
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <h6>Bukti Nota Pengisian</h6>
+                                    @if ($pengiriman->bukti_nota_pengisian == null)
+                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                            style="background-color: #dee2e6; height: 50vh;">
+                                            <p class="text-white">Belum ada bukti</p>
                                         </div>
                                     @else
-                                        <img src="{{ asset('img/GasMasuk/'.$pengiriman->bukti_gas_masuk) }}"
-                                            class="rounded" alt="" style="max-width: 500px; max-height: 500px">
+                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                            style="height: 50vh; background-color: #dee2e6;">
+                                            <img src="{{ asset('img/NotaPengisian/' . $pengiriman->bukti_nota_pengisian) }}"
+                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                alt="Bukti Nota Pengisian">
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="col-6">
+                                    <h6>Bukti Nota Sopir</h6>
+                                    @if ($pengiriman->bukti_nota_sopir == null)
+                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                            style="background-color: #dee2e6; height: 50vh;">
+                                            <p class="text-white">Belum ada bukti</p>
+                                        </div>
+                                    @else
+                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                            style="height: 50vh; background-color: #dee2e6;">
+                                            <img src="{{ asset('img/NotaSopir/' . $pengiriman->bukti_nota_sopir) }}"
+                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                alt="Bukti Nota Sopir">
+                                        </div>
                                     @endif
                                 </div>
                             </div>
-                            <div class="border rounded col mx-2 p-3">
-                                <div class="mb-2">
-                                    <h5>Gas Keluar</h5>
-                                    <div class="row ms-2">
-                                        <div class="col px-0">
-                                            <p class="mb-0">- <span class="fw-bold">Gas Keluar</span></p>
-                                            <p class="mb-0">- <span class="fw-bold">Waktu Diterima</span></p>
-                                            <p class="">- <span class="fw-bold">Bukti Gas Keluar</span></p>
-                                        </div>
-                                        <div class="col-9 text-dark">
-                                            <p class="mb-0 fw-bold">: <span class="fw-light">{{ $pengiriman->kapasitas_gas_keluar }} bar / {{ $pengiriman->pesanan->jumlah_m3 }} m<sup>3</sup></span></p>
-                                            <p class="mb-0 fw-bold">: <span class="fw-light">{{ date('d/m/Y H:i', strtotime($pengiriman->waktu_diterima)) }}</span></p>
-                                            <p class="mb-0 fw-bold">: </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-2 text-center">
-                                    @if ($pengiriman->bukti_gas_keluar == null)
-                                        <div class="w-100 rounded" style="background-color: #dee2e6;">
-                                            <p class="text-white py-9">Belum ada bukti</p>
+                            <div class="row">
+                                <div class="col-6">
+                                    <h6>Bukti Gas Masuk</h6>
+                                    @if ($pengiriman->bukti_gas_masuk == null)
+                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                            style="background-color: #dee2e6; height: 50vh;">
+                                            <p class="text-white">Belum ada bukti</p>
                                         </div>
                                     @else
-                                        <img src="{{ asset('img/GasKeluar/'.$pengiriman->bukti_gas_keluar) }}"
-                                        class="rounded" alt="" style="max-width: 500px; max-height: 500px">
+                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                            style="height: 50vh; background-color: #dee2e6;">
+                                            <img src="{{ asset('img/GasMasuk/' . $pengiriman->bukti_gas_masuk) }}"
+                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                alt="Bukti Gas Masuk">
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="col-6">
+                                    <h6>Bukti Gas Keluar</h6>
+                                    @if ($pengiriman->bukti_gas_keluar == null)
+                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                            style="background-color: #dee2e6; height: 50vh;">
+                                            <p class="text-white">Belum ada bukti</p>
+                                        </div>
+                                    @else
+                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                            style="height: 50vh; background-color: #dee2e6;">
+                                            <img src="{{ asset('img/GasKeluar/' . $pengiriman->bukti_gas_keluar) }}"
+                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                alt="Bukti Gas Keluar">
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -242,5 +473,15 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    </div>
+@endsection
+@section('js')
+    <script>
+        // Automatically submit the form on input change
+        document.querySelectorAll('#auto-submit-form input').forEach(function(input) {
+            input.addEventListener('change', function() {
+                document.getElementById('auto-submit-form').submit();
+            });
+        });
+    </script>
 @endsection

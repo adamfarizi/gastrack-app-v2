@@ -20,6 +20,7 @@ class CreatePelangganTable extends Migration
             $table->string('koordinat')->nullable();
             $table->string('no_hp')->nullable();
             $table->decimal('bop_pelanggan', 50, 0);
+            $table->decimal('harga_pelanggan', 50, 0);
             $table->enum('jenis_pembayaran',['2', '3', '4'])->nullable();
             $table->enum('status',['aktif', 'tidak aktif'])->default('aktif');
             $table->timestamps();

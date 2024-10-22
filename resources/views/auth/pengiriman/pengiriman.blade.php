@@ -62,14 +62,28 @@
                         <span class="nav-link-text ms-1">Penarikan BOP</span>
                     </a>
                 </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Master Pengguna
+                    </h6>
+                </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/pengguna') }}">
+                    <a class="nav-link text-dark" href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
-                        <span class="nav-link-text ms-1">Pengguna</span>
+                        <span class="nav-link-text ms-1">Pelanggan</span>
                     </a>
                 </li>
+                @if (Auth::user()->role == 'Super Admin')
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ url('/pengguna_admin') }}">
+                            <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">group</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Admin</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Halaman Pengguna
                     </h6>
@@ -194,7 +208,7 @@
     </div>
     <div class="row mt-3">
         {{-- Tabel proses  --}}
-        <div class="col-12 mb-4">
+        {{-- <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header pb-0">
                     <div class="row">
@@ -248,9 +262,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         {{-- Tabel dikirim --}}
-        <div class="col-12 mb-4">
+        {{-- <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header pb-0">
                     <div class="row">
@@ -307,7 +321,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         {{-- Tabel Riwayat --}}
         <div class="col-12 mb-4">
             <div class="card">
@@ -321,32 +335,54 @@
                         </div>
                     </div>
                     <div class="row justify-content-between">
-                        <div class="col d-flex align-items-center text-dark">
-                            <span class="text-sm me-2">Menampilkan </span>
+                        {{-- Paginate --}}
+                        <div class="col d-flex align-items-center text-dark pt-3">
+                            <span class="text-sm me-2">Menampilkan</span>
                             <form action="{{ route('pengiriman') }}" method="get" class="form-inline me-2">
-                                <select name="perPage_riwayat" id="perPage_riwayat" class="form-control border rounded px-2" onchange="this.form.submit()">
+                                <select name="perPage_riwayat" id="perPage_riwayat"
+                                    class="form-control border rounded px-2" onchange="this.form.submit()">
                                     <option value="10" {{ $perPage_riwayat == 10 ? 'selected' : '' }}>10</option>
                                     <option value="50" {{ $perPage_riwayat == 50 ? 'selected' : '' }}>50</option>
                                     <option value="100" {{ $perPage_riwayat == 100 ? 'selected' : '' }}>100</option>
-                                    <option value="{{ $riwayat_pengirimans->total() }}" {{ $perPage_riwayat == $riwayat_pengirimans->total() ? 'selected' : '' }}>Semua</option>
+                                    <option value="{{ $riwayat_pengirimans->total() }}"
+                                        {{ $perPage_riwayat == $riwayat_pengirimans->total() ? 'selected' : '' }}>Semua
+                                    </option>
                                 </select>
                             </form>
                             <span class="text-sm">data</span>
                         </div>
+                        {{-- Search --}}
                         <div class="col-md-2 col-sm-6 ml-auto">
+                            <label for="searchInput_RiwayatPengiriman" class="form-label pt-3"></label>
                             <div class="input-group mb-3 border rounded-2">
                                 <span class="input-group-text text-body me-2"><i class="fas fa-search"
                                         aria-hidden="true"></i></span>
                                 <input type="text" class="form-control ms-2" id="searchInput_RiwayatPengiriman"
-                                    placeholder="Cari  ...">
+                                    placeholder="Cari ...">
                             </div>
                         </div>
-                        <div class="col-md-2 col-sm-6 ml-auto">
-                            <div class="input-group mb-3 border rounded-2">
-                                <input type="date" class="form-control ms-2 me-2" id="dateFilterRiwayatPengiriman" 
-                                onchange="filterTableByDate('table_riwayat_pengiriman', 'dateFilterRiwayatPengiriman', 'noResultsMessage_riwayat_pengiriman')">
+                        {{-- Filter --}}
+                        <form action="{{ url('/pengiriman') }}" method="GET" class="col-md row d-flex justify-content-end">
+                            @csrf
+                            @method('GET')
+                            <div class="col-md">
+                                <label for="filterTanggalAwal" class="form-label">Tanggal Awal</label>
+                                <div class="input-group border rounded-2">
+                                    <input type="date" name="tanggal_awal" class="form-control px-1"
+                                        value="{{ request('tanggal_awal') }}">
+                                </div>
                             </div>
-                        </div>
+                            <div class="col-md">
+                                <label for="filterTanggalAkhir" class="form-label">Tanggal Akhir</label>
+                                <div class="input-group border rounded-2">
+                                    <input type="date" name="tanggal_akhir" class="form-control px-1"
+                                        value="{{ request('tanggal_akhir') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3 align-self-end pb-3">
+                                <button type="submit" class="btn btn-primary m-0 mt-2">Filter</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
@@ -354,50 +390,102 @@
                         <table class="table align-items-center mb-0" id="table_riwayat_pengiriman">
                             <thead class="sticky-top bg-white z-index-1">
                                 <tr>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Id Pengiriman</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sopir</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Dikirim</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Diterima</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Sisa Gas</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Informasi</th>
-                                    <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Surat Jalan</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Id Pengiriman</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Sopir</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Pelanggan</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Dikirim</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Diterima</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Bukti<br>Pengisian</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        Surat<br>Jalan</th>
                                 </tr>
                             </thead>
                             <tbody id="table_riwayat_pengiriman_body" class="text-dark">
                                 @forelse ($riwayat_pengirimans as $pengiriman)
+                                    @php
+                                        $days = [
+                                            1 => 'Senin',
+                                            2 => 'Selasa',
+                                            3 => 'Rabu',
+                                            4 => 'Kamis',
+                                            5 => 'Jumat',
+                                            6 => 'Sabtu',
+                                            7 => 'Minggu',
+                                        ];
+
+                                        // Ambil angka hari untuk waktu_pengiriman
+                                        $waktuPengiriman = \Carbon\Carbon::parse($pengiriman->waktu_pengiriman);
+                                        $hariPengiriman = $days[$waktuPengiriman->format('N')];
+
+                                        // Ambil angka hari untuk waktu_diterima
+                                        $waktuDiterima = \Carbon\Carbon::parse($pengiriman->waktu_diterima);
+                                        $hariDiterima = $days[$waktuDiterima->format('N')];
+                                    @endphp
+
                                     <tr>
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->kode_pengiriman }}</p>
-                                        </td>
-                                        <td class="text-center">
-                                            <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
-                                            <p class="text-sm font-weight-light mb-0">{{ $pengiriman->pesanan->transaksi->pelanggan->email }}</p>
+                                            <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->kode_pengiriman }}
+                                            </p>
                                         </td>
                                         <td class="text-center">
                                             <p class="text-sm font-weight-bold mb-0">{{ $pengiriman->sopir->nama }}</p>
-                                            <p class="text-sm font-weight-light mb-0">{{ $pengiriman->mobil->nopol_mobil }}</p>
+                                            <p class="text-sm font-weight-light mb-0">
+                                                {{ $pengiriman->mobil->nopol_mobil }}</p>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0 mt-2">{{ $pengiriman->waktu_pengiriman }}</p>
+                                            <p class="text-sm font-weight-bold mb-0">
+                                                {{ $pengiriman->pesanan->transaksi->pelanggan->nama_pemilik }}</p>
+                                            <p class="text-sm font-weight-light mb-0">
+                                                {{ $pengiriman->pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-light mb-0 mt-2">
+                                                {{ $hariPengiriman }},
+                                                {{ \Carbon\Carbon::parse($pengiriman->waktu_pengiriman)->translatedFormat('d-M-Y') }}
+                                            </p>
+                                            <p class="text-sm font-weight-light mb-0">
+                                                jam:
+                                                {{ \Carbon\Carbon::parse($pengiriman->waktu_pengiriman)->format('H:i') }}
+                                            </p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-sm font-weight-light mb-0 mt-2">
+                                                {{ $hariDiterima }},
+                                                {{ \Carbon\Carbon::parse($pengiriman->waktu_diterima)->translatedFormat('d-M-Y') }}
+                                            </p>
+                                            <p class="text-sm font-weight-light mb-0">
+                                                jam:
+                                                {{ \Carbon\Carbon::parse($pengiriman->waktu_diterima)->format('H:i') }}
+                                            </p>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="#" data-id="{{ $pengiriman->id_pengiriman }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalBuktiNota{{ $pengiriman->id_pengiriman }}">
+                                                <p class="text-sm mb-0" style="text-decoration: underline;">Nota Pengisian
+                                                </p>
                                             </a>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0 mt-2">{{ $pengiriman->waktu_diterima }}</p>
+                                            <a href="#" data-id="{{ $pengiriman->id_pengiriman }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#riwayatsuratJalan{{ $pengiriman->id_pengiriman }}">
+                                                <p class="text-sm mb-0" style="text-decoration: underline;">Surat Jalan
+                                                </p>
                                             </a>
-                                        </td>
-                                        <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0 ">Sisa Gas: {{ $pengiriman->sisa_gas }} bar</p>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ url('/pengiriman/more/info_pengiriman/'.$pengiriman->id_pengiriman) }}">
-                                                <p class="text-sm mb-0" style="text-decoration: underline;">Detail Pengiriman</p>
-                                            </a>                                     
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="#" data-id="{{ $pengiriman->id_pengiriman }}" data-bs-toggle="modal" data-bs-target="#riwayatsuratJalan{{ $pengiriman->id_pengiriman }}">
-                                                <p class="text-sm mb-0" style="text-decoration: underline;">Surat Jalan</p>
-                                            </a>                                     
                                         </td>
                                     </tr>
                                 @empty
@@ -408,7 +496,7 @@
                                     </tr>
                                 @endforelse
                             </tbody>
-                        </table>                        
+                        </table>
                         <div class="text-center mt-5" id="noResultsMessage_riwayat_pengiriman" style="display: none;">
                             <p class="fw-light">Pengiriman tidak ditemukan.</p>
                         </div>
@@ -477,7 +565,7 @@
     </div>
 
     {{-- Modal Proses --}}
-    @foreach ($pesanans as $pesanan)
+    {{-- @foreach ($pesanans as $pesanan)
         <div class="modal fade" id="more-info-proses-{{ $pesanan->id_pesanan }}" tabindex="-1" role="dialog"
             aria-labelledby="modal-default{{ $pesanan->id_pesanan }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -571,10 +659,10 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    @endforeach --}}
 
     {{-- Modal Gas Masuk --}}
-    @foreach ($pengirimans as $pengiriman)
+    {{-- @foreach ($pengirimans as $pengiriman)
         <div class="modal fade" id="more-gas-masuk-{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog"
             aria-labelledby="modal-default{{ $pengiriman->id_pengiriman }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -598,10 +686,10 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    @endforeach --}}
 
     {{-- Modal Gas Keluar --}}
-    @foreach ($pengirimans as $pengiriman)
+    {{-- @foreach ($pengirimans as $pengiriman)
         <div class="modal fade" id="more-gas-keluar-{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog"
             aria-labelledby="modal-default{{ $pengiriman->id_pengiriman }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -625,10 +713,10 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    @endforeach --}}
 
     {{-- Modal Surat Jalan --}}
-    @foreach ($pengirimans as $pengiriman)
+    {{-- @foreach ($pengirimans as $pengiriman)
         <div class="modal fade" id="suratJalan{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" aria-labelledby="modal-default{{ $pengiriman->id_pengiriman }}"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -759,10 +847,10 @@
                 </div>
             </div>
         </div>
-    @endforeach
+    @endforeach --}}
     @foreach ($riwayat_pengirimans as $pengiriman)
-        <div class="modal fade" id="riwayatsuratJalan{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" aria-labelledby="modal-default{{ $pengiriman->id_pengiriman }}"
-            aria-hidden="true">
+        <div class="modal fade" id="riwayatsuratJalan{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog"
+            aria-labelledby="modal-default{{ $pengiriman->id_pengiriman }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <img class="ms-2 position-absolute top-50 start-50 translate-middle d-sm-block"
@@ -794,9 +882,7 @@
                                                 {{ $transaksi->pelanggan->no_hp }}<br>
                                                 {{ $transaksi->pelanggan->alamat }}</p>
                                             <div class="visible-print text-start">
-                                                {!! QrCode::size(100)
-                                                    ->color(52,71,103)
-                                                    ->generate($pengiriman->id_pengiriman) !!}
+                                                {!! QrCode::size(100)->color(52, 71, 103)->generate($pengiriman->id_pengiriman) !!}
                                             </div>
                                         @endif
                                     @endforeach
@@ -892,38 +978,67 @@
             </div>
         </div>
     @endforeach
+
+    {{-- Modal Bukti Nota --}}
+    @foreach ($riwayat_pengirimans as $pengiriman)
+        <div class="modal fade" id="modalBuktiNota{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog"
+            aria-labelledby="modal-title-default" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modal-title-default">Bukti Nota</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-dark text-center" style="max-height:450px; overflow-y: auto;">
+                        <!-- Mengecek jika bukti gas masuk tersedia -->
+                        @if ($pengiriman->bukti_nota_pengisian == null)
+                            <div class="w-100 rounded" style="background-color: #dee2e6;">
+                                <p class="text-white py-9">Belum ada bukti</p>
+                            </div>
+                        @else
+                            <img src="{{ asset('img/NotaPengisian/' . $pengiriman->bukti_nota_pengisian) }}"
+                                class="w-100 rounded" alt="Bukti Nota">
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endsection
 @section('js')
     {{-- Script search --}}
     <script>
         $(document).ready(function() {
-            $("#searchInput_Diproses").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("#table_diproses_body tr").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+            // $("#searchInput_Diproses").on("keyup", function() {
+            //     var value = $(this).val().toLowerCase();
+            //     $("#table_diproses_body tr").filter(function() {
+            //         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            //     });
 
-                var noResultsMessage = $("#noResultsMessage_diproses");
-                if ($("#table_diproses_body tr:visible").length === 0) {
-                    noResultsMessage.show();
-                } else {
-                    noResultsMessage.hide();
-                }
-            });
+            //     var noResultsMessage = $("#noResultsMessage_diproses");
+            //     if ($("#table_diproses_body tr:visible").length === 0) {
+            //         noResultsMessage.show();
+            //     } else {
+            //         noResultsMessage.hide();
+            //     }
+            // });
 
-            $("#searchInput_Dikirim").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("#table_dikirim_body tr").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+            // $("#searchInput_Dikirim").on("keyup", function() {
+            //     var value = $(this).val().toLowerCase();
+            //     $("#table_dikirim_body tr").filter(function() {
+            //         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            //     });
 
-                var noResultsMessage = $("#noResultsMessage_dikirim");
-                if ($("#table_dikirim_body tr:visible").length === 0) {
-                    noResultsMessage.show();
-                } else {
-                    noResultsMessage.hide();
-                }
-            });
+            //     var noResultsMessage = $("#noResultsMessage_dikirim");
+            //     if ($("#table_dikirim_body tr:visible").length === 0) {
+            //         noResultsMessage.show();
+            //     } else {
+            //         noResultsMessage.hide();
+            //     }
+            // });
 
             $("#searchInput_RiwayatPengiriman").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
@@ -939,39 +1054,6 @@
                 }
             });
         });
-    </script>
-    
-    {{-- Filter by Tanggal --}}
-    <script>
-        function setDefaultDate(elementId) {
-            document.getElementById(elementId).valueAsDate = new Date();
-        }
-
-        // Panggil fungsi untuk mengatur tanggal default
-        setDefaultDate('dateFilterRiwayatPengiriman');
-    </script>
-    <script>
-        function filterTableByDate(tableId, dateFilterId, noResultsMessageId) {
-            // Ambil nilai tanggal dari input
-            var selectedDate = document.getElementById(dateFilterId).value;
-
-            // Saring data sesuai dengan tanggal yang dipilih
-            $("#" + tableId + "_body tr").filter(function() {
-                // Ambil tanggal dari setiap baris
-                var rowDate = $(this).find("td:eq(3)").text(); // Gantilah indeks dengan indeks kolom yang berisi tanggal
-
-                // Periksa apakah tanggal pada baris cocok dengan tanggal yang dipilih
-                $(this).toggle(rowDate.includes(selectedDate));
-            });
-
-            // Sembunyikan atau tampilkan pesan jika tidak ada hasil
-            var noResultsMessage = $("#" + noResultsMessageId);
-            if ($("#" + tableId + "_body tr:visible").length === 0) {
-                noResultsMessage.show();
-            } else {
-                noResultsMessage.hide();
-            }
-        }
     </script>
 
     <script>
@@ -998,290 +1080,289 @@
             });
         }
 
-        function realTime_Proses() {
-            $.ajax({
-                url: '/pengiriman/data',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    var table = $('#table_diproses tbody');
-                    table.empty();
+        // function realTime_Proses() {
+        //     $.ajax({
+        //         url: '/pengiriman/data',
+        //         type: 'GET',
+        //         dataType: 'json',
+        //         success: function(data) {
+        //             var table = $('#table_diproses tbody');
+        //             table.empty();
 
-                    if (!data.prosess || data.prosess.length === 0) {
-                        var row =
-                            '<tr class="text-dark">' +
-                            '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pengiriman</td>' +
-                            '</tr>';
+        //             if (!data.prosess || data.prosess.length === 0) {
+        //                 var row =
+        //                     '<tr class="text-dark">' +
+        //                     '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pengiriman</td>' +
+        //                     '</tr>';
 
-                        table.append(row);
-                    } else {
-                        $.each(data.prosess, function(index, pengiriman) {
-                            var namaPelanggan = '';
-                            $.each(data.transaksis, function(index, transaksi) {
-                                if (pengiriman.pesanan.id_transaksi === transaksi
-                                    .id_transaksi) {
-                                    namaPelanggan = transaksi.pelanggan.nama_perusahaan;
-                                }
-                            });
+        //                 table.append(row);
+        //             } else {
+        //                 $.each(data.prosess, function(index, pengiriman) {
+        //                     var namaPelanggan = '';
+        //                     $.each(data.transaksis, function(index, transaksi) {
+        //                         if (pengiriman.pesanan.id_transaksi === transaksi
+        //                             .id_transaksi) {
+        //                             namaPelanggan = transaksi.pelanggan.nama_perusahaan;
+        //                         }
+        //                     });
 
-                            var row =
-                                '<tr class="text-dark">' +
-                                '<td class="align-middle font-weight-bold text-sm text-center">' +
-                                pengiriman.kode_pengiriman + '</td>' +
-                                '<td>' +
-                                '<div class="text-center">';
-                            if (namaPelanggan !== '') {
-                                row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
-                            }
-                            row += '<p class="text-xs text-secondary mb-0">Waktu  : ' + pengiriman
-                                .pesanan.tanggal_pesanan +
-                                '</p>' +
-                                '</div>' +
-                                '</td>' +
-                                '<td class="align-middle text-sm text-center">' +
-                                '<a href="#" type="button" data-id="' + pengiriman.pesanan.id_pesanan +
-                                '" data-bs-toggle="modal" data-bs-target="#more-info-proses-' +
-                                pengiriman.pesanan.id_pesanan + '">' +
-                                '<p class="text-sm pt-3" style="text-decoration: underline;">Selengkapnya</p>' +
-                                '</a>' +
-                                '</td>' +
-                                '<td class="align-middle text-sm text-center w-15">' +
-                                '<div class="input-group border rounded-2">' +
-                                '<input type="text" class="form-control ms-2" name="jumlah_pesanan" id="jumlah_pesanan_' +
-                                pengiriman.id_pengiriman +
-                                '" placeholder="Jumlah Pesanan" required>' +
-                                '</div>' +
-                                '</td>' +
-                                '<td class="align-middle text-sm text-center">' +
-                                '<div class="border rounded-2">' +
-                                '<select class="form-control text-center" id="id_kurir_' + pengiriman
-                                .id_pengiriman + '" name="nama_kurir" required>' +
-                                '<option value="Belum Memilih"> Belum Memilih </option>';
-                            $.each(data.sopirs, function(index, sopir) {
-                                row += '<option value="' + sopir.id_sopir + '">' + sopir.nama +
-                                    '</option>';
-                            });
-                            row += '</select>' +
-                                '</div>' +
-                                '</td>' +
-                                '<td class="align-middle text-sm text-center">' +
-                                '<div class="border rounded-2">' +
-                                '<select class="form-control text-center" id="id_mobil_' + pengiriman
-                                .id_pengiriman + '" name="nopol_mobil" required>' +
-                                '<option value="Belum Memilih"> Belum Memilih </option>';
-                            $.each(data.mobils, function(index, mobil) {
-                                row += '<option value="' + mobil.id_mobil + '">' + mobil
-                                    .nopol_mobil + '</option>';
-                            });
-                            row += '</select>' +
-                                '</div>' +
-                                '</td>' +
-                                '<td class="align-middle text-sm text-center pt-4">' +
-                                '<button id="btn_kirim_' + pengiriman.id_pengiriman + '" value="' +
-                                pengiriman.id_pengiriman +
-                                '" type="submit" class="btn bg-gradient-success btn-icon btn-sm ps-3 mt-1">' +
-                                '<span>' +
-                                '<i class="fa fa-solid fa-paper-plane me-3" style="color: #ffffff;"></i>' +
-                                '</span>Kirim' +
-                                '</button>' +
-                                '</td>' +
-                                '</tr>';
+        //                     var row =
+        //                         '<tr class="text-dark">' +
+        //                         '<td class="align-middle font-weight-bold text-sm text-center">' +
+        //                         pengiriman.kode_pengiriman + '</td>' +
+        //                         '<td>' +
+        //                         '<div class="text-center">';
+        //                     if (namaPelanggan !== '') {
+        //                         row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
+        //                     }
+        //                     row += '<p class="text-xs text-secondary mb-0">Waktu  : ' + pengiriman
+        //                         .pesanan.tanggal_pesanan +
+        //                         '</p>' +
+        //                         '</div>' +
+        //                         '</td>' +
+        //                         '<td class="align-middle text-sm text-center">' +
+        //                         '<a href="#" type="button" data-id="' + pengiriman.pesanan.id_pesanan +
+        //                         '" data-bs-toggle="modal" data-bs-target="#more-info-proses-' +
+        //                         pengiriman.pesanan.id_pesanan + '">' +
+        //                         '<p class="text-sm pt-3" style="text-decoration: underline;">Selengkapnya</p>' +
+        //                         '</a>' +
+        //                         '</td>' +
+        //                         '<td class="align-middle text-sm text-center w-15">' +
+        //                         '<div class="input-group border rounded-2">' +
+        //                         '<input type="text" class="form-control ms-2" name="jumlah_pesanan" id="jumlah_pesanan_' +
+        //                         pengiriman.id_pengiriman +
+        //                         '" placeholder="Jumlah Pesanan" required>' +
+        //                         '</div>' +
+        //                         '</td>' +
+        //                         '<td class="align-middle text-sm text-center">' +
+        //                         '<div class="border rounded-2">' +
+        //                         '<select class="form-control text-center" id="id_kurir_' + pengiriman
+        //                         .id_pengiriman + '" name="nama_kurir" required>' +
+        //                         '<option value="Belum Memilih"> Belum Memilih </option>';
+        //                     $.each(data.sopirs, function(index, sopir) {
+        //                         row += '<option value="' + sopir.id_sopir + '">' + sopir.nama +
+        //                             '</option>';
+        //                     });
+        //                     row += '</select>' +
+        //                         '</div>' +
+        //                         '</td>' +
+        //                         '<td class="align-middle text-sm text-center">' +
+        //                         '<div class="border rounded-2">' +
+        //                         '<select class="form-control text-center" id="id_mobil_' + pengiriman
+        //                         .id_pengiriman + '" name="nopol_mobil" required>' +
+        //                         '<option value="Belum Memilih"> Belum Memilih </option>';
+        //                     $.each(data.mobils, function(index, mobil) {
+        //                         row += '<option value="' + mobil.id_mobil + '">' + mobil
+        //                             .nopol_mobil + '</option>';
+        //                     });
+        //                     row += '</select>' +
+        //                         '</div>' +
+        //                         '</td>' +
+        //                         '<td class="align-middle text-sm text-center pt-4">' +
+        //                         '<button id="btn_kirim_' + pengiriman.id_pengiriman + '" value="' +
+        //                         pengiriman.id_pengiriman +
+        //                         '" type="submit" class="btn bg-gradient-success btn-icon btn-sm ps-3 mt-1">' +
+        //                         '<span>' +
+        //                         '<i class="fa fa-solid fa-paper-plane me-3" style="color: #ffffff;"></i>' +
+        //                         '</span>Kirim' +
+        //                         '</button>' +
+        //                         '</td>' +
+        //                         '</tr>';
 
-                            table.append(row);
+        //                     table.append(row);
 
-                            $('#btn_kirim_' + pengiriman.id_pengiriman).click(function(event) {
-                                event.preventDefault();
+        //                     $('#btn_kirim_' + pengiriman.id_pengiriman).click(function(event) {
+        //                         event.preventDefault();
 
-                                var jumlah_pesanan = $('#jumlah_pesanan_' + pengiriman
-                                    .id_pengiriman).val();
-                                var id_kurir = $('#id_kurir_' + pengiriman.id_pengiriman).val();
-                                var id_mobil = $('#id_mobil_' + pengiriman.id_pengiriman).val();
-                                var pengirimanId = $(this).val();
-                                $.ajax({
-                                    type: 'POST',
-                                    url: '/pengiriman/update_kirim/' + pengirimanId,
-                                    data: {
-                                        _token: '{{ csrf_token() }}',
-                                        id_pengiriman: pengirimanId,
-                                        id_kurir: id_kurir,
-                                        id_mobil: id_mobil,
-                                        jumlah_pesanan: jumlah_pesanan,
-                                    },
-                                    success: function(response) {
-                                        location.reload();
-                                        if (response.success) {
-                                            var successToast = $('#successToast');
-                                            successToast.find('.toast-body').text()
-                                            successToast.toast('show');
-                                        } else if (response.error) {
-                                            var dangerToast = $('#dangerToast');
-                                            dangerToast.find('.toast-body').text();
-                                            dangerToast.toast('show');
-                                        }
-                                    },
-                                    error: function(error) {
-                                        console.log(error);
-                                    }
-                                });
-                            });
-                        });
-                    }
-                    table.show();
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        }
+        //                         var jumlah_pesanan = $('#jumlah_pesanan_' + pengiriman
+        //                             .id_pengiriman).val();
+        //                         var id_kurir = $('#id_kurir_' + pengiriman.id_pengiriman).val();
+        //                         var id_mobil = $('#id_mobil_' + pengiriman.id_pengiriman).val();
+        //                         var pengirimanId = $(this).val();
+        //                         $.ajax({
+        //                             type: 'POST',
+        //                             url: '/pengiriman/update_kirim/' + pengirimanId,
+        //                             data: {
+        //                                 _token: '{{ csrf_token() }}',
+        //                                 id_pengiriman: pengirimanId,
+        //                                 id_kurir: id_kurir,
+        //                                 id_mobil: id_mobil,
+        //                                 jumlah_pesanan: jumlah_pesanan,
+        //                             },
+        //                             success: function(response) {
+        //                                 location.reload();
+        //                                 if (response.success) {
+        //                                     var successToast = $('#successToast');
+        //                                     successToast.find('.toast-body').text()
+        //                                     successToast.toast('show');
+        //                                 } else if (response.error) {
+        //                                     var dangerToast = $('#dangerToast');
+        //                                     dangerToast.find('.toast-body').text();
+        //                                     dangerToast.toast('show');
+        //                                 }
+        //                             },
+        //                             error: function(error) {
+        //                                 console.log(error);
+        //                             }
+        //                         });
+        //                     });
+        //                 });
+        //             }
+        //             table.show();
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error(error);
+        //         }
+        //     });
+        // }
 
-        function realTime_Dikirim() {
-            $.ajax({
-                url: '/pengiriman/data',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    var table = $('#table_dikirim tbody');
-                    table.empty();
+        // function realTime_Dikirim() {
+        //     $.ajax({
+        //         url: '/pengiriman/data',
+        //         type: 'GET',
+        //         dataType: 'json',
+        //         success: function(data) {
+        //             var table = $('#table_dikirim tbody');
+        //             table.empty();
 
-                    if (!data.pengirimans || data.pengirimans.length === 0) {
-                        var row =
-                            '<tr class="text-dark">' +
-                            '<td colspan="8" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pengiriman</td>' +
-                            '</tr>';
+        //             if (!data.pengirimans || data.pengirimans.length === 0) {
+        //                 var row =
+        //                     '<tr class="text-dark">' +
+        //                     '<td colspan="8" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pengiriman</td>' +
+        //                     '</tr>';
 
-                        table.append(row);
-                    } else {
-                        $.each(data.pengirimans, function(index, pengiriman) {
-                            var namaPelanggan = '';
-                            $.each(data.transaksis, function(index, transaksi) {
-                                if (pengiriman.pesanan.id_transaksi === transaksi
-                                    .id_transaksi) {
-                                    namaPelanggan = transaksi.pelanggan.nama_perusahaan;
-                                }
-                            });
-                            var namaSopir = '';
-                            $.each(data.nama_sopir, function(index, sopir) {
-                                if (pengiriman.id_sopir === sopir.id_sopir) {
-                                    namaSopir = sopir.nama;
-                                }
-                            });
-                            var namaMobil = '';
-                            $.each(data.nama_mobil, function(index, mobil) {
-                                if (pengiriman.id_mobil === mobil.id_mobil) {
-                                    namaMobil = mobil.identitas_mobil;
-                                }
-                            });
-                            var statusBadge = getStatusBadge(pengiriman);
-                            var row =
-                                '<tr class="text-dark">' +
-                                '<td class="align-middle font-weight-bold text-sm text-center">' +
-                                pengiriman.kode_pengiriman + '</td>' +
-                                '<td>' +
-                                '<div class="text-center">';
-                            if (namaPelanggan !== '') {
-                                row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
-                            }
-                            row += '<p class="text-xs text-secondary mb-0">Permintaan  : ' + pengiriman
-                                .gas_permintaan + ' bar' +
-                                '</p>' +
-                                '</div>' +
-                                '<td>' +
-                                '<div class="text-center">';
-                            if (namaSopir !== '') {
-                                row += '<h6 class="mb-1 text-sm">' + namaSopir + '</h6>';
-                            }
-                            if (namaMobil !== '') {
-                                row += '<p class="text-xs text-secondary mb-0">Mobil  : ' + namaMobil +
-                                    '</p>';
-                            }
-                            row += '</div>' +
-                                '</td>' +
-                                '<td class="text-center pt-4">';
-                            if (pengiriman.kapasitas_gas_masuk == null) {
-                                row += '<p class="text-sm mb-0">Gas Masuk : kosong </p>';
-                            } else {
-                                row += '<p class="text-sm mb-0">Gas Masuk : ' + pengiriman
-                                    .kapasitas_gas_masuk + ' bar' + '</p>';
-                            }
-                            row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
-                                '" data-bs-toggle="modal" data-bs-target="#more-gas-masuk-' + pengiriman
-                                .id_pengiriman + '">' +
-                                '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
-                                '</a>' +
-                                '</td>' +
-                                '<td class="text-center pt-4">';
-                            if (pengiriman.kapasitas_gas_keluar == null) {
-                                row += '<p class="text-sm mb-0">Gas Keluar : kosong </p>';
-                            } else {
-                                row += '<p class="text-sm mb-0">Gas Keluar : ' + pengiriman
-                                    .kapasitas_gas_keluar + ' bar' + '</p>';
-                            }
-                            row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
-                                '" data-bs-toggle="modal" data-bs-target="#more-gas-keluar-' +
-                                pengiriman.id_pengiriman + '">' +
-                                '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
-                                '</a>' +
-                                '</td>' +
-                                '<td class="text-center">';
-                            if (pengiriman.sisa_gas == null) {
-                                row += '<p class="text-sm mb-0">tidak tersisa </p>';
-                            } else {
-                                row += '<p class="text-sm mb-0">Sisa Gas : ' + pengiriman
-                                    .kapasitas_gas_keluar + ' bar' + '</p>';
-                            }
-                            row += '</td>' +
-                                '<td class="align-middle text-center">' +
-                                '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
-                                '" data-bs-toggle="modal" data-bs-target="#suratJalan' +
-                                pengiriman.id_pengiriman + '">' +
-                                '<p class="text-sm" style="text-decoration: underline;">Surat Jalan</p>' +
-                                '</a>' +
-                                '</td>' +
-                                '<td class="align-middle text-center">' +
-                                statusBadge +
-                                '</td>' +
-                                '</tr>';
+        //                 table.append(row);
+        //             } else {
+        //                 $.each(data.pengirimans, function(index, pengiriman) {
+        //                     var namaPelanggan = '';
+        //                     $.each(data.transaksis, function(index, transaksi) {
+        //                         if (pengiriman.pesanan.id_transaksi === transaksi
+        //                             .id_transaksi) {
+        //                             namaPelanggan = transaksi.pelanggan.nama_perusahaan;
+        //                         }
+        //                     });
+        //                     var namaSopir = '';
+        //                     $.each(data.nama_sopir, function(index, sopir) {
+        //                         if (pengiriman.id_sopir === sopir.id_sopir) {
+        //                             namaSopir = sopir.nama;
+        //                         }
+        //                     });
+        //                     var namaMobil = '';
+        //                     $.each(data.nama_mobil, function(index, mobil) {
+        //                         if (pengiriman.id_mobil === mobil.id_mobil) {
+        //                             namaMobil = mobil.identitas_mobil;
+        //                         }
+        //                     });
+        //                     var statusBadge = getStatusBadge(pengiriman);
+        //                     var row =
+        //                         '<tr class="text-dark">' +
+        //                         '<td class="align-middle font-weight-bold text-sm text-center">' +
+        //                         pengiriman.kode_pengiriman + '</td>' +
+        //                         '<td>' +
+        //                         '<div class="text-center">';
+        //                     if (namaPelanggan !== '') {
+        //                         row += '<h6 class="mb-1 text-sm">' + namaPelanggan + '</h6>';
+        //                     }
+        //                     row += '<p class="text-xs text-secondary mb-0">Permintaan  : ' + pengiriman
+        //                         .gas_permintaan + ' bar' +
+        //                         '</p>' +
+        //                         '</div>' +
+        //                         '<td>' +
+        //                         '<div class="text-center">';
+        //                     if (namaSopir !== '') {
+        //                         row += '<h6 class="mb-1 text-sm">' + namaSopir + '</h6>';
+        //                     }
+        //                     if (namaMobil !== '') {
+        //                         row += '<p class="text-xs text-secondary mb-0">Mobil  : ' + namaMobil +
+        //                             '</p>';
+        //                     }
+        //                     row += '</div>' +
+        //                         '</td>' +
+        //                         '<td class="text-center pt-4">';
+        //                     if (pengiriman.kapasitas_gas_masuk == null) {
+        //                         row += '<p class="text-sm mb-0">Gas Masuk : kosong </p>';
+        //                     } else {
+        //                         row += '<p class="text-sm mb-0">Gas Masuk : ' + pengiriman
+        //                             .kapasitas_gas_masuk + ' bar' + '</p>';
+        //                     }
+        //                     row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
+        //                         '" data-bs-toggle="modal" data-bs-target="#more-gas-masuk-' + pengiriman
+        //                         .id_pengiriman + '">' +
+        //                         '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
+        //                         '</a>' +
+        //                         '</td>' +
+        //                         '<td class="text-center pt-4">';
+        //                     if (pengiriman.kapasitas_gas_keluar == null) {
+        //                         row += '<p class="text-sm mb-0">Gas Keluar : kosong </p>';
+        //                     } else {
+        //                         row += '<p class="text-sm mb-0">Gas Keluar : ' + pengiriman
+        //                             .kapasitas_gas_keluar + ' bar' + '</p>';
+        //                     }
+        //                     row += '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
+        //                         '" data-bs-toggle="modal" data-bs-target="#more-gas-keluar-' +
+        //                         pengiriman.id_pengiriman + '">' +
+        //                         '<p class="text-sm" style="text-decoration: underline;">Bukti</p>' +
+        //                         '</a>' +
+        //                         '</td>' +
+        //                         '<td class="text-center">';
+        //                     if (pengiriman.sisa_gas == null) {
+        //                         row += '<p class="text-sm mb-0">tidak tersisa </p>';
+        //                     } else {
+        //                         row += '<p class="text-sm mb-0">Sisa Gas : ' + pengiriman
+        //                             .kapasitas_gas_keluar + ' bar' + '</p>';
+        //                     }
+        //                     row += '</td>' +
+        //                         '<td class="align-middle text-center">' +
+        //                         '<a href="#" type="button" data-id="' + pengiriman.id_pengiriman +
+        //                         '" data-bs-toggle="modal" data-bs-target="#suratJalan' +
+        //                         pengiriman.id_pengiriman + '">' +
+        //                         '<p class="text-sm" style="text-decoration: underline;">Surat Jalan</p>' +
+        //                         '</a>' +
+        //                         '</td>' +
+        //                         '<td class="align-middle text-center">' +
+        //                         statusBadge +
+        //                         '</td>' +
+        //                         '</tr>';
 
-                            table.append(row);
-                        });
-                    }
-                    table.show();
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        }
+        //                     table.append(row);
+        //                 });
+        //             }
+        //             table.show();
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error(error);
+        //         }
+        //     });
+        // }
 
-        function getStatusBadge(pengiriman) {
-            if (pengiriman.status_pengiriman === 'Dikirim') {
-                return '<span class="badge badge-sm bg-gradient-info">Dikirim</span>';
-            } else {
-                return '<span class="badge badge-sm bg-gradient-success">Diterima</span>';
-            }
-        }
+        // function getStatusBadge(pengiriman) {
+        //     if (pengiriman.status_pengiriman === 'Dikirim') {
+        //         return '<span class="badge badge-sm bg-gradient-info">Dikirim</span>';
+        //     } else {
+        //         return '<span class="badge badge-sm bg-gradient-success">Diterima</span>';
+        //     }
+        // }
 
         $(document).ready(function() {
             realtime_Nav();
-            realTime_Proses();
-            realTime_Dikirim();
+            // realTime_Proses();
+            // realTime_Dikirim();
         });
         document.addEventListener("DOMContentLoaded", function(event) {
             Echo.channel(`PesananBaru-channel`).listen('PesananBaruEvent', (e) => {
                 realtime_Nav();
-                realTime_Proses();
-                realTime_Dikirim();
+                // realTime_Proses();
+                // realTime_Dikirim();
             });
             Echo.channel(`GasMasuk-channel`).listen('GasMasukEvent', (e) => {
                 realtime_Nav();
-                realTime_Dikirim();
+                // realTime_Dikirim();
             });
 
             Echo.channel(`GasKeluar-channel`).listen('GasKeluarEvent', (e) => {
                 realtime_Nav();
-                realTime_Dikirim();
+                // realTime_Dikirim();
             });
-        });    
+        });
     </script>
-
 @endsection

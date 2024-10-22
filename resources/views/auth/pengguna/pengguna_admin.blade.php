@@ -67,7 +67,7 @@
                     </h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/pengguna') }}">
+                    <a class="nav-link text-dark" href="{{ url('/pengguna') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">group</i>
                         </div>
@@ -76,7 +76,7 @@
                 </li>
                 @if (Auth::user()->role == 'Super Admin')
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url('/pengguna_admin') }}">
+                        <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/pengguna_admin') }}">
                             <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                                 <i class="material-icons opacity-10">group</i>
                             </div>
@@ -112,9 +112,9 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Pengguna Pelanggan</li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Pengguna Admin</li>
                 </ol>
-                <h6 class="font-weight-bolder mb-0">Pengguna Pelanggan</h6>
+                <h6 class="font-weight-bolder mb-0">Pengguna Admin</h6>
             </nav>
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                 <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -207,169 +207,106 @@
         </div>
     </div>
     <div class="row mt-3">
-        {{-- Tabel Pelanggan --}}
-        <div class="col-12 mb-4">
-            <div class="card">
-                <div class="card-header pb-0">
-                    <div class="row">
-                        <div class="col d-flex">
-                            <h4 class="card-title">Pelanggan</h4>
-                        </div>
-                        <div class="col-md-2 col-sm-6 ml-auto mb-2">
-                            <a type="button" class="py-2 btn btn-sm bg-gradient-primary border-end"
-                                data-bs-toggle="modal" data-bs-target="#tambahpelanggan">
-                                <span> <i class="fa fa-solid fa-plus me-2" style="color: #ffffff;"></i></span>
-                                Tambah Pelanggan
-                            </a>
+        <div class="row">
+            {{-- Tabel admin --}}
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col d-flex">
+                                <h4 class="card-title">Admin</h4>
+                            </div>
+                            <div class="col-md-2 col-sm-6 ml-auto mb-2">
+                                <a type="button" class="py-2 btn btn-sm bg-gradient-primary border-end"
+                                    data-bs-toggle="modal" data-bs-target="#tambahadmin">
+                                    <span> <i class="fa fa-solid fa-plus me-2" style="color: #ffffff;"></i></span>
+                                    Tambah Admin
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
-                    <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
-                        <table class="table align-items-center mb-0">
-                            <thead class="sticky-top bg-white z-index-1">
-                                <tr>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Perusahaan</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Nama<br>Pemilik</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Tagihan</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Jenis<br>Tagihan</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Harga<br>Pelanggan</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        BOP</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Alamat</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Status</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                    </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pelanggans as $pelanggan)
+                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
+                        <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
+                            <table class="table align-items-center mb-0">
+                                <thead class="sticky-top bg-white z-index-1">
                                     <tr>
-                                        <td>
-                                            <div class="d-flex px-2 py-1">
-                                                <div class="avatar avatar-sm me-3 bg-dark">
-                                                    <i class="material-icons opacity-10">factory</i>
-                                                </div>
-                                                <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-sm">{{ $pelanggan->nama_perusahaan }}</h6>
-                                                    <p class="text-xs text-secondary mb-0">{{ $pelanggan->email }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ $pelanggan->nama_pemilik }}</h6>
-                                                <p class="text-xs text-secondary mb-0">{{ $pelanggan->no_hp }}</p>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            @php
-                                                $tagihanPelanggan = $tagihans
-                                                    ->where('id_pelanggan', $pelanggan->id_pelanggan)
-                                                    ->first();
-                                            @endphp
-                                            @if ($tagihanPelanggan)
-                                                <p class="text-xs font-weight-bold mb-0">
-                                                    Rp.{{ number_format($tagihanPelanggan->jumlah_tagihan, 0, ',', '.') }}
-                                                </p>
-                                            @else
-                                                <p class="text-xs font-weight-bold mb-0">Tidak ada tagihan</p>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            @if ($pelanggan->jenis_pembayaran == null)
-                                                <p class="text-xs font-weight-bold mb-0">Belum memilih</p>
-                                            @else
-                                                <p class="text-xs font-weight-bold mb-0">
-                                                    {{ $pelanggan->jenis_pembayaran }} Minggu</p>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">
-                                                Rp.{{ number_format($pelanggan->harga_pelanggan, 0, ',', '.') }}</p>
-                                        </td>
-                                        <td class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">
-                                                Rp.{{ number_format($pelanggan->bop_pelanggan, 0, ',', '.') }}</p>
-                                        </td>
-                                        <td class="text-wrap" style="width: 200px;">
-                                            <p class="text-xs pt-3 mb-0">{{ $pelanggan->alamat }}
-                                            <p>
-                                        </td>
-                                        <td class="text-center">
-                                            <form
-                                                action="{{ url('/pengguna/pelanggan/status/' . $pelanggan->id_pelanggan) }}"
-                                                method="POST">
-                                                @csrf
-                                                @if ($pelanggan->status == 'aktif')
-                                                    <button type="submit" href
-                                                        class="badge badge-sm bg-gradient-success border-0">Aktif</button>
-                                                @else
-                                                    <button type="submit"
-                                                        class="badge badge-sm bg-gradient-danger border-0">Tidak
-                                                        Aktif</button>
-                                                @endif
-                                            </form>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ url('/pengguna/pelanggan/edit/' . $pelanggan->id_pelanggan) }}"
-                                                class="text-dark font-weight-bold" data-toggle="tooltip"
-                                                data-original-title="Edit user">
-                                                <i class="fa fa-solid fa-pen" style="color: #252f40;"></i>
-                                            </a>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="#" class="dropdown-item border-radius-md"
-                                                data-bs-toggle="modal" data-bs-target="#confirmDeletePengguna">
-                                                <i class="fa fa-solid fa-trash" style="color: #ea0606;"></i>
-                                            </a>
-                                        </td>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Pengguna</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Role</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Status</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        </th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                        </th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($admins as $admin)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex px-2 py-1">
+                                                    <div class="avatar avatar-sm me-3 bg-dark">
+                                                        <i class="material-icons opacity-10">support_agent</i>
+                                                    </div>
+                                                    <div class="d-flex flex-column justify-content-center">
+                                                        <h6 class="mb-0 text-sm">{{ $admin->nama }}</h6>
+                                                        <p class="text-xs text-secondary mb-0">{{ $admin->email }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="text-xs font-weight-bold mb-0">{{ $admin->role }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge badge-sm bg-gradient-success">Aktif</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="{{ url('/pengguna/admin/edit/' . $admin->id_admin) }}"
+                                                    class="text-dark font-weight-bold" data-toggle="tooltip"
+                                                    data-original-title="Edit user">
+                                                    <i class="fa fa-solid fa-pen" style="color: #252f40;"></i>
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="#" class="dropdown-item border-radius-md"
+                                                    data-bs-toggle="modal" data-bs-target="#confirmDeleteAdmin">
+                                                    <i class="fa fa-solid fa-trash" style="color: #ea0606;"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Modal Konfirmasi delete pengguna --}}
-    <form action="{{ url('/pengguna/pelanggan/delete/' . $pelanggan->id_pelanggan) }}" method="POST"
-        enctype="multipart/form-data">
+    {{-- Modal Konfirmasi delete admin --}}
+    <form action="{{ url('/pengguna/admin/delete/' . $admin->id_admin) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('DELETE')
-        <div class="modal fade" id="confirmDeletePengguna" tabindex="-1" role="dialog"
-            aria-labelledby="confirmDeletePenggunaLabel" aria-hidden="true">
+        <div class="modal fade" id="confirmDeleteAdmin" tabindex="-1" role="dialog"
+            aria-labelledby="confirmDeleteAdminLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmDeletePenggunaLabel">Konfirmasi Hapus</h5>
+                        <h5 class="modal-title" id="confirmDeleteAdminLabel">Konfirmasi Hapus</h5>
                     </div>
                     <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus pengguna ini?
+                        Apakah Anda yakin ingin menghapus admin ini?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn" onclick="closeModalPengguna()">Batal</button>
+                        <button type="button" class="btn" onclick="closeModalAdmin()">Batal</button>
                         <button type="submit" class="btn btn-danger">Hapus</button>
                     </div>
                 </div>
@@ -378,10 +315,10 @@
     </form>
 
     <script>
-        function closeModalPengguna() {
-            $('#confirmDeletePengguna').modal('hide');
+        function closeModalAdmin() {
+            $('#confirmDeleteAdmin').modal('hide');
         }
     </script>
 
-    @include('auth.pengguna.create.create_pelanggan')
+    @include('auth.pengguna.create.create_admin')
 @endsection

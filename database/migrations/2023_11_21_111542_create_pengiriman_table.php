@@ -14,6 +14,8 @@ class CreatePengirimanTable extends Migration
             $table->string('kode_pengiriman');
             $table->string('gas_permintaan')->nullable();
             $table->dateTime('waktu_pengiriman')->nullable();
+            $table->string('bukti_nota_pengisian')->nullable();
+            $table->string('bukti_nota_sopir')->nullable();
             $table->string('kapasitas_gas_masuk')->nullable();
             $table->string('bukti_gas_masuk')->nullable();
             $table->dateTime('waktu_diterima')->nullable();
