@@ -204,6 +204,18 @@
                                     </p>
                                 </div>
                                 <div class="row">
+                                    <p class="col-4 fw-bold text-dark mb-0">Total Pesanan</p>
+                                    <p class="col fw-bold text-dark mb-0">: 
+                                        <span class="ms-1 col fw-light text-second">{{ $transaksi->pesanan->sum('jumlah_m3') }} m<sup>3</sup></span>
+                                    </p>
+                                </div>
+                                <div class="row">
+                                    <p class="col-4 fw-bold text-dark mb-0">Harga Pelanggan</p>
+                                    <p class="col fw-bold text-dark mb-0">: 
+                                        <span class="ms-1 col fw-light text-second">Rp. {{ number_format($transaksi->pelanggan->harga_pelanggan, 0, ',', '.') }}</span>
+                                    </p>
+                                </div>
+                                <div class="row">
                                     <p class="col-4 fw-bold text-dark mb-0">Total Tagihan</p>
                                     <p class="col fw-bold text-dark mb-0">: 
                                         <span class="ms-1 col fw-light text-second">Rp. {{ number_format($transaksi->tagihan->jumlah_tagihan, 0, ',', '.') }}</span>
@@ -214,7 +226,7 @@
                                     <p class="col fw-bold text-dark mb-0">:    
                                         <span class="row">
                                             @foreach ($pesanans as $pesanan)
-                                                <p class="py-0 my-0 ms-4 fw-light text-second">- Jumlah Pesanan {{ $pesanan->jumlah_bar }} bar, harga Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
+                                                <p class="py-0 my-0 ms-4 fw-light text-second">- Jumlah Pesanan {{ $pesanan->jumlah_m3 }} m<sup>3</sup>, harga Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
                                             @endforeach
                                         </span>
                                     </p>

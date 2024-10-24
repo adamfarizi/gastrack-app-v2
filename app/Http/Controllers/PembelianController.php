@@ -420,6 +420,7 @@ class PembelianController extends Controller
         $pengiriman->save();
 
         $pesanan = $pengiriman->pesanan;
+        $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
         $pesanan->lwc = $validatedData['lwc'];
 
         // Hitung m3
@@ -450,8 +451,11 @@ class PembelianController extends Controller
         $pesanan->save();
         
         // Masukkan tagihan
+        $id_transaksi = $pengiriman->pesanan->transaksi->id_transaksi;
+        $semua_pesanan = Pesanan::where('id_transaksi', $id_transaksi)->get();
+        $totalHargaPesanan = $semua_pesanan->sum('harga_pesanan');
         $tagihan = $pengiriman->pesanan->transaksi->tagihan;
-        $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + $pesanan->harga_pesanan;
+        $tagihan->jumlah_tagihan = $totalHargaPesanan;
         $tagihan->save();
 
         return back()->with('success', 'Data updated successfully!');

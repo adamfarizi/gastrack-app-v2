@@ -40,6 +40,9 @@ Route::middleware(['auth:sanctum', 'check.pelanggan'])->group(function () {
     Route::post('/pelanggan/pembelian', [ApiPembelianController::class, 'create_transaksi']);
     Route::post('/pelanggan/update_pembayaran/{id}', [ApiPembelianController::class, 'update_pembayaran']);    
     Route::get('/pelanggan/tagihan/{id}', [ApiPembelianController::class, 'index_tagihanPelanggan']);
+    //? Pelanggan Baru
+    Route::post('/pelanggan/update_pengiriman_lwc/{id}', [ApiPembelianController::class, 'updatePengirimanLWC']);    
+    //? Pelanggan Baru
 });
 
 Route::middleware(['auth:sanctum', 'check.sopir'])->group(function(){
@@ -51,6 +54,14 @@ Route::middleware(['auth:sanctum', 'check.sopir'])->group(function(){
     Route::put('/sopir/update/email/{id}', [ApiSopirController::class, 'edit_email']);
     Route::put('/sopir/update/no_hp/{id}', [ApiSopirController::class, 'edit_no_hp']);
     Route::put('/sopir/update/password/{id}', [ApiSopirController::class, 'edit_password']);
+    //? Sopir Baru
+    Route::get('/sopir/pengiriman_all', [ApiSopirController::class, 'getDataPengirimanAll']);
+    Route::get('/sopir/mobil_free', [ApiSopirController::class, 'getDataMobilFree']);
+    Route::post('/sopir/select_pengiriman/{id}', [ApiSopirController::class, 'selectPengiriman']);
+    Route::post('/sopir/update_nota_pengisian/{id}', [ApiSopirController::class, 'uploadNotaPengisian']);
+    Route::post('/sopir/update_nota_sopir/{id}', [ApiSopirController::class, 'uploadNotaSopir']);
+    Route::post('/sopir/update_status_sopir_mobil/{id}', [ApiSopirController::class, 'ubahStatusSopirMobil']);
+    //? Sopir Baru
     Route::get('/sopir/pengiriman/{id}', [ApiSopirController::class, 'getDataPengiriman']);
     Route::get('/sopir/detailpengiriman/{id}', [ApiSopirController::class, 'getDataDetailPengiriman']);
     Route::post('/sopir/update_gas_masuk/{id}', [ApiSopirController::class, 'gas_masuk']);

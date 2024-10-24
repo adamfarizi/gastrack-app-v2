@@ -46,8 +46,8 @@ class ApiPembelianController extends Controller
     public function create_transaksi(Request $request)
     {
         $pelangganAktif = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))
-        ->where('status', 'aktif')
-        ->first();
+            ->where('status', 'aktif')
+            ->first();
 
         if (!$pelangganAktif) {
             return response()->json([
@@ -55,7 +55,7 @@ class ApiPembelianController extends Controller
                 'message' => 'Pelanggan tidak aktif. Transaksi tidak dapat dilakukan.',
             ], 422);
         }
-        
+
         $validator = Validator::make($request->all(), [
             'id_pelanggan' => 'required|exists:pelanggan,id_pelanggan',
             'bukti_pesanan' => 'required|image|mimes:jpeg,jpg,png|max:2048',
@@ -67,7 +67,7 @@ class ApiPembelianController extends Controller
                 'message' => 'Validasi gagal',
                 'errors' => $validator->errors(),
             ], 422);
-        }else {
+        } else {
             $tagihan_terbaru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                 ->orderBy('created_at', 'desc')
                 ->first();
@@ -126,8 +126,8 @@ class ApiPembelianController extends Controller
                 $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
                 $total_pesanan = 1;
                 broadcast(new PesananBaruEvent($nama_perusahaan));
-                broadcast(new Chart1Event($nama_perusahaan,$jumlah_pesanan,$hari));
-                broadcast(new Chart4Event($nama_perusahaan,$total_pesanan));
+                broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
+                broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
 
                 return response()->json([
                     'success' => true,
@@ -179,8 +179,8 @@ class ApiPembelianController extends Controller
                         $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
                         $total_pesanan = 1;
                         broadcast(new PesananBaruEvent($nama_perusahaan));
-                        broadcast(new Chart1Event($nama_perusahaan,$jumlah_pesanan,$hari));
-                        broadcast(new Chart4Event($nama_perusahaan,$total_pesanan));
+                        broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
+                        broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
 
                         return response()->json([
                             'success' => true,
@@ -245,8 +245,8 @@ class ApiPembelianController extends Controller
                     $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
                     $total_pesanan = 1;
                     broadcast(new PesananBaruEvent($nama_perusahaan));
-                    broadcast(new Chart1Event($nama_perusahaan,$jumlah_pesanan,$hari));
-                    broadcast(new Chart4Event($nama_perusahaan,$total_pesanan));
+                    broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
+                    broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
 
                     return response()->json([
                         'success' => true,
@@ -380,22 +380,22 @@ class ApiPembelianController extends Controller
         ], 200);
     }
 
-    public function index_tagihanPelanggan(string $id){
+    public function index_tagihanPelanggan(string $id)
+    {
         $pelanggan = Tagihan::where('id_pelanggan', $id)
-        ->where('status_tagihan', "Belum Bayar")
-        ->first();
-    
+            ->where('status_tagihan', "Belum Bayar")
+            ->first();
+
         if (empty($pelanggan)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada tagihan',
             ], 422);
-        }
-        else{
+        } else {
             $formattedJumlahTagihan = number_format($pelanggan->jumlah_tagihan, 0, ',', '.');
             Carbon::setLocale('id');
             $formattedTanggalJatuhTempo = Carbon::parse($pelanggan->tanggal_jatuh_tempo)->isoFormat('DD MMMM YYYY');
-    
+
             // Update data pelanggan dengan format baru
             $pelanggan->tanggal_jatuh_tempo = $formattedTanggalJatuhTempo;
             $pelanggan->jumlah_tagihan = $formattedJumlahTagihan;
@@ -403,6 +403,54 @@ class ApiPembelianController extends Controller
                 'success' => true,
                 'message' => 'Data berhasil ditemukan',
                 'data' => $pelanggan,
+            ], 200);
+        }
+    }
+
+    public function updatePengirimanLWC(Request $request, $id_pesanan)
+    {
+        // Validasi request
+        $request->validate([
+            'gas_masuk' => 'required|integer',
+            'sisa_gas' => 'required|integer',
+            'lwc' => 'required|integer',
+        ]);
+
+        // Ambil data pesanan berdasarkan ID dan filter kondisi pengiriman
+        $pesanan = Pesanan::where('id_pesanan', $id_pesanan)
+            ->where(function ($query) {
+                $query->whereNull('lwc')
+                    ->orWhere('lwc', 0); // Cek lwc null atau 0
+            })
+            ->whereHas('pengiriman', function ($query) {
+                $query->whereNull('kapasitas_gas_masuk')
+                    ->whereNull('kapasitas_gas_keluar')
+                    ->whereNull('sisa_gas');
+            })
+            ->with('pengiriman')
+            ->first();
+
+        if (!$pesanan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan!',
+            ], 422);
+        } else {
+            // Update data pengiriman
+            $pengiriman = $pesanan->pengiriman;
+            $pengiriman->kapasitas_gas_masuk = $request->gas_masuk;
+            $pengiriman->kapasitas_gas_keluar = $request->gas_masuk - $request->sisa_gas;
+            $pengiriman->sisa_gas = $request->sisa_gas;
+            $pengiriman->save();  // Simpan perubahan pada pengiriman
+
+            // Update data pesanan
+            $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
+            $pesanan->lwc = $request->lwc;
+            $pesanan->save();  // Simpan perubahan pada pesanan
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pengiriman berhasil diupdate',
             ], 200);
         }
     }

@@ -626,12 +626,12 @@
                                 .nama_perusahaan + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
+                                '<p class="text-sm mb-0">' + mobilText + '</p>' +
+                                '</td>' +
+                                '<td class="text-center">' +
                                 '<a href="#" type="button" data-bs-toggle="modal" data-bs-target="#modalBuktiNota' +
                                 pesanan.pengiriman.id_pengiriman +
                                 '" class="text-sm fw-light mb-0 opacity-7"><u/>Bukti Nota</u></a>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + mobilText + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
                                 '<p class="text-sm mb-0">' + gasMasuk + '</p>' +

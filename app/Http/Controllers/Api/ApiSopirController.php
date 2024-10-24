@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\GasKeluarEvent;
-use App\Events\GasMasukEvent;
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use App\Models\Gas;
-use App\Models\Penarikanbop;
-use App\Models\Pesanan;
+use App\Models\User;
+use App\Models\Mobil;
 use App\Models\Sopir;
-use App\Models\Pengiriman;
-use App\Http\Resources\PostResource;
+use App\Models\Pesanan;
 use App\Models\Tagihan;
 use App\Models\Transaksi;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Pengiriman;
 use Illuminate\Support\Str;
+use App\Models\Penarikanbop;
+use Illuminate\Http\Request;
+use App\Events\GasMasukEvent;
+use App\Events\GasKeluarEvent;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 
 class ApiSopirController extends Controller
@@ -181,45 +182,57 @@ class ApiSopirController extends Controller
     {
         // Validasi request
         $request->validate([
-            'kapasitas_gas_masuk' => 'required',
             'bukti_gas_masuk' => 'required|image|mimes:jpeg,jpg,png',
         ]);
 
-        // Ambil data pengiriman berdasarkan ID
-        $pengiriman = Pengiriman::find($id_pengiriman);
+        // Ambil data pengiriman sebelumnya
+        $pengiriman_lama = Pengiriman::where('id_pengiriman', '<', $id_pengiriman)
+            ->whereNull('bukti_gas_keluar')
+            ->orderBy('id_pengiriman', 'desc')
+            ->first();
 
-        if (!$pengiriman) {
+        if (!$pengiriman_lama) {
+            // Ambil pengiriman sekarang
+            $pengiriman_baru = Pengiriman::where('id_pengiriman', $id_pengiriman)
+                ->first();
+
+            if (!$pengiriman_baru) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data tidak ditemukan!',
+                ], 422);
+            }
+
+            if ($request->hasFile('bukti_gas_masuk')) {
+                $file = $request->file('bukti_gas_masuk');
+                $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
+                $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+                $file->move(public_path('img/GasMasuk'), $fileName);
+
+                $pengiriman_baru->update([
+                    'bukti_gas_masuk' => $fileName,
+                ]);
+            }
+
+            $pengiriman_baru->waktu_pengiriman = now();
+            $pengiriman_baru->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pengiriman berhasil diupdate'
+            ], 200);
+        } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak ditemukan!',
+                'message' => 'Masukkan Gas Keluar pesanan sebelumnya dahulu!',
             ], 422);
         }
-
-        if ($request->hasFile('bukti_gas_masuk')) {
-            $file = $request->file('bukti_gas_masuk');
-            $fileName = $file->getClientOriginalName();
-            $file->move(public_path('img/GasMasuk'), $fileName);
-
-            $pengiriman->update([
-                'bukti_gas_masuk' => $fileName,
-            ]);
-        }
-
-        $pengiriman->waktu_pengiriman = now();
-        $pengiriman->kapasitas_gas_masuk = $request->kapasitas_gas_masuk;
-        $pengiriman->save();
-
-        // $nama_sopir = $pengiriman->sopir->nama;
-        // broadcast(new GasMasukEvent($nama_sopir));
-
-        return response()->json(['message' => 'Data pengiriman berhasil diupdate']);
     }
 
     public function gas_keluar(Request $request, $id_pengiriman)
     {
         // Validasi request
         $request->validate([
-            'sisa_gas' => 'required|string',
             'bukti_gas_keluar' => 'required|image|mimes:jpeg,jpg,png',
         ]);
 
@@ -236,66 +249,7 @@ class ApiSopirController extends Controller
             ], 422);
         }
 
-        // Perhitungan gas masuk
-        $gas_keluar = $pengiriman->kapasitas_gas_masuk - $request->sisa_gas;
-
-        // Update data pengiriman
         $pengiriman->waktu_diterima = now();
-        $pengiriman->kapasitas_gas_keluar = $gas_keluar;
-        $pengiriman->sisa_gas = $request->sisa_gas;
-
-        // Perhitungan bar
-        $id_pesanan = $pengiriman->id_pesanan;
-        $harga_gas = Gas::sum('harga_gas');
-        $pesanan = Pesanan::where('id_pesanan', $id_pesanan)->first();
-        $pesanan->jumlah_bar = $gas_keluar;
-
-        // Perhitungan m3
-        $specific_gravity = 0.75;
-        $CO2 = 1;
-        $N2 = 1;
-        $heating_value = 1001.48361;
-        $temperature = 21;
-        $pressure = $gas_keluar;
-        $tube_volume = 1450;
-        $tube_volume2 = $tube_volume / 1000;
-        $P = $pressure * 14.504;
-        $P2 = (($P * (156.47 / (160.8 - 7.22 * $specific_gravity + $CO2 - 0.392 * $N2))) + 14.7) / 1000;
-        $T = $temperature * 9 / 5 + 32;
-        $T2 = (($T + 460) * 226.29 / (99.15 + 211.9 * $specific_gravity - ($CO2 + 1.681 * $N2))) / 500;
-        $H = 0.0330378 * pow($T2, -2) - 0.0221323 * pow($T2, -3) + 0.0161353 * pow($T2, -5);
-        $I = (0.265827 * pow($T2, -2) + 0.0457697 * pow($T2, -4) - 0.133185 * pow($T2, -1)) / $H;
-        $B = (3 - $H * pow($I, 2)) / (9 * $H * pow($P2, 2));
-        $E1 = ($T2 < 1.09) ? (1 - 0.00075 * pow($P2, 2.3) * (2 - exp(-20 * (1.09 - $T2)))) : (1 - 0.00075 * pow($P2, 2.3) * exp(-20 * ($T2 - 1.09)));
-        if ($T2 < 1.09) {
-            $E2 = $E1 - 1.317 * pow((1.09 - $T2), 4) * $P2 * (1.69 - pow($P2, 2));
-        } else {
-            $E2 = $E1 - 0.0011 * sqrt($T2 - 1.09) * pow($P2, 2) * pow((2.17 + 1.4 * sqrt($T2 - 1.09) - $P2), 2);
-        }
-        $F = (9 * $I - 2 * $H * pow($I, 3)) / (54 * $H * pow($P2, 3)) - ($E2 / (2 * $H * pow($P2, 2)));
-        $D = pow(($F + sqrt(pow($F, 2) + pow($B, 3))), 1 / 3);
-        $FPV = sqrt($B / $D - $D + $I / (3 * $P2)) / (1 + 0.00132 / pow($T2, 3.25));
-
-        $m3 = $tube_volume2 * ($pressure + 1.01325) / 1.01325 * (273 + 27) / (273 + $temperature) * $FPV ** 2;
-        $volume_std = $m3 * 35.3147 * 288.56 / 300 / 1000000;
-        $heating_quantity = $volume_std * $heating_value;
-
-        $pesanan->jumlah_m3 = $m3;
-        
-        // Perhitungan harga gas m3
-        $pesanan->harga_pesanan = round($pesanan->jumlah_m3, 2) * $harga_gas;
-        $pesanan->save();   
-
-        // Perhitungan tagihan
-        $id_transaksi = $pesanan->id_transaksi;
-        $transaksi = Transaksi::where('id_transaksi', $id_transaksi)->first();
-        $id_tagihan = $transaksi->id_tagihan;
-        $tagihan = Tagihan::where('id_tagihan', $id_tagihan)->first();
-        // bar
-        // $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + ($gas_keluar * $harga_gas);
-        // m3
-        $tagihan->jumlah_tagihan = $tagihan->jumlah_tagihan + (round($pesanan->jumlah_m3, 2) * $harga_gas);
-        $tagihan->save();
 
         if ($request->hasFile('bukti_gas_keluar')) {
             $file = $request->file('bukti_gas_keluar');
@@ -307,20 +261,10 @@ class ApiSopirController extends Controller
             ]);
         }
 
-        $pengiriman->status_pengiriman = 'Diterima';
-        $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
-        $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
-        $pengiriman->push();
-
-        $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
-        $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
-        $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
-        broadcast(new GasKeluarEvent($nama_perusahaan));
-
         return response()->json([
+            'success' => true,
             'message' => 'Data pengiriman berhasil diupdate',
-            'gas_keluar' => $gas_keluar,
-        ]);
+        ], 200);
     }
 
     public function detail_sopir(string $id)
@@ -528,7 +472,6 @@ class ApiSopirController extends Controller
         }
     }
 
-
     private function hidePhoneNumber($phoneNumber)
     {
         // Menyembunyikan karakter kecuali 4 digit terakhir
@@ -661,6 +604,255 @@ class ApiSopirController extends Controller
                 'data' => $penarikan,
             ], 200);
         }
-    } 
+    }
 
+    public function getDataPengirimanAll()
+    {
+        $pengiriman = Pengiriman::where('status_pengiriman', 'Proses')
+            ->whereNull('id_sopir')
+            ->whereNull('id_mobil')
+            ->join('pesanan', 'pengiriman.id_pesanan', '=', 'pesanan.id_pesanan')
+            ->join('transaksi', 'pesanan.id_transaksi', '=', 'transaksi.id_transaksi')
+            ->join('pelanggan', 'transaksi.id_pelanggan', '=', 'pelanggan.id_pelanggan');
+
+        if (!$pengiriman->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Belum ada pesanan!',
+            ], 422);
+        } else {
+            $data = $pengiriman
+                ->select(
+                    'pengiriman.id_pengiriman',
+                    'transaksi.resi_transaksi AS resi',
+                    'pelanggan.koordinat',
+                    'pelanggan.nama_perusahaan',
+                    'pelanggan.alamat AS alamat_perusahaan',
+                    'pesanan.tanggal_pesanan AS tanggal_pemesanaan',
+                    'pesanan.bukti_pesanan',
+                    'pesanan.deskripsi_pesanan',
+                )
+                ->orderByDesc('pengiriman.created_at')
+                ->get();
+
+            if ($data) {
+                $pengiriman->each(function ($item) {
+                    $item->tanggal_pemesanaan = Carbon::parse($item->tanggal_pemesanaan)->isoFormat('DD MMMM YYYY');
+                });
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data berhasil ditemukan',
+                    'data' => $data,
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data tidak ditemukan!',
+                ], 422);
+            }
+        }
+    }
+
+    public function getDataMobilFree()
+    {
+        $mobil = Mobil::where('ketersediaan_mobil', 'tersedia')
+            ->where('status_mobil', 'aktif')
+            ->get();
+
+        if ($mobil->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada mobil tersedia!',
+            ], 422);
+        } else {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil ditemukan',
+                'data' => $mobil,
+            ], 200);
+        }
+    }
+
+    public function selectPengiriman(Request $request, $id_pengiriman)
+    {
+        // Validasi request
+        $request->validate([
+            'id_sopir' => 'required|integer|exists:sopir,id_sopir',
+            'id_mobil' => 'required|integer|exists:mobil,id_mobil',
+        ]);
+
+        // Ambil data pengiriman berdasarkan ID
+        $pengiriman = Pengiriman::where('id_pengiriman', $id_pengiriman)
+            ->whereNull('id_sopir')
+            ->whereNull('id_mobil')
+            ->with('pesanan.transaksi.pelanggan')
+            ->first();
+
+        if (!$pengiriman) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan!',
+            ], 422);
+        } else {
+            $sopir = Sopir::where('id_sopir', $request->id_sopir)
+                ->where('ketersediaan_sopir', 'tersedia')
+                ->where('status_sopir', 'aktif')
+                ->first();
+
+            $mobil = Mobil::where('id_mobil', $request->id_mobil)
+                ->where('ketersediaan_mobil', 'tersedia')
+                ->where('status_mobil', 'aktif')
+                ->first();
+
+            if (!$mobil || !$sopir) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sopir dan Mobil tidak tersedia!',
+                ], 422);
+            } else {
+                $bop_pelanggan = $pengiriman->pesanan->transaksi->pelanggan->bop_pelanggan;
+
+                $sopir->ketersediaan_sopir = 'tidak tersedia';
+                $sopir->bop_sopir = $sopir->bop_sopir + $bop_pelanggan;
+                $sopir->save();
+
+                $mobil->ketersediaan_mobil = 'tidak tersedia';
+                $mobil->save();
+
+                $pengiriman->status_pengiriman = 'Dikirim';
+                $pengiriman->id_sopir = $request->id_sopir;
+                $pengiriman->id_mobil = $request->id_mobil;
+                $pengiriman->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data pengiriman berhasil diupdate',
+                    'data' => $pengiriman,
+                ], 200);
+            }
+        }
+    }
+
+    public function uploadNotaPengisian(Request $request, $id_pengiriman)
+    {
+        // Validasi request
+        $request->validate([
+            'bukti_nota_pengisian' => 'required|image|mimes:jpeg,jpg,png',
+        ]);
+
+        // Ambil data pengiriman berdasarkan ID
+        $pengiriman = Pengiriman::where('id_pengiriman', $id_pengiriman)
+            ->join('sopir', 'pengiriman.id_sopir', '=', 'sopir.id_sopir')
+            ->join('mobil', 'pengiriman.id_mobil', '=', 'mobil.id_mobil')
+            ->first();
+
+        if (!$pengiriman) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan!',
+            ], 422);
+        }
+
+        if ($request->hasFile('bukti_nota_pengisian')) {
+            $file = $request->file('bukti_nota_pengisian');
+            $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman->kode_pengiriman);
+            $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+            $file->move(public_path('img/NotaPengisian'), $fileName);
+
+            $pengiriman->update([
+                'bukti_nota_pengisian' => $fileName,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pengiriman berhasil diupdate',
+            'data' => $pengiriman->bukti_nota_pengisian,
+        ], 200);
+    }
+
+    public function ubahStatusSopirMobil(Request $request, $id_pengiriman)
+    {
+        // Ambil data pengiriman berdasarkan ID
+        $pengiriman = Pengiriman::where('id_pengiriman', $id_pengiriman)
+            ->join('sopir', 'pengiriman.id_sopir', '=', 'sopir.id_sopir')
+            ->join('mobil', 'pengiriman.id_mobil', '=', 'mobil.id_mobil')
+            ->first();
+
+        if (!$pengiriman) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan!',
+            ], 422);
+        } else {
+
+            $status_sopir = $pengiriman->sopir->ketersediaan_sopir;
+            $status_mobil = $pengiriman->mobil->ketersediaan_mobil;
+
+            if ($status_sopir === 'tersedia' && $status_mobil === 'tersedia') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Status Sopir dan Mobil sudah tersedia!',
+                ], 422);            
+            }
+
+            $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+            $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+            $pengiriman->push();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status Sopir dan Mobil berhasil diupdate',
+            ], 200);
+        }
+    }
+
+    public function uploadNotaSopir(Request $request, $id_pengiriman)
+    {
+        // Validasi request
+        $request->validate([
+            'bukti_nota_sopir' => 'required|image|mimes:jpeg,jpg,png',
+        ]);
+
+        // Ambil data pengiriman berdasarkan ID
+        $pengiriman = Pengiriman::where('id_pengiriman', $id_pengiriman)
+            ->join('sopir', 'pengiriman.id_sopir', '=', 'sopir.id_sopir')
+            ->join('mobil', 'pengiriman.id_mobil', '=', 'mobil.id_mobil')
+            ->first();
+
+        if (!$pengiriman) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan!',
+            ], 422);
+        }
+
+        if ($request->hasFile('bukti_nota_sopir')) {
+            $file = $request->file('bukti_nota_sopir');
+            $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman->kode_pengiriman);
+            $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+            $file->move(public_path('img/NotaSopir'), $fileName);
+
+            $pengiriman->update([
+                'bukti_nota_sopir' => $fileName,
+            ]);
+        }
+
+        $pengiriman->status_pengiriman = 'Diterima';
+        $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+        $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+        $pengiriman->push();
+
+        // Notif Gas Diterima
+        $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
+        $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
+        $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
+        broadcast(new GasKeluarEvent($nama_perusahaan));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pengiriman berhasil diupdate',
+            'data' => $pengiriman->bukti_nota_pengisian,
+        ], 200);
+    }
 }
