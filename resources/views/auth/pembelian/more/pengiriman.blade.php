@@ -312,7 +312,7 @@
                                     @method('PUT')
                                     <h6>Tekanan</h6>
                                     <div class="row mb-4">
-                                        <div class="col-md-auto"">
+                                        <div class="col-md-2"">
                                             <label class="form-label">Gas Masuk <span style="color: red">*</span></label>
                                             <div class="input-group input-group-outline">
                                                 <input type="number" class="form-control" name="gas_masuk"
@@ -320,7 +320,7 @@
                                                 <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-auto"">
+                                        <div class="col-md-2"">
                                             <label class="form-label">Gas Akhir <span style="color: red">*</span></label>
                                             <div class="input-group input-group-outline">
                                                 <input type="number" class="form-control" name="sisa_gas"
@@ -328,19 +328,12 @@
                                                 <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-auto"">
+                                        <div class="col-md-2"">
                                             <label class="form-label">Selisih Gas</label>
                                             <div class="input-group input-group-outline">
                                                 <input type="number" class="form-control" name="gas_keluar"
                                                     value="{{ $pengiriman->kapasitas_gas_keluar ?? 0 }}" readonly>
                                                 <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-auto"">
-                                            <label class="form-label">LWC <span style="color: red">*</span></label>
-                                            <div class="input-group input-group-outline">
-                                                <input type="number" class="form-control" name="lwc"
-                                                    value="{{ $pengiriman->pesanan->lwc }}" required>
                                             </div>
                                         </div>
                                         <div class="col-md-auto d-flex align-items-end">

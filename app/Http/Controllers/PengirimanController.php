@@ -27,9 +27,10 @@ class PengirimanController extends Controller
         $pengirimans = Pengiriman::where('status_pengiriman', 'Dikirim')->get();
 
         $perPage_riwayat = $request->input('perPage_riwayat', 10);
-        $riwayat_pengirimans_query = Pengiriman::where('status_pengiriman', 'Diterima')
+        $riwayat_pengirimans_query = Pengiriman::whereIn('status_pengiriman', ['Dikirim', 'Diterima'])
             ->join('pesanan', 'pesanan.id_pesanan', '=', 'pengiriman.id_pesanan')
             ->with(['pesanan', 'pesanan.transaksi.pelanggan'])
+            ->whereNotNull('waktu_pengiriman')
             ->orderBy('waktu_pengiriman', 'desc');
 
         if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {

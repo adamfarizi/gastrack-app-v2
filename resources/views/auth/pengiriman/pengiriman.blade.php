@@ -462,14 +462,20 @@
                                             </p>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-sm font-weight-light mb-0 mt-2">
-                                                {{ $hariDiterima }},
-                                                {{ \Carbon\Carbon::parse($pengiriman->waktu_diterima)->translatedFormat('d-M-Y') }}
-                                            </p>
-                                            <p class="text-sm font-weight-light mb-0">
-                                                jam:
-                                                {{ \Carbon\Carbon::parse($pengiriman->waktu_diterima)->format('H:i') }}
-                                            </p>
+                                            @if (!$pengiriman->waktu_diterima)
+                                                <p class="text-sm font-weight-light mb-0 mt-2">
+                                                    Sedang Diproses
+                                                </p>
+                                            @else
+                                                <p class="text-sm font-weight-light mb-0 mt-2">
+                                                    {{ $hariDiterima }},
+                                                    {{ \Carbon\Carbon::parse($pengiriman->waktu_diterima)->translatedFormat('d-M-Y') }}
+                                                </p>
+                                                <p class="text-sm font-weight-light mb-0">
+                                                    jam:
+                                                    {{ \Carbon\Carbon::parse($pengiriman->waktu_diterima)->format('H:i') }}
+                                                </p>
+                                            @endif
                                         </td>
                                         <td class="text-center">
                                             <a href="#" data-id="{{ $pengiriman->id_pengiriman }}"

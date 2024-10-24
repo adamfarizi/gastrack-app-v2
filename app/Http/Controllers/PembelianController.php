@@ -411,7 +411,6 @@ class PembelianController extends Controller
         $validatedData = $request->validate([
             'gas_masuk' => 'required|numeric',
             'sisa_gas' => 'required|numeric',
-            'lwc' => 'required|numeric',
         ]);
 
         $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
@@ -421,7 +420,6 @@ class PembelianController extends Controller
 
         $pesanan = $pengiriman->pesanan;
         $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
-        $pesanan->lwc = $validatedData['lwc'];
 
         // Hitung m3
         $specific_gravity = $pesanan->spesific_gravity;

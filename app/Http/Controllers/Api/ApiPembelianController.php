@@ -413,14 +413,14 @@ class ApiPembelianController extends Controller
         $request->validate([
             'gas_masuk' => 'required|integer',
             'sisa_gas' => 'required|integer',
-            'lwc' => 'required|integer',
+            'tube_volume' => 'required|integer',
         ]);
 
         // Ambil data pesanan berdasarkan ID dan filter kondisi pengiriman
         $pesanan = Pesanan::where('id_pesanan', $id_pesanan)
             ->where(function ($query) {
-                $query->whereNull('lwc')
-                    ->orWhere('lwc', 0); // Cek lwc null atau 0
+                $query->whereNull('tube_volume')
+                    ->orWhere('tube_volume', 0); // Cek lwc null atau 0
             })
             ->whereHas('pengiriman', function ($query) {
                 $query->whereNull('kapasitas_gas_masuk')
@@ -445,7 +445,7 @@ class ApiPembelianController extends Controller
 
             // Update data pesanan
             $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
-            $pesanan->lwc = $request->lwc;
+            $pesanan->tube_volume = $request->tube_volume;
             $pesanan->save();  // Simpan perubahan pada pesanan
 
             return response()->json([
