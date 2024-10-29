@@ -33,7 +33,7 @@ class PelangganSeeder extends Seeder
                 'no_hp' => '088112232321',
                 'bop_pelanggan' => '60000',
                 'harga_pelanggan' => '150000',
-                'jenis_pembayaran' => '4',
+                'jenis_pembayaran' => '5',
                 'jenis_rumus' => 'turbin',
             ],    
         ];

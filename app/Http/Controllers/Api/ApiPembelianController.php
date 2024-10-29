@@ -76,10 +76,16 @@ class ApiPembelianController extends Controller
             if (!$tagihan_terbaru) {
                 $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
                 //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
-                if ($pelanggan->jenis_rumus === 'normal') {
-                    $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
-                } else {
+                // if ($pelanggan->jenis_rumus === 'normal') {
+                //     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                // } else {
+                //     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                // }
+                //? Jatuh tempo ada yang 1 bulan
+                if ($pelanggan->jenis_pembayaran == 5) {
                     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                } else {
+                    $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
                 }
 
                 $tagihan = new Tagihan([
@@ -173,7 +179,13 @@ class ApiPembelianController extends Controller
                             ], 422);
                         } else {
                             //? Pelanggan Turbin
-                            $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                            // $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                            //? Jatuh tempo ada yang 1 bulan
+                            if ($pelanggan->jenis_pembayaran == 5) {
+                                $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                            } else {
+                                $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                            }
                             $tagihan = new Tagihan([
                                 'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
                                 'status_tagihan' => 'Belum Bayar',
@@ -286,10 +298,16 @@ class ApiPembelianController extends Controller
                 } else {
                     $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
                     //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
-                    if ($pelanggan->jenis_rumus === 'normal') {
-                        $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
-                    } else {
+                    // if ($pelanggan->jenis_rumus === 'normal') {
+                    //     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                    // } else {
+                    //     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                    // }
+                    //? Jatuh tempo ada yang 1 bulan
+                    if ($pelanggan->jenis_pembayaran == 5) {
                         $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                    } else {
+                        $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
                     }
 
                     $tagihan = new Tagihan([

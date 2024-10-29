@@ -51,10 +51,11 @@
                         <div class="col-md-3">
                             <label>Jadwal Bayar <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
-                                <select class="form-control px-2" aria-label="Jadwal Bayar" name="jadwal_bayar" id="jadwal_bayar">
+                                <select class="form-control px-2" aria-label="Jadwal Bayar" name="jadwal_bayar">
                                     <option value="2">2 Minggu</option>
                                     <option value="3">3 Minggu</option>
-                                    <option value="4">4 Minggu / 1 Bulan</option>
+                                    <option value="4">4 Minggu</option>
+                                    <option value="5">1 Bulan</option>
                                 </select>
                             </div>
                         </div>
@@ -97,7 +98,7 @@
         </div>
     </div>
 </form>
-<script>
+{{-- <script>
     document.getElementById('jenis_rumus').addEventListener('change', function () {
         var jadwalBayar = document.getElementById('jadwal_bayar');
         if (this.value === 'turbin') {
@@ -108,4 +109,4 @@
             jadwalBayar.value = '2'; // Atur default sesuai kebutuhan
         }
     });
-</script>
+</script> --}}

@@ -189,11 +189,13 @@
                                         <span class="ms-1 col fw-light text-second">{{ date('d/M/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</span>
                                     </p>
                                 </div>
-                                <div class="row">
-                                    <p class="col-4 fw-bold text-dark mb-0">Waktu Mundur</p>
-                                    <p class="col fw-bold text-dark mb-0">: 
-                                        <span class="ms-1 col fw-light text-second" id="countdown"></span></p>
-                                </div>
+                                @if ($transaksi->tagihan->status_tagihan === "Belum Bayar")
+                                    <div class="row">
+                                        <p class="col-4 fw-bold text-dark mb-0">Waktu Mundur</p>
+                                        <p class="col fw-bold text-dark mb-0">: 
+                                            <span class="ms-1 col fw-light text-second" id="countdown"></span></p>
+                                    </div>
+                                @endif
                                 <div class="row">
                                     <p class="col-4 fw-bold text-dark mb-0">Tanggal Pembayaran</p>
                                     @if ($transaksi->tagihan->status_tagihan === 'Sudah Bayar' || $transaksi->tagihan->status_tagihan === 'Diproses')
@@ -227,6 +229,9 @@
                                         <span class="row">
                                             @foreach ($pesanans as $pesanan)
                                                 <p class="py-0 my-0 ms-4 fw-light text-second">- Jumlah Pesanan {{ $pesanan->jumlah_m3 }} m<sup>3</sup>, harga Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
+                                                @if ($transaksi->pelanggan->jenis_rumus == 'turbin')
+                                                    @break
+                                                @endif
                                             @endforeach
                                         </span>
                                     </p>

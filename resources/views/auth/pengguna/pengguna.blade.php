@@ -297,8 +297,15 @@
                                             @if ($pelanggan->jenis_pembayaran == null)
                                                 <p class="text-xs mb-0">Belum memilih</p>
                                             @else
-                                                <p class="text-xs mb-0">
-                                                    {{ $pelanggan->jenis_pembayaran }} Minggu{{ $pelanggan->jenis_pembayaran == 4 ? ' / 1 Bulan' : '' }}</p>
+                                                @if ($pelanggan->jenis_pembayaran == 5)
+                                                    <p class="text-xs mb-0">
+                                                        1 Bulan
+                                                    </p>
+                                                @else
+                                                    <p class="text-xs mb-0">
+                                                        {{ $pelanggan->jenis_pembayaran }} Minggu
+                                                    </p>
+                                                @endif
                                             @endif
                                         </td>
                                         <td class="text-center">

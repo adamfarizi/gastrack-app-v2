@@ -368,7 +368,14 @@
                                     <h6>Tekanan</h6>
                                     <div class="row mb-4">
                                         <div class="col-md-2"">
-                                            <label class="form-label">Gas Masuk <span style="color: red">*</span></label>
+                                            <label class="form-label">
+                                                @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
+                                                    Gas Masuk 
+                                                @else
+                                                    Turbin Masuk
+                                                @endif
+                                                <span style="color: red">*</span>
+                                            </label>
                                             <div class="input-group input-group-outline">
                                                 <input type="number" class="form-control" name="gas_masuk"
                                                     value="{{ $pengiriman->kapasitas_gas_masuk ?? 0 }}" required>
@@ -376,7 +383,13 @@
                                             </div>
                                         </div>
                                         <div class="col-md-2"">
-                                            <label class="form-label">Gas Akhir <span style="color: red">*</span></label>
+                                            <label class="form-label">
+                                                @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
+                                                    Gas Akhir 
+                                                @else
+                                                    Turbin Akhir
+                                                @endif
+                                                <span style="color: red">*</span></label>
                                             <div class="input-group input-group-outline">
                                                 <input type="number" class="form-control" name="sisa_gas"
                                                     value="{{ $pengiriman->sisa_gas ?? 0 }}" required>
@@ -384,7 +397,13 @@
                                             </div>
                                         </div>
                                         <div class="col-md-2"">
-                                            <label class="form-label">Selisih Gas</label>
+                                            <label class="form-label">
+                                                @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
+                                                    Selsisi Gas 
+                                                @else
+                                                    Selisih Turbin
+                                                @endif
+                                            </label>
                                             <div class="input-group input-group-outline">
                                                 <input type="number" class="form-control" name="gas_keluar"
                                                     value="{{ $pengiriman->kapasitas_gas_keluar ?? 0 }}" readonly>
@@ -528,7 +547,7 @@
                             <div class="border rounded col mt-2 p-3">
                                 <div class="row mb-4">
                                     <div class="col-md-6">
-                                        <h6>Bukti Gas Masuk</h6>
+                                        <h6>Bukti Turbin Masuk</h6>
                                         @if ($pengiriman->bukti_gas_masuk == null)
                                             <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
                                                 style="background-color: #dee2e6; height: 50vh;">
@@ -544,7 +563,7 @@
                                         @endif
                                     </div>
                                     <div class="col-md-6">
-                                        <h6>Bukti Gas Keluar</h6>
+                                        <h6>Bukti Turbin Keluar</h6>
                                         @if ($pengiriman->bukti_gas_keluar == null)
                                             <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
                                                 style="background-color: #dee2e6; height: 50vh;">

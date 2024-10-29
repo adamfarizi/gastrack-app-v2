@@ -93,7 +93,9 @@ class PembelianController extends Controller
     {
         $data['title'] = 'Pembelian';
 
-        $transaksis = Transaksi::where('id_transaksi', $id_transaksi)->get();
+        $transaksis = Transaksi::where('id_transaksi', $id_transaksi)
+            ->with('pelanggan', 'Tagihan')
+            ->get();
         $pesanans = Pesanan::where('id_transaksi', $id_transaksi)->get();
 
         return view('auth.pembelian.more.tagihan', [
