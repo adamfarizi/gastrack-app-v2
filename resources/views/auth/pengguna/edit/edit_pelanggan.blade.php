@@ -33,7 +33,7 @@
                 <li class="nav-item">
                     <a class="nav-link text-dark " href="{{ url('/pengiriman') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa fa-solid fa-dolly" style="color: #344767;"></i>                        
+                            <i class="fa fa-solid fa-dolly" style="color: #344767;"></i>
                         </div>
                         <span class="nav-link-text ms-1">Pengiriman</span>
                     </a>
@@ -89,7 +89,7 @@
                     </h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ url('/profil/'.Auth::user()->id_admin) }}">
+                    <a class="nav-link text-dark" href="{{ url('/profil/' . Auth::user()->id_admin) }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">person</i>
                         </div>
@@ -100,9 +100,7 @@
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
             <div class="mx-3">
-                <a class="btn bg-gradient-primary w-100"
-                    href="{{ url('logout') }}"
-                    type="button">Keluar</a>
+                <a class="btn bg-gradient-primary w-100" href="{{ url('logout') }}" type="button">Keluar</a>
             </div>
         </div>
     </aside>
@@ -115,7 +113,8 @@
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark">Pengguna</a></li>
-                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Pelanggan</li>                                                </ol>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Pelanggan</li>
+                </ol>
                 <h6 class="font-weight-bolder mb-0">Pelanggan</h6>
             </nav>
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -123,7 +122,8 @@
                     <ul class="navbar-nav justify-content-end me-5">
                         <div class="d-flex py-1">
                             <div class="my-auto">
-                                <img src="{{ asset('../assets/img/local/profil.png') }}" class="border-radius-lg avatar-sm me-3 mt-1">
+                                <img src="{{ asset('../assets/img/local/profil.png') }}"
+                                    class="border-radius-lg avatar-sm me-3 mt-1">
                             </div>
                             <div class="d-flex flex-column justify-content-center">
                                 <h6 class="text-sm font-weight-normal mb-1">
@@ -162,15 +162,15 @@
                         </div>
                     </div>
                     <div class="card-body px-4">
-                        <form role="form text-left border" action="{{ url('/pengguna/pelanggan/edit/' . $pelanggan->id_pelanggan) }}"
-                            method="POST">
+                        <form role="form text-left border"
+                            action="{{ url('/pengguna/pelanggan/edit/' . $pelanggan->id_pelanggan) }}" method="POST">
                             @csrf
                             <div class="row">
                                 <div class="col-md-6">
                                     <label>Nama Perusahaan</label>
                                     <div class="input-group input-group-outline mb-3 bg-white">
-                                        <input name="nama_perusahaan" type="text" class="form-control" aria-label="nama"
-                                            value="{{ $pelanggan->nama_perusahaan }}">
+                                        <input name="nama_perusahaan" type="text" class="form-control"
+                                            aria-label="nama" value="{{ $pelanggan->nama_perusahaan }}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -181,41 +181,69 @@
                                     </div>
                                 </div>
                             </div>
-                            <label>Email</label>
-                            <div class="input-group input-group-outline mb-3 bg-white">
-                                <input name="email" type="text" class="form-control" aria-label="email"
-                                    value="{{ $pelanggan->email }}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Email</label>
+                                    <div class="input-group input-group-outline mb-3 bg-white">
+                                        <input name="email" type="text" class="form-control" aria-label="email"
+                                            value="{{ $pelanggan->email }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>No Hp <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3 input-group-outline">
+                                        <input name="no_hp" type="number" class="form-control"
+                                            placeholder="Masukkan nomor hp" aria-label="no_hp"
+                                            value="{{ $pelanggan->no_hp }}">
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
-                                    <label>No Hp <span class="text-danger">*</span></label>
+                                    <label>Jenis Rumus <span class="text-danger">*</span></label>
                                     <div class="input-group mb-3 input-group-outline">
-                                        <input name="no_hp" type="number" class="form-control" placeholder="Masukkan nomor hp"
-                                            aria-label="no_hp" value="{{ $pelanggan->no_hp }}">
+                                        <select class="form-control px-2" aria-label="Jenis Rumus" name="jenis_rumus"
+                                            id="jenisRumus">
+                                            <option value="normal"
+                                                {{ $pelanggan->jenis_rumus === 'normal' ? 'selected' : '' }}>Normal
+                                            </option>
+                                            <option value="turbin"
+                                                {{ $pelanggan->jenis_rumus === 'turbin' ? 'selected' : '' }}>Turbin
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <label>Jadwal Bayar <span class="text-danger">*</span></label>
                                     <div class="input-group mb-3 input-group-outline">
-                                        <select class="form-control px-2" aria-label="Jadwal Bayar" name="jadwal_bayar">
-                                            <option value="2" {{ $pelanggan->jenis_pembayaran === '2' ? 'selected' : '' }}>2 Minggu</option>
-                                            <option value="3" {{ $pelanggan->jenis_pembayaran === '3' ? 'selected' : '' }}>3 Minggu</option>
-                                            <option value="4" {{ $pelanggan->jenis_pembayaran === '4' ? 'selected' : '' }}>4 Minggu</option>
+                                        <select class="form-control px-2" aria-label="Jadwal Bayar" name="jadwal_bayar"
+                                            id="jadwalBayar">
+                                            <option value="2"
+                                                {{ $pelanggan->jenis_pembayaran === '2' ? 'selected' : '' }}>2 Minggu
+                                            </option>
+                                            <option value="3"
+                                                {{ $pelanggan->jenis_pembayaran === '3' ? 'selected' : '' }}>3 Minggu
+                                            </option>
+                                            <option value="4"
+                                                {{ $pelanggan->jenis_pembayaran === '4' ? 'selected' : '' }}>4 Minggu / 1 Bulan
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <label>Harga Pelanggan <span class="text-danger">*</span></label>
                                     <div class="input-group mb-3 input-group-outline">
-                                        <input name="harga_pelanggan" type="number" class="form-control" placeholder="Masukkan bop pelanggan"
-                                            aria-label="harga" value="{{ $pelanggan->harga_pelanggan }}">
+                                        <input name="harga_pelanggan" type="number" class="form-control"
+                                            placeholder="Masukkan bop pelanggan" aria-label="harga"
+                                            value="{{ $pelanggan->harga_pelanggan }}">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <label>BOP Pelanggan <span class="text-danger">*</span></label>
                                     <div class="input-group mb-3 input-group-outline">
-                                        <input name="bop" type="number" class="form-control" placeholder="Masukkan bop pelanggan"
-                                            aria-label="bop" value="{{ $pelanggan->bop_pelanggan }}">
+                                        <input name="bop" type="number" class="form-control"
+                                            placeholder="Masukkan bop pelanggan" aria-label="bop"
+                                            value="{{ $pelanggan->bop_pelanggan }}">
                                     </div>
                                 </div>
                             </div>
@@ -239,7 +267,8 @@
                                 <div class="col-md-6">
                                     <div class="input-group input-group-outline mb-3">
                                         <input name="new_password_confirmation" type="password" class="form-control"
-                                            aria-label="new_password_confirmation" value="" placeholder="Konfirmasi Password Baru">
+                                            aria-label="new_password_confirmation" value=""
+                                            placeholder="Konfirmasi Password Baru">
                                     </div>
                                 </div>
                             </div>
@@ -253,4 +282,22 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jenisRumus = document.getElementById('jenisRumus');
+            const jadwalBayar = document.getElementById('jadwalBayar');
+            function handleJadwalBayarState() {
+                if (jenisRumus.value === 'turbin') {
+                    jadwalBayar.value = '4'; // Set to 4 Minggu
+                    jadwalBayar.disabled = true; // Disable dropdown
+                } else {
+                    jadwalBayar.disabled = false; // Enable dropdown
+                }
+            }
+            handleJadwalBayarState();
+            jenisRumus.addEventListener('change', handleJadwalBayarState);
+        });
+    </script>
 @endsection

@@ -22,6 +22,7 @@ class PelangganSeeder extends Seeder
                 'bop_pelanggan' => '50000',
                 'harga_pelanggan' => '100000',
                 'jenis_pembayaran' => '2',
+                'jenis_rumus' => 'normal',
             ],[
                 'nama_perusahaan' => 'PT. Sinar Patihan',
                 'nama_pemilik' => 'Dam Adam',
@@ -32,7 +33,8 @@ class PelangganSeeder extends Seeder
                 'no_hp' => '088112232321',
                 'bop_pelanggan' => '60000',
                 'harga_pelanggan' => '150000',
-                'jenis_pembayaran' => '3',
+                'jenis_pembayaran' => '4',
+                'jenis_rumus' => 'turbin',
             ],    
         ];
 

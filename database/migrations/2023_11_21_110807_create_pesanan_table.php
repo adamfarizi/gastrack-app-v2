@@ -26,6 +26,8 @@ return new class extends Migration
             $table->decimal('heating_value', 15, 5)->nullable()->default(1001.48361);
             $table->integer('temperature')->nullable()->default(21);
             $table->integer('tube_volume')->nullable()->default(0);
+            $table->decimal('vt', 10, 2)->nullable()->default(0);
+            $table->decimal('k', 10, 2)->nullable()->default(0);
 
             $table->decimal('harga_pesanan', 50, 0)->nullable()->default('0');
             $table->decimal('bop_pesanan', 50, 0)->nullable()->default('0');

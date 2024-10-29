@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\BayarTagihanEvent;
+use Carbon\Carbon;
+use App\Models\Gas;
+use App\Models\Pesanan;
+use App\Models\Tagihan;
+use App\Models\Pelanggan;
+use App\Models\Transaksi;
+use App\Models\Pengiriman;
 use App\Events\Chart1Event;
 use App\Events\Chart4Event;
-use App\Events\PesananBaruEvent;
-use App\Http\Controllers\Controller;
-use App\Models\Gas;
-use App\Models\Pelanggan;
-use App\Models\Pengiriman;
-use App\Models\Transaksi;
-use App\Models\Tagihan;
-use App\Models\Pesanan;
-use App\Events\newTranEvent;
-use App\Events\updateTranEvent;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Events\newTranEvent;
 use Illuminate\Http\Request;
+use App\Events\GasKeluarEvent;
+use App\Events\updateTranEvent;
+use App\Events\PesananBaruEvent;
+use App\Events\BayarTagihanEvent;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class ApiPembelianController extends Controller
 {
@@ -71,9 +72,16 @@ class ApiPembelianController extends Controller
             $tagihan_terbaru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                 ->orderBy('created_at', 'desc')
                 ->first();
+            // Cek apakah sudah pernah pesan
             if (!$tagihan_terbaru) {
                 $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
-                $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
+                if ($pelanggan->jenis_rumus === 'normal') {
+                    $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                } else {
+                    $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                }
+
                 $tagihan = new Tagihan([
                     'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
                     'status_tagihan' => 'Belum Bayar',
@@ -129,23 +137,108 @@ class ApiPembelianController extends Controller
                 broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
                 broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Transaksi baru sudah ditambah !',
-                    'data_transaksi' => $transaksi_baru,
-                    'data_tagihan' => $tagihan_baru,
-                    'data_pesanan' => $pesanan,
-                    'data_pengiriman' => $pengiriman,
-                ], 200);
+                //? If else jika pesanan baru maka Turbin harus upload gas masuk
+                if ($pelanggan->jenis_rumus === 'normal') {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Transaksi baru sudah ditambah !',
+                        'data_transaksi' => $transaksi_baru,
+                        'data_tagihan' => $tagihan_baru,
+                        'data_pesanan' => $pesanan,
+                        'data_pengiriman' => $pengiriman,
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Transaksi baru sudah ditambah !',
+                        'upload_gas_masuk' => true,
+                        'data_transaksi' => $transaksi_baru,
+                        'data_tagihan' => $tagihan_baru,
+                        'data_pesanan' => $pesanan,
+                        'data_pengiriman' => $pengiriman,
+                    ], 200);
+                }
             } else {
+                // Cek status pembayaran tagihan
                 if ($tagihan_terbaru->status_tagihan === 'Belum Bayar') {
                     $tanggal_sekarang = now();
+                    // Cek jatuh tempo
                     if ($tanggal_sekarang > $tagihan_terbaru->tanggal_jatuh_tempo) {
+                        $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
+                        //! Pelanggan Turbin tetap bisa pesan meski lewat jatuh tempo, tetapi membuat transaksi baru
+                        if ($pelanggan->jenis_rumus === 'normal') {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Anda memiliki tagihan yang belum dibayar !',
+                            ], 422);
+                        } else {
+                            //? Pelanggan Turbin
+                            $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                            $tagihan = new Tagihan([
+                                'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
+                                'status_tagihan' => 'Belum Bayar',
+                                'tanggal_pembayaran' => null,
+                                'bukti_pembayaran' => null,
+                                'id_pelanggan' => $request->input('id_pelanggan'),
+                            ]);
+                            $tagihan->save();
+                            $resi_transaksi = 'GTK-' . now()->format('YmdHis') . Str::random(2);
+                            $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
+                                ->orderBy('created_at', 'desc')
+                                ->first();
+                            $transaksi = new Transaksi([
+                                'resi_transaksi' => $resi_transaksi,
+                                'tanggal_transaksi' => now(),
+                                'id_pelanggan' => $request->input('id_pelanggan'),
+                                'id_tagihan' => $tagihan_baru->id_tagihan,
+                                'id_admin' => 1,
+                            ]);
+                            $transaksi->save();
+                            $tanggal_sekarang = now();
+                            $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
+                                ->latest('created_at')
+                                ->first();
+                            $file = $request->file('bukti_pesanan');
+                            $fileName = $file->getClientOriginalName();
+                            $file->move(public_path('img/BuktiPesanan'), $fileName);
+                            $pesanan = new Pesanan([
+                                'tanggal_pesanan' => $tanggal_sekarang,
+                                'id_transaksi' => $transaksi_baru->id_transaksi,
+                                'bukti_pesanan' => $fileName,
+                                'bop_pesanan' => $pelanggan->bop_pelanggan,
+                                'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
+                            ]);
+                            $pesanan->save();
+                            $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
+                                ->latest('created_at')
+                                ->first();
+                            $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
+                            $pengiriman = new Pengiriman([
+                                'kode_pengiriman' => $kode_pengiriman,
+                                'status_pengiriman' => 'Proses',
+                                'id_pesanan' => $pesanan_baru->id_pesanan,
+                            ]);
+                            $pengiriman->save();
 
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Anda memiliki tagihan yang belum dibayar !',
-                        ], 422);
+                            // Broadcast
+                            $nama_perusahaan = $pelanggan->nama_perusahaan;
+                            $jumlah_pesanan = $request->input('jumlah_pesanan');
+                            $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
+                            $total_pesanan = 1;
+                            broadcast(new PesananBaruEvent($nama_perusahaan));
+                            broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
+                            broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
+
+                            return response()->json([
+                                'success' => true,
+                                'message' => 'Transaksi baru sudah ditambah masukkan Gas Akhir Pesanan Lama dan Gas Awal Pesanan Baru !',
+                                'upload_gas_keluar' => true,
+                                'data_transaksi' => $transaksi_baru,
+                                'data_tagihan' => $tagihan_baru,
+                                'data_pesanan' => $pesanan,
+                                'data_pengiriman' => $pengiriman,
+                            ], 200);
+                        }
                     } else {
                         $transaksi_terbaru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                             ->latest('created_at')
@@ -192,7 +285,13 @@ class ApiPembelianController extends Controller
                     }
                 } else {
                     $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
-                    $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                    //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
+                    if ($pelanggan->jenis_rumus === 'normal') {
+                        $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                    } else {
+                        $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                    }
+
                     $tagihan = new Tagihan([
                         'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
                         'status_tagihan' => 'Belum Bayar',
@@ -453,6 +552,127 @@ class ApiPembelianController extends Controller
                 'message' => 'Data pengiriman berhasil diupdate',
             ], 200);
         }
+    }
+
+    public function uploadGasMasuk(Request $request, $id_transaksi)
+    {
+        // Validasi request
+        $request->validate([
+            'bukti_gas_masuk' => 'required|image|mimes:jpeg,jpg,png',
+        ]);
+
+        // Ambil transaksi berdasarkan ID
+        $transaksi = Transaksi::where('id_transaksi', $id_transaksi)
+            ->with('pesanan.pengiriman')
+            ->first();
+
+        if (!$transaksi) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data transaksi tidak ditemukan!',
+            ], 422);
+        }
+
+        // Ambil pengiriman dari pesanan pertama (asumsi satu transaksi memiliki satu pesanan)
+        $pengiriman_baru = $transaksi->pesanan->first()->pengiriman ?? null;
+
+        if (!$pengiriman_baru) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data pengiriman tidak ditemukan!',
+            ], 422);
+        }
+
+        // Cek apakah bukti gas masuk sudah ada
+        if ($pengiriman_baru->bukti_gas_masuk) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bukti gas masuk sudah diupload sebelumnya!',
+            ], 422);
+        }
+
+        if ($request->hasFile('bukti_gas_masuk')) {
+            $file = $request->file('bukti_gas_masuk');
+            $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
+            $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+            $file->move(public_path('img/GasMasuk'), $fileName);
+
+            $pengiriman_baru->update([
+                'bukti_gas_masuk' => $fileName,
+            ]);
+        }
+
+        $pengiriman_baru->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pengiriman berhasil diupdate dengan bukti gas masuk'
+        ], 200);
+    }
+
+    public function uploadGasKeluar(Request $request, $id_transaksi)
+    {
+        // Validasi request
+        $request->validate([
+            'bukti_gas_keluar' => 'required|image|mimes:jpeg,jpg,png',
+        ]);
+
+        // Ambil data transaksi lama
+        $transaksi_lama = Transaksi::where('id_transaksi', '<', $id_transaksi)
+            ->with('pesanan.pengiriman')
+            ->orderBy('id_transaksi', 'desc')
+            ->first();
+
+        if (!$transaksi_lama) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaksi lama tidak ditemukan!',
+            ], 422);
+        }
+
+        // Ambil pengiriman pertama dari transaksi lama
+        $pengiriman_pertama = $transaksi_lama->pesanan->first()->pengiriman->first();
+
+        if (!$pengiriman_pertama) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengiriman tidak ditemukan!',
+            ], 422);
+        }
+
+        // Cek apakah bukti_gas_keluar sudah diupload
+        if ($pengiriman_pertama->bukti_gas_keluar !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bukti gas keluar sudah diupload sebelumnya!',
+            ], 422);
+        }
+
+        if ($request->hasFile('bukti_gas_keluar')) {
+            $file = $request->file('bukti_gas_keluar');
+            $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_pertama->kode_pengiriman);
+            $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+            $file->move(public_path('img/GasKeluar'), $fileName);
+
+            // Update pengiriman dengan bukti_gas_keluar
+            $pengiriman_pertama->update([
+                'bukti_gas_keluar' => $fileName,
+            ]);
+        }
+
+        $pengiriman_pertama->save();
+
+        // Notif Gas Diterima
+        $pesanan = Pesanan::where('id_pesanan', $pengiriman_pertama->id_pesanan)->first();
+        $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
+        $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
+        broadcast(new GasKeluarEvent($nama_perusahaan));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pengiriman berhasil diupdate dengan bukti gas keluar',
+            'bukti_gas_masuk' => true,
+        ], 200);
     }
 
 }

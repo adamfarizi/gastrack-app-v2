@@ -235,76 +235,131 @@
                     {{-- Perhitungan --}}
                     <div class="row mx-2">
                         <div class="border rounded col mt-2 p-3">
-                            {{-- Rumus Standar --}}
+                            {{-- Rumus --}}
                             <div>
-                                <form id="auto-submit-form"
-                                    action="{{ url('/pembelian/more/pesanan/pengiriman/' . $pengiriman->id_pengiriman . '/hitung_m3') }}"
-                                    method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <h6>Input Data of Gas Spesification and Actual P-V-T <span
-                                            class="text-sm text-dark text-light opacity-7"> ( Hitung ulang ketika mengganti
-                                            salah satu data ! )</span></h6>
-                                    <div class="row mb-4">
-                                        <div class="col-md-2">
-                                            <label class="form-label">Specific Gravity <span
-                                                    style="color: red">*</span></label>
-                                            <div class="input-group input-group-outline">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="spesific_gravity"
-                                                    value="{{ $pengiriman->pesanan->spesific_gravity ?? 0.75 }}" required>
+                                @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
+                                    {{-- Normal --}}
+                                    <form id="auto-submit-form"
+                                        action="{{ url('/pembelian/more/pesanan/pengiriman/' . $pengiriman->id_pengiriman . '/hitung_m3_normal') }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <h6>Input Data of Gas Spesification and Actual P-V-T
+                                            <span class="text-sm text-dark text-light opacity-7">
+                                                ( Hitung ulang ketika mengganti salah satu data ! )
+                                            </span>
+                                        </h6>
+                                        <div class="row mb-4">
+                                            <div class="col-md-2">
+                                                <label class="form-label">Specific Gravity <span
+                                                        style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="spesific_gravity"
+                                                        value="{{ $pengiriman->pesanan->spesific_gravity ?? 0.75 }}"
+                                                        required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">CO2 <span style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="CO2" value="{{ $pengiriman->pesanan->CO2 ?? 1.0 }}"
+                                                        required>
+                                                    <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">%</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">N2 <span style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="N2" value="{{ $pengiriman->pesanan->N2 ?? 1.0 }}"
+                                                        required>
+                                                    <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">%</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Heating Value <span
+                                                        style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.00001" class="form-control"
+                                                        name="heating_value"
+                                                        value="{{ $pengiriman->pesanan->heating_value ?? 1001.48361 }}"
+                                                        required>
+                                                    <span class="input-group-text m-0 p-0 me-2 mt-2 opacity-5">BTU /
+                                                        SCF</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Temperature <span
+                                                        style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="temperature"
+                                                        value="{{ $pengiriman->pesanan->temperature ?? 21 }}" required>
+                                                    <span
+                                                        class="input-group-text m-0 p-0 me-3 mt-2 opacity-5"><sup>o</sup>C</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Tube Volume / LWC <span
+                                                        style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="tube_volume"
+                                                        value="{{ $pengiriman->pesanan->tube_volume ?? 1450 }}" required>
+                                                    <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">liter</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">CO2 <span style="color: red">*</span></label>
-                                            <div class="input-group input-group-outline">
-                                                <input type="number" step="0.01" class="form-control" name="CO2"
-                                                    value="{{ $pengiriman->pesanan->CO2 ?? 1.0 }}" required>
-                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">%</span>
+                                    </form>
+                                @else
+                                    {{-- Turbin --}}
+                                    <form id="auto-submit-form"
+                                        action="{{ url('/pembelian/more/pesanan/pengiriman/' . $pengiriman->id_pengiriman . '/hitung_m3_turbin') }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <h6>Input Data of Gas Spesification
+                                            <span class="text-sm text-dark text-light opacity-7">
+                                                ( Hitung ulang ketika mengganti salah satu data ! )
+                                            </span>
+                                        </h6>
+                                        <div class="row mb-4">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Vt <span
+                                                        style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="vt"
+                                                        value="{{ $pengiriman->pesanan->vt ?? 0 }}"
+                                                        required>
+                                                    <span
+                                                        class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">m<sup>3</sup></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Temperature <span
+                                                        style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="temperature"
+                                                        value="{{ $pengiriman->pesanan->temperature ?? 21 }}" required>
+                                                    <span
+                                                        class="input-group-text m-0 p-0 me-3 mt-2 opacity-5"><sup>o</sup>C</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">K <span
+                                                        style="color: red">*</span></label>
+                                                <div class="input-group input-group-outline">
+                                                    <input type="number" step="0.01" class="form-control"
+                                                        name="k"  value="{{ $pengiriman->pesanan->k ?? 0 }}" required></div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">N2 <span style="color: red">*</span></label>
-                                            <div class="input-group input-group-outline">
-                                                <input type="number" step="0.01" class="form-control" name="N2"
-                                                    value="{{ $pengiriman->pesanan->N2 ?? 1.0 }}" required>
-                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">%</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Heating Value <span
-                                                    style="color: red">*</span></label>
-                                            <div class="input-group input-group-outline">
-                                                <input type="number" step="0.00001" class="form-control"
-                                                    name="heating_value"
-                                                    value="{{ $pengiriman->pesanan->heating_value ?? 1001.48361 }}"
-                                                    required>
-                                                <span class="input-group-text m-0 p-0 me-2 mt-2 opacity-5">BTU / SCF</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Temperature <span
-                                                    style="color: red">*</span></label>
-                                            <div class="input-group input-group-outline">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="temperature"
-                                                    value="{{ $pengiriman->pesanan->temperature ?? 21 }}" required>
-                                                <span
-                                                    class="input-group-text m-0 p-0 me-3 mt-2 opacity-5"><sup>o</sup>C</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label">Tube Volume <span
-                                                    style="color: red">*</span></label>
-                                            <div class="input-group input-group-outline">
-                                                <input type="number" step="0.01" class="form-control"
-                                                    name="tube_volume"
-                                                    value="{{ $pengiriman->pesanan->tube_volume ?? 1450 }}" required>
-                                                <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">liter</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                @endif
+                                {{-- Hitung Gas --}}
                                 <form
                                     action="{{ url('/pembelian/more/pesanan/pengiriman/' . $pengiriman->id_pengiriman . '/hitung_harga') }}"
                                     method="POST">
@@ -338,7 +393,7 @@
                                         </div>
                                         <div class="col-md-auto d-flex align-items-end">
                                             {{-- Fitur foto haru ada semua --}}
-                                            @if (is_null($pengiriman->bukti_nota_pengisian) ||
+                                            {{-- @if (is_null($pengiriman->bukti_nota_pengisian) ||
                                                     is_null($pengiriman->bukti_nota_sopir) ||
                                                     is_null($pengiriman->bukti_gas_masuk) ||
                                                     is_null($pengiriman->bukti_gas_keluar))
@@ -352,12 +407,12 @@
                                                     <span class="btn-inner--icon">+</span>
                                                     <span class="btn-inner--text">Hitung</span>
                                                 </button>
-                                            @endif
+                                            @endif --}}
 
-                                            {{-- <button class="btn btn-icon btn-3 btn-primary m-0" type="submit">
+                                            <button class="btn btn-icon btn-3 btn-primary m-0" type="submit">
                                                 <span class="btn-inner--icon">+</span>
                                                 <span class="btn-inner--text">Hitung</span>
-                                            </button> --}}
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -366,7 +421,11 @@
                             <h6>Harga Pesanan</h6>
                             <div class="row mb-4">
                                 <div class="col-md-8">
-                                    <label class="form-label">Volume LWC/m<sup>3</sup></label>
+                                    @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
+                                        <label class="form-label">Volume LWC/m<sup>3</sup></label>
+                                    @else
+                                        <label class="form-label">Volume m<sup>3</sup></label>
+                                    @endif
                                     <div class="input-group input-group-outline">
                                         <input type="number" class="form-control" name="jumlah_m3"
                                             value="{{ $pengiriman->pesanan->jumlah_m3 ?? 0 }}" readonly>
@@ -391,78 +450,137 @@
                     </div>
 
                     {{-- Bukti --}}
-                    <div class="row mx-2">
-                        <div class="border rounded col mt-2 p-3">
-                            <div class="row mb-4">
-                                <div class="col-6">
-                                    <h6>Bukti Nota Pengisian</h6>
-                                    @if ($pengiriman->bukti_nota_pengisian == null)
-                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
-                                            style="background-color: #dee2e6; height: 50vh;">
-                                            <p class="text-white">Belum ada bukti</p>
-                                        </div>
-                                    @else
-                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
-                                            style="height: 50vh; background-color: #dee2e6;">
-                                            <img src="{{ asset('img/NotaPengisian/' . $pengiriman->bukti_nota_pengisian) }}"
-                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
-                                                alt="Bukti Nota Pengisian">
-                                        </div>
-                                    @endif
+                    @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
+                        <div class="row mx-2">
+                            <div class="border rounded col mt-2 p-3">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h6>Bukti Nota Pengisian</h6>
+                                        @if ($pengiriman->bukti_nota_pengisian == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/NotaPengisian/' . $pengiriman->bukti_nota_pengisian) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Nota Pengisian">
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Bukti Nota Sopir</h6>
+                                        @if ($pengiriman->bukti_nota_sopir == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/NotaSopir/' . $pengiriman->bukti_nota_sopir) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Nota Sopir">
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <h6>Bukti Nota Sopir</h6>
-                                    @if ($pengiriman->bukti_nota_sopir == null)
-                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
-                                            style="background-color: #dee2e6; height: 50vh;">
-                                            <p class="text-white">Belum ada bukti</p>
-                                        </div>
-                                    @else
-                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
-                                            style="height: 50vh; background-color: #dee2e6;">
-                                            <img src="{{ asset('img/NotaSopir/' . $pengiriman->bukti_nota_sopir) }}"
-                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
-                                                alt="Bukti Nota Sopir">
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <h6>Bukti Gas Masuk</h6>
-                                    @if ($pengiriman->bukti_gas_masuk == null)
-                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
-                                            style="background-color: #dee2e6; height: 50vh;">
-                                            <p class="text-white">Belum ada bukti</p>
-                                        </div>
-                                    @else
-                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
-                                            style="height: 50vh; background-color: #dee2e6;">
-                                            <img src="{{ asset('img/GasMasuk/' . $pengiriman->bukti_gas_masuk) }}"
-                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
-                                                alt="Bukti Gas Masuk">
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="col-6">
-                                    <h6>Bukti Gas Keluar</h6>
-                                    @if ($pengiriman->bukti_gas_keluar == null)
-                                        <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
-                                            style="background-color: #dee2e6; height: 50vh;">
-                                            <p class="text-white">Belum ada bukti</p>
-                                        </div>
-                                    @else
-                                        <div class="d-flex rounded justify-content-center align-items-center w-100"
-                                            style="height: 50vh; background-color: #dee2e6;">
-                                            <img src="{{ asset('img/GasKeluar/' . $pengiriman->bukti_gas_keluar) }}"
-                                                class="img-fluid" style="max-height: 100%; object-fit: contain;"
-                                                alt="Bukti Gas Keluar">
-                                        </div>
-                                    @endif
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Bukti Gas Masuk</h6>
+                                        @if ($pengiriman->bukti_gas_masuk == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/GasMasuk/' . $pengiriman->bukti_gas_masuk) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Gas Masuk">
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Bukti Gas Keluar</h6>
+                                        @if ($pengiriman->bukti_gas_keluar == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/GasKeluar/' . $pengiriman->bukti_gas_keluar) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Gas Keluar">
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="row mx-2">
+                            <div class="border rounded col mt-2 p-3">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h6>Bukti Gas Masuk</h6>
+                                        @if ($pengiriman->bukti_gas_masuk == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/GasMasuk/' . $pengiriman->bukti_gas_masuk) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Gas Masuk">
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Bukti Gas Keluar</h6>
+                                        @if ($pengiriman->bukti_gas_keluar == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/GasKeluar/' . $pengiriman->bukti_gas_keluar) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Gas Keluar">
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="col-md-6">
+                                        <h6>Bukti Nota Pengisian</h6>
+                                        @if ($pengiriman->bukti_nota_pengisian == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/NotaPengisian/' . $pengiriman->bukti_nota_pengisian) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Nota Pengisian">
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

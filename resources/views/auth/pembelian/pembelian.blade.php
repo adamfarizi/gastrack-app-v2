@@ -293,7 +293,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive p-0" style="min-height:100px; max-height: 380px; overflow-y: auto;">
+                            <div class="table-responsive p-0" style="min-height:200px; max-height: 380px; overflow-y: auto;">
                                 <table class="table align-items-center mb-0" id="table_riwayat_pembelian">
                                     <thead class="sticky-top bg-white z-index-1">
                                         <tr>
@@ -766,9 +766,13 @@
 
         function getStatusBadge(transaksi) {
             if (transaksi.tagihan.status_tagihan === 'Belum Bayar') {
-                return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';
+                if (new Date(transaksi.tagihan.tanggal_jatuh_tempo) < new Date()) {
+                    return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-dark text-white">Jatuh Tempo</a>';
+                } else {
+                    return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';
+                }
             }else if (transaksi.tagihan.status_tagihan === 'Diproses') {
-                return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger position-relative text-white">Konfirmasi<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
+                return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-info position-relative text-white">Konfirmasi<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
             } else {
                 return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>"  class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>';
             }

@@ -12,6 +12,7 @@ use App\Models\Pengiriman;
 use App\Events\Chart2Event;
 use Illuminate\Http\Request;
 use App\Helpers\Calculations;
+use App\Helpers\Calculations2;
 use Barryvdh\DomPDF\Facade\Pdf;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -188,11 +189,15 @@ class PembelianController extends Controller
         }
 
         $pesanans = $queryPesanan->orderBy('tanggal_pesanan', 'desc')->get();
+        $pesanan_turbin = Pesanan::where('id_transaksi', $id_transaksi)
+            ->with(['pengiriman.sopir', 'pengiriman.mobil', 'transaksi.pelanggan', 'transaksi.tagihan', 'transaksi.admin'])
+            ->first();
         $totalm3 = $pesanans->pluck('jumlah_m3')->sum();
         $totalharga = $pesanans->pluck('harga_pesanan')->sum();
 
         return response()->json([
             'pesanans' => $pesanans,
+            'pesanan_turbin' => $pesanan_turbin,
             'totalm3' => $totalm3,
             'totalharga' => $totalharga,
         ]);
@@ -375,7 +380,7 @@ class PembelianController extends Controller
         return $pdf->stream('data_pesanan_' . $transaksi->pelanggan->nama_perusahaan . '.pdf');
     }
 
-    public function hitung_m3(Request $request, $id_pengiriman)
+    public function hitung_m3_normal(Request $request, $id_pengiriman)
     {
         $pengiriman = Pengiriman::where('id_pengiriman', $id_pengiriman)
             ->with(['mobil', 'sopir', 'pesanan.transaksi.tagihan'])
@@ -402,10 +407,31 @@ class PembelianController extends Controller
         return back()->with('success', 'Data updated successfully!');
     }
 
-    public function hitung_harga(Request $request, $id_pengiriman)
+    public function hitung_m3_turbin(Request $request, $id_pengiriman)
     {
         $pengiriman = Pengiriman::where('id_pengiriman', $id_pengiriman)
             ->with(['mobil', 'sopir', 'pesanan.transaksi.tagihan'])
+            ->first();
+
+        $validatedData = $request->validate([
+            'temperature' => 'required|numeric',
+            'vt' => 'required|numeric',
+            'k' => 'required|numeric',
+        ]);
+
+        $pesanan = $pengiriman->pesanan;
+        $pesanan->temperature = $validatedData['temperature'];
+        $pesanan->vt = $validatedData['vt'];
+        $pesanan->k = $validatedData['k'];
+        $pesanan->save();
+
+        return back()->with('success', 'Data updated successfully!');
+    }
+
+    public function hitung_harga(Request $request, $id_pengiriman)
+    {
+        $pengiriman = Pengiriman::where('id_pengiriman', $id_pengiriman)
+            ->with(['mobil', 'sopir', 'pesanan.transaksi.tagihan', 'pesanan.transaksi.pelanggan'])
             ->first();
 
         $validatedData = $request->validate([
@@ -422,32 +448,66 @@ class PembelianController extends Controller
         $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
 
         // Hitung m3
-        $specific_gravity = $pesanan->spesific_gravity;
-        $CO2 = $pesanan->CO2;
-        $N2 = $pesanan->N2;
-        $heating_value = $pesanan->heating_value;
-        $temperature = $pesanan->temperature;
-        $pressure = $pesanan->pengiriman->kapasitas_gas_keluar;
-        $tube_volume = $pesanan->tube_volume;
-        $hitung_m3 = Calculations::calculateGasVolume([
-            'specific_gravity' => $specific_gravity,
-            'CO2' => $CO2,
-            'N2' => $N2,
-            'heating_value' => $heating_value,
-            'temperature' => $temperature,
-            'pressure' => $pressure,
-            'tube_volume' => $tube_volume,
-        ]);     
-        if ($hitung_m3['status'] === 'error') {
-            return back()->withErrors($hitung_m3['messages']);
+        if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal') {
+            // Rumus Normal
+            $specific_gravity = $pesanan->spesific_gravity;
+            $CO2 = $pesanan->CO2;
+            $N2 = $pesanan->N2;
+            $heating_value = $pesanan->heating_value;
+            $temperature = $pesanan->temperature;
+            $pressure = $pesanan->pengiriman->kapasitas_gas_keluar;
+            $tube_volume = $pesanan->tube_volume;
+
+            if ($tube_volume == 0) {
+                return redirect()->back()->with('error', 'Isi tube volume dahulu !');
+            }
+
+            $hitung_m3 = Calculations::calculateGasVolume([
+                'specific_gravity' => $specific_gravity,
+                'CO2' => $CO2,
+                'N2' => $N2,
+                'heating_value' => $heating_value,
+                'temperature' => $temperature,
+                'pressure' => $pressure,
+                'tube_volume' => $tube_volume,
+            ]);
+
+            if ($hitung_m3['status'] === 'error') {
+                return back()->withErrors($hitung_m3['messages']);
+            }
+
+            $pesanan->jumlah_m3 = $hitung_m3['data']['m3'];
+
+        } else {
+            // Rumus Turbin
+            $temperature = $pesanan->temperature;
+            $pressure = $pesanan->pengiriman->kapasitas_gas_keluar;
+            $vt = $pesanan->vt;
+            $k = $pesanan->k;
+
+            if ($vt == 0 && $k == 0) {
+                return redirect()->back()->with('error', 'Isi vt dan k dahulu !');
+            }
+
+            $hitung_m3 = Calculations2::calculateGasVolume2([
+                'vt' => $vt,
+                'pressure' => $pressure,
+                'temperature' => $temperature,
+                'k' => $k,
+            ]);
+
+            if ($hitung_m3['status'] === 'error') {
+                return back()->withErrors($hitung_m3['messages']);
+            }
+
+            $pesanan->jumlah_m3 = $hitung_m3['data']['m3'];
         }
-        $pesanan->jumlah_m3 = $hitung_m3['data']['m3'];
 
         // Harga Gas
         $harga_satuan = $pengiriman->pesanan->transaksi->pelanggan->harga_pelanggan;
         $pesanan->harga_pesanan = $pesanan->jumlah_m3 * $harga_satuan;
         $pesanan->save();
-        
+
         // Masukkan tagihan
         $id_transaksi = $pengiriman->pesanan->transaksi->id_transaksi;
         $semua_pesanan = Pesanan::where('id_transaksi', $id_transaksi)->get();

@@ -44,7 +44,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pembelian/more/pesanan/{id}/export_excel', [PembelianController::class, 'exportExcel']);
     Route::get('/pembelian/more/pesanan/{id}/export_pdf', [PembelianController::class, 'exportPDF']);
     Route::get('/pembelian/more/pesanan/pengiriman/{id}', [PembelianController::class, 'detail_pengiriman']);
-    Route::put('/pembelian/more/pesanan/pengiriman/{id}/hitung_m3', [PembelianController::class, 'hitung_m3']);
+    Route::put('/pembelian/more/pesanan/pengiriman/{id}/hitung_m3_normal', [PembelianController::class, 'hitung_m3_normal']);
+    Route::put('/pembelian/more/pesanan/pengiriman/{id}/hitung_m3_turbin', [PembelianController::class, 'hitung_m3_turbin']);
     Route::put('/pembelian/more/pesanan/pengiriman/{id}/hitung_harga', [PembelianController::class, 'hitung_harga']);
     //? Pembelian Baru
     Route::get('/pembelian/more/tagihan/{id}', [PembelianController::class, 'detail_tagihan']);

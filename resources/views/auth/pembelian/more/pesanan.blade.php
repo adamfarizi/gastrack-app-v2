@@ -196,6 +196,17 @@
                                     @endif
                                     </p>
                                 </div>
+                                <div class="row">
+                                    <p class="col-4 fw-bold text-dark mb-0">Jenis Rumus</p>
+                                    @if ($transaksi->pelanggan->jenis_rumus === 'normal')
+                                        <p class="col fw-bold text-dark mb-0">: <span
+                                                class="ms-1 col fw-light text-second">Normal</span>
+                                        @else
+                                        <p class="col fw-bold text-dark mb-0">: <span
+                                                class="ms-1 col fw-light text-second">Turbin</span>
+                                    @endif
+                                    </p>
+                                </div>
                             </div>
                             <div class="mb-3 col-md-5">
                                 <div class="row">
@@ -266,248 +277,145 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- Tabel --}}
-                        <div class="table-responsive p-0" style="min-height:380px; overflow-y: auto;">
-                            <table class="table align-items-center mb-0" id="table_pesanan">
-                                <thead class="sticky-top bg-white z-index-1">
-                                    <tr>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            No</th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Resi</th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Hari</th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Tanggal</th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Pelanggan</th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            No. Pol</th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Nota</th>
-                                        <th colspan="4"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Tekanan</th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Volume<br>LWC/m<sup>3</sup></th>
-                                        <th rowspan="2"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-10">
-                                            Total Harga</th>
-                                        <th rowspan="2"></th>
-                                    </tr>
-                                    <tr>
-                                        <th style="padding-inline: 2px;"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Awal</th>
-                                        <th style="padding-inline: 2px;"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Akhir</th>
-                                        <th style="padding-inline: 2px;"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Selisih</th>
-                                        <th style="padding-inline: 2px;"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            LWC</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table_pesanan_body">
-                                </tbody>
-                                <tfoot
-                                    style="border-top: 1px solid #f0f2f5; position: sticky; bottom: 0; z-index: 10; background-color: #ffffff;">
-                                    <tr>
-                                        <td colspan="11"
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Jumlah</td>
-                                        <td id="totalM3" class="text-center text-secondary text-sm font-weight-bolder">
-                                            0</td>
-                                        <td id="totalHarga" class="text-center text-secondary text-sm font-weight-bolder">
-                                            0</td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            <div class="text-center mt-5" id="noResultsMessage_pesanan" style="display: none;">
-                                <p class="fw-light">Pesanan tidak ditemukan.</p>
-                            </div>
-                        </div>
-                        {{-- Pesanan Awal --}}
-                        {{-- <div class="row mx-2 mb-3">
-                            <p class="col-3 fw-bold text-dark mb-0">Pesanan Awal</p>
-                            <div class="table-responsive border rounded p-0" style="max-height: 450px; overflow-y: auto;">
-                                <table class="table align-items-center mb-0" id="table_pembelian">
-                                    <thead>
+                        @if ($transaksi->pelanggan->jenis_rumus === 'normal')
+                            {{-- Tabel --}}
+                            <div class="table-responsive p-0" style="min-height:380px; overflow-y: auto;">
+                                <table class="table align-items-center mb-0" id="table_pesanan_normal">
+                                    <thead class="sticky-top bg-white z-index-1">
                                         <tr>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Waktu</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Jumlah Transaksi</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Total Bayar</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Status Pengiriman</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                No</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Resi</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Hari</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Tanggal</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Pelanggan</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                No. Pol</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Nota</th>
+                                            <th colspan="4"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Tekanan</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Volume<br>LWC/m<sup>3</sup></th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-10">
+                                                Total Harga</th>
+                                            <th rowspan="2"></th>
+                                        </tr>
+                                        <tr>
+                                            <th style="padding-inline: 2px;"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Awal</th>
+                                            <th style="padding-inline: 2px;"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Akhir</th>
+                                            <th style="padding-inline: 2px;"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Selisih</th>
+                                            <th style="padding-inline: 2px;"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                LWC</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr class="fw-light">
-                                            <td class="text-center">
-                                                <p class="text-sm mb-0">tanggal :
-                                                    {{ date('d/m/Y', strtotime($pesananAwal->tanggal_pesanan)) }}</p>
-                                                <p class="text-sm mb-0">jam :
-                                                    {{ date('H:i', strtotime($pesananAwal->tanggal_pesanan)) }}</p>
-                                            </td>
-                                            <td class="text-center">
-                                                {{ $pesananAwal->jumlah_bar }} bar / {{ $pesananAwal->jumlah_m3 }} m<sup>3</sup>
-                                            </td>
-                                            <td class="text-center">
-                                                Rp. {{ number_format($pesananAwal->harga_pesanan, 0, ',', '.') }}
-                                            </td>
-                                            <td class="text-center">
-                                                @foreach ($pengirimans as $pengiriman)
-                                                    @if ($pesananAwal->id_pesanan == $pengiriman->id_pesanan)
-                                                        @if ($pengiriman->status_pengiriman == 'Proses')
-                                                            <span class="badge badge-sm bg-gradient-danger">Belum Dikirim</span>
-                                                        @elseif ($pengiriman->status_pengiriman == 'Dikirim')
-                                                            <span class="badge badge-sm bg-gradient-info">Dikirim</span>
-                                                        @else
-                                                            <a href="{{ url('/pembelian/more/pesanan/pengiriman/' . $pesananAwal->id_pesanan) }}" class="badge badge-sm bg-gradient-success text-white">Diterima</a>
-                                                        @endif
-                                                    @endif    
-                                                @endforeach
-                                            </td>
-                                        </tr>
+                                    <tbody id="table_pesanan_normal_body">
                                     </tbody>
-                                </table>
-                            </div>
-                        </div> --}}
-                        {{-- Pesanan Akhir --}}
-                        {{-- <div class="row mx-2 mb-3">
-                            <p class="col-3 fw-bold text-dark mb-0">Pesanan Akhir</p>
-                            <div class="table-responsive border rounded p-0" style="max-height: 450px; overflow-y: auto;">
-                                <table class="table align-items-center mb-0" id="table_pembelian">
-                                    <thead>
+                                    <tfoot
+                                        style="border-top: 1px solid #f0f2f5; position: sticky; bottom: 0; z-index: 10; background-color: #ffffff;">
                                         <tr>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Waktu</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Jumlah Transaksi</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Total Bayar</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Status Pengiriman</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="fw-light">
-                                            <td class="text-center">
-                                                <p class="text-sm mb-0">tanggal :
-                                                    {{ date('d/m/Y', strtotime($pesananAkhir->tanggal_pesanan)) }}</p>
-                                                <p class="text-sm mb-0">jam :
-                                                    {{ date('H:i', strtotime($pesananAkhir->tanggal_pesanan)) }}</p>
-                                            </td>
-                                            <td class="text-center">
-                                                {{ $pesananAkhir->jumlah_bar }} bar / {{ $pesananAkhir->jumlah_m3 }} m<sup>3</sup>
-                                            </td>
-                                            <td class="text-center">
-                                                Rp. {{ number_format($pesananAkhir->harga_pesanan, 0, ',', '.') }}
-                                            </td>
-                                            <td class="text-center">
-                                                @foreach ($pengirimans as $pengiriman)
-                                                    @if ($pesananAkhir->id_pesanan == $pengiriman->id_pesanan)
-                                                        @if ($pengiriman->status_pengiriman == 'Proses')
-                                                            <span class="badge badge-sm bg-gradient-danger">Belum Dikirim</span>
-                                                        @elseif ($pengiriman->status_pengiriman == 'Dikirim')
-                                                            <span class="badge badge-sm bg-gradient-info">Dikirim</span>
-                                                        @else
-                                                            <a href="{{ url('/pembelian/more/pesanan/pengiriman/' . $pesananAkhir->id_pesanan) }}" class="badge badge-sm bg-gradient-success text-white">Diterima</a>
-                                                        @endif
-                                                    @endif    
-                                                @endforeach
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div> --}}
-                        {{-- Semua Pesanan --}}
-                        {{-- <div class="row mx-2 mb-3">
-                            <p class="col-3 fw-bold text-dark mb-0">Semua Pesanan</p>
-                            <div class="table-responsive border rounded p-0" style="max-height: 450px; overflow-y: auto;">
-                                <table class="table align-items-center mb-0" id="table_pembelian">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Nomor</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Waktu</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Jumlah Transaksi</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Total Bayar</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Status Pengiriman</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($pesanans as $pesanan)
-                                            <tr class="fw-light">
-                                                <td class="text-center">{{ $loop->iteration }} </td>
-                                                <td class="text-center">
-                                                    <p class="text-sm mb-0">tanggal :
-                                                        {{ date('d/m/Y', strtotime($pesanan->tanggal_pesanan)) }}</p>
-                                                    <p class="text-sm mb-0">jam :
-                                                        {{ date('H:i', strtotime($pesanan->tanggal_pesanan)) }}</p>
-                                                </td>
-                                                <td class="text-center">
-                                                    {{ $pesanan->jumlah_bar }} bar / {{ $pesanan->jumlah_m3 }} m<sup>3</sup>
-                                                </td>
-                                                <td class="text-center">
-                                                    Rp. {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}
-                                                </td>
-                                                <td class="text-center">
-                                                    @foreach ($pengirimans as $pengiriman)
-                                                        @if ($pesanan->id_pesanan == $pengiriman->id_pesanan)
-                                                            @if ($pengiriman->status_pengiriman == 'Proses')
-                                                                <span class="badge badge-sm bg-gradient-danger">Belum Dikirim</span>
-                                                            @elseif ($pengiriman->status_pengiriman == 'Dikirim')
-                                                                <span class="badge badge-sm bg-gradient-info">Dikirim</span>
-                                                            @else
-                                                                <a href="{{ url('/pembelian/more/pesanan/pengiriman/' . $pesanan->id_pesanan) }}" class="badge badge-sm bg-gradient-success text-white">Diterima</a>
-                                                            @endif
-                                                        @endif    
-                                                    @endforeach
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                        <tr class="text-center" style="background-color: #e9ecef">
-                                            <td class="fw-bold text-secondary">Total: </td>
+                                            <td colspan="11"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Jumlah</td>
+                                            <td id="totalM3"
+                                                class="text-center text-secondary text-sm font-weight-bolder">
+                                                0</td>
+                                            <td id="totalHarga"
+                                                class="text-center text-secondary text-sm font-weight-bolder">
+                                                0</td>
                                             <td></td>
-                                            <td colspan="3" class="fw-bold text-primary">Rp. {{ number_format($transaksi->tagihan->jumlah_tagihan, 0, ',', '.') }}</td>
                                         </tr>
-                                    </tbody>
+                                    </tfoot>
                                 </table>
+                                <div class="text-center mt-5" id="noResultsMessage_pesanan" style="display: none;">
+                                    <p class="fw-light">Pesanan tidak ditemukan.</p>
+                                </div>
                             </div>
-                        </div> --}}
+                        @else
+                            {{-- Tabel --}}
+                            <div class="table-responsive p-0" style="min-height:380px; overflow-y: auto;">
+                                <table class="table align-items-center mb-0" id="table_pesanan_turbin">
+                                    <thead class="sticky-top bg-white z-index-1">
+                                        <tr>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                No</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Pelanggan</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Hari</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Tanggal</th>
+                                            <th colspan="3"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Tekanan</th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Volume m<sup>3</sup></th>
+                                            <th rowspan="2"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-10">
+                                                Total Harga</th>
+                                            <th rowspan="2"></th>
+                                        </tr>
+                                        <tr>
+                                            <th style="padding-inline: 2px;"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Awal</th>
+                                            <th style="padding-inline: 2px;"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Akhir</th>
+                                            <th style="padding-inline: 2px;"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Selisih</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table_pesanan_turbin_body">
+                                    </tbody>
+                                    <tfoot
+                                        style="border-top: 1px solid #f0f2f5; position: sticky; bottom: 0; z-index: 10; background-color: #ffffff;">
+                                        <tr>
+                                            <td colspan="7"
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Jumlah</td>
+                                            <td id="totalM3"
+                                                class="text-center text-secondary text-sm font-weight-bolder">
+                                                0</td>
+                                            <td id="totalHarga"
+                                                class="text-center text-secondary text-sm font-weight-bolder">
+                                                0</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="text-center mt-5" id="noResultsMessage_pesanan" style="display: none;">
+                                    <p class="fw-light">Pesanan tidak ditemukan.</p>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -516,8 +424,8 @@
 
     {{-- Modal Bukti Nota --}}
     @foreach ($pengirimans as $pengiriman)
-        <div class="modal fade" id="modalBuktiNota{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog" aria-labelledby="modal-title-default"
-            aria-hidden="true">
+        <div class="modal fade" id="modalBuktiNota{{ $pengiriman->id_pengiriman }}" tabindex="-1" role="dialog"
+            aria-labelledby="modal-title-default" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -531,7 +439,8 @@
                                 <p class="text-white py-9">Belum ada bukti</p>
                             </div>
                         @else
-                            <img src="{{ asset('img/NotaSopir/' . $pengiriman->bukti_nota_sopir) }}" class="w-100 rounded" alt="Bukti Nota">
+                            <img src="{{ asset('img/NotaSopir/' . $pengiriman->bukti_nota_sopir) }}"
+                                class="w-100 rounded" alt="Bukti Nota">
                         @endif
                     </div>
                     <div class="modal-footer">
@@ -581,57 +490,139 @@
                     tanggal_akhir: tanggalAkhir
                 },
                 success: function(data) {
-                    var table = $('#table_pesanan tbody');
-                    table.empty();
+                    if (transaksi.pelanggan.jenis_rumus === 'normal') {
+                        var table = $('#table_pesanan_normal tbody');
+                        table.empty();
 
-                    if (!data.pesanans || data.pesanans.length === 0) {
-                        var row =
-                            '<tr class="text-dark">' +
-                            '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pesanan.</td>' +
-                            '</tr>';
+                        if (!data.pesanans || data.pesanans.length === 0) {
+                            var row =
+                                '<tr class="text-dark">' +
+                                '<td colspan="13" class="text-center fw-light text-secondary text-sm py-5">Tidak ada pesanan.</td>' +
+                                '</tr>';
 
-                        table.append(row);
+                            table.append(row);
+                        } else {
+                            $.each(data.pesanans, function(index, pesanan) {
+                                var datetimeString = pesanan.tanggal_pesanan;
+                                var formatedDateTime = formatDateTime(datetimeString);
+                                var mobilText = pesanan.pengiriman.mobil ? pesanan.pengiriman.mobil
+                                    .nopol_mobil : 'Belum Dikirim';
+                                var gasMasuk = pesanan.pengiriman.kapasitas_gas_masuk ? pesanan
+                                    .pengiriman
+                                    .kapasitas_gas_masuk : 0;
+                                var gasKeluar = pesanan.pengiriman.kapasitas_gas_keluar ? pesanan
+                                    .pengiriman
+                                    .kapasitas_gas_keluar : 0;
+                                var lwc = pesanan.lwc ? pesanan.lwc : 0;
+                                var sisaGas = pesanan.pengiriman.sisa_gas ? pesanan.pengiriman
+                                    .sisa_gas : 0;
+                                var m3 = pesanan.jumlah_m3 ? pesanan.jumlah_m3 : 0;
+                                var hargaPesanan = pesanan.harga_pesanan;
+                                var hargaFormatted = formatRupiah(hargaPesanan);
+                                var row =
+                                    '<tr class="text-dark">' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + (index + 1) + '</p>' +
+                                    '</td>' +
+                                    '<td>' +
+                                    '<p class="text-xs font-weight-bold mb-0">' + pesanan.pengiriman
+                                    .kode_pengiriman + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + formatedDateTime.hari + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + formatedDateTime.tanggal + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + pesanan.transaksi.pelanggan
+                                    .nama_perusahaan + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + mobilText + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<a href="#" type="button" data-bs-toggle="modal" data-bs-target="#modalBuktiNota' +
+                                    pesanan.pengiriman.id_pengiriman +
+                                    '" class="text-sm fw-light mb-0 opacity-7"><u/>Bukti Nota</u></a>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + gasMasuk + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + sisaGas + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + gasKeluar + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + lwc + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + m3 + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + hargaFormatted + '</p>' +
+                                    '</td>';
+                                if (transaksi.tagihan.status_tagihan === 'Belum Bayar') {
+                                    row +=
+                                        '<td class="text-center">' +
+                                        '<a href="{{ url('/pembelian/more/pesanan/pengiriman/') }}/' +
+                                        pesanan.id_pesanan +
+                                        '" class="text-sm mb-0" title="Edit"><i class="fa fa-solid fa-pen" style="color: #252f40;"></i></a>' +
+                                        '</td>';
+                                }
+                                row += '</tr>';
+                                table.append(row);
+                            });
+
+                            $('#totalHarga').text(formatRupiah(data.totalharga));
+                            $('#totalM3').text(parseFloat(data.totalm3).toFixed(2));
+                        }
+
+                        table.show();
                     } else {
-                        $.each(data.pesanans, function(index, pesanan) {
+                        var table = $('#table_pesanan_turbin tbody');
+                        table.empty();
+
+                        if (!data.pesanan_turbin || data.pesanan_turbin.length === 0) {
+                            var row =
+                                '<tr class="text-dark">' +
+                                '<td colspan="9" class="text-center fw-light text-secondary text-sm py-5">Tidak ada pesanan.</td>' +
+                                '</tr>';
+
+                            table.append(row);
+                        } else {
+                            var pesanan = data.pesanan_turbin;
+                            console.log(pesanan);
+                            
                             var datetimeString = pesanan.tanggal_pesanan;
                             var formatedDateTime = formatDateTime(datetimeString);
-                            var mobilText = pesanan.pengiriman.mobil ? pesanan.pengiriman.mobil
-                                .nopol_mobil : 'Belum Dikirim';
-                            var gasMasuk = pesanan.pengiriman.kapasitas_gas_masuk ? pesanan.pengiriman
+                            var gasMasuk = pesanan.pengiriman.kapasitas_gas_masuk ? pesanan
+                                .pengiriman
                                 .kapasitas_gas_masuk : 0;
-                            var gasKeluar = pesanan.pengiriman.kapasitas_gas_keluar ? pesanan.pengiriman
+                            var gasKeluar = pesanan.pengiriman.kapasitas_gas_keluar ? pesanan
+                                .pengiriman
                                 .kapasitas_gas_keluar : 0;
-                            var lwc = pesanan.lwc ? pesanan.lwc : 0;
-                            var sisaGas = pesanan.pengiriman.sisa_gas ? pesanan.pengiriman.sisa_gas : 0;
+                            var sisaGas = pesanan.pengiriman.sisa_gas ? pesanan.pengiriman
+                                .sisa_gas : 0;
                             var m3 = pesanan.jumlah_m3 ? pesanan.jumlah_m3 : 0;
                             var hargaPesanan = pesanan.harga_pesanan;
                             var hargaFormatted = formatRupiah(hargaPesanan);
                             var row =
                                 '<tr class="text-dark">' +
                                 '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + (index + 1) + '</p>' +
-                                '</td>' +
-                                '<td>' +
-                                '<p class="text-xs font-weight-bold mb-0">' + pesanan.pengiriman
-                                .kode_pengiriman + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + formatedDateTime.hari + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + formatedDateTime.tanggal + '</p>' +
+                                '<p class="text-sm mb-0">' + 1 + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
                                 '<p class="text-sm mb-0">' + pesanan.transaksi.pelanggan
                                 .nama_perusahaan + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + mobilText + '</p>' +
+                                '<p class="text-sm mb-0">' + formatedDateTime.hari + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                '<a href="#" type="button" data-bs-toggle="modal" data-bs-target="#modalBuktiNota' +
-                                pesanan.pengiriman.id_pengiriman +
-                                '" class="text-sm fw-light mb-0 opacity-7"><u/>Bukti Nota</u></a>' +
+                                '<p class="text-sm mb-0">' + formatedDateTime.tanggal + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
                                 '<p class="text-sm mb-0">' + gasMasuk + '</p>' +
@@ -643,27 +634,28 @@
                                 '<p class="text-sm mb-0">' + gasKeluar + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + lwc + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
                                 '<p class="text-sm mb-0">' + m3 + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
                                 '<p class="text-sm mb-0">' + hargaFormatted + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<a href="{{ url('/pembelian/more/pesanan/pengiriman/') }}/' + pesanan
-                                .id_pesanan +
-                                '" class="text-sm mb-0" title="Edit"><i class="fa fa-solid fa-pen" style="color: #252f40;"></i></a>' +
-                                '</td>' +
-                                '</tr>';
+                                '</td>';
+                            if (transaksi.tagihan.status_tagihan === 'Belum Bayar') {
+                                row +=
+                                    '<td class="text-center">' +
+                                    '<a href="{{ url('/pembelian/more/pesanan/pengiriman/') }}/' +
+                                    pesanan.id_pesanan +
+                                    '" class="text-sm mb-0" title="Edit"><i class="fa fa-solid fa-pen" style="color: #252f40;"></i></a>' +
+                                    '</td>';
+                            }
+                            row += '</tr>';
                             table.append(row);
-                        });
 
-                        $('#totalHarga').text(formatRupiah(data.totalharga));
-                        $('#totalM3').text(parseFloat(data.totalm3).toFixed(2));
+                            $('#totalHarga').text(formatRupiah(data.totalharga));
+                            $('#totalM3').text(parseFloat(data.totalm3).toFixed(2));
+                        }
+
+                        table.show();
                     }
-                    table.show();
                 },
                 error: function(xhr, status, error) {
                     console.error(error);

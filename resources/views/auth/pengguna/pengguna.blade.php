@@ -240,7 +240,7 @@
                                         Tagihan</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        Jenis<br>Tagihan</th>
+                                        Jenis<br>Rumus</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
                                         Harga<br>Pelanggan</th>
@@ -294,13 +294,19 @@
                                             @else
                                                 <p class="text-xs font-weight-bold mb-0">Tidak ada tagihan</p>
                                             @endif
+                                            @if ($pelanggan->jenis_pembayaran == null)
+                                                <p class="text-xs mb-0">Belum memilih</p>
+                                            @else
+                                                <p class="text-xs mb-0">
+                                                    {{ $pelanggan->jenis_pembayaran }} Minggu{{ $pelanggan->jenis_pembayaran == 4 ? ' / 1 Bulan' : '' }}</p>
+                                            @endif
                                         </td>
                                         <td class="text-center">
-                                            @if ($pelanggan->jenis_pembayaran == null)
+                                            @if ($pelanggan->jenis_rumus == null)
                                                 <p class="text-xs font-weight-bold mb-0">Belum memilih</p>
                                             @else
                                                 <p class="text-xs font-weight-bold mb-0">
-                                                    {{ $pelanggan->jenis_pembayaran }} Minggu</p>
+                                                    {{ ucfirst($pelanggan->jenis_rumus) }}</p>
                                             @endif
                                         </td>
                                         <td class="text-center">

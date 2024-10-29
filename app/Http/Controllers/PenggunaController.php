@@ -43,7 +43,9 @@ class PenggunaController extends Controller
             'nama_pemilik' => 'required',
             'email' => 'required|unique:pelanggan',
             'no_hp' => 'required',
+            'jenis_rumus' => 'required',
             'jadwal_bayar' => 'required',
+            'harga' => 'required',
             'bop' => 'required',
             'alamat' => 'required',
             'password' => 'required',
@@ -55,7 +57,9 @@ class PenggunaController extends Controller
             'nama_pemilik' => $request->nama_pemilik,
             'email' => $request->email,
             'no_hp' => $request->no_hp,
+            'jenis_rumus' => $request->jenis_rumus,
             'jenis_pembayaran' => $request->jadwal_bayar,
+            'harga_pelanggan' => $request->harga,
             'bop_pelanggan' => $request->bop,
             'alamat' => $request->alamat,
             'password' => Hash::make($request->password),
@@ -86,6 +90,7 @@ class PenggunaController extends Controller
                 'nama_pemilik' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
                 'no_hp' => 'required|string|max:15',
+                'jenis_rumus' => 'required',
                 'jadwal_bayar' => 'required',
                 'harga_pelanggan' => 'required',
                 'bop' => 'required',
@@ -97,6 +102,7 @@ class PenggunaController extends Controller
             $pelanggan->nama_pemilik = $request->input('nama_pemilik');
             $pelanggan->email = $request->input('email');
             $pelanggan->no_hp = $request->input('no_hp');
+            $pelanggan->jenis_rumus = $request->input('jenis_rumus');
             $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
             $pelanggan->harga_pelanggan = $request->input('harga_pelanggan');
             $pelanggan->bop_pelanggan = $request->input('bop');
@@ -110,6 +116,7 @@ class PenggunaController extends Controller
                 'nama_pemilik' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
                 'no_hp' => 'required|string|max:15',
+                'jenis_rumus' => 'required',
                 'jadwal_bayar' => 'required',
                 'harga_pelanggan' => 'required',
                 'bop' => 'required',
@@ -136,6 +143,7 @@ class PenggunaController extends Controller
             $pelanggan->nama_pemilik = $request->input('nama_pemilik');
             $pelanggan->email = $request->input('email');
             $pelanggan->no_hp = $request->input('no_hp');
+            $pelanggan->jenis_rumus = $request->input('jenis_rumus');
             $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
             $pelanggan->harga_pelanggan = $request->input('harga_pelanggan');
             $pelanggan->bop_pelanggan = $request->input('bop');

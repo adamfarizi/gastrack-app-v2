@@ -9,47 +9,63 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-md-3">
                             <label>Nama Perusahaan <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
                                 <input name="nama_perusahaan" type="text" class="form-control" placeholder="Masukkan nama perusahaan"
                                     aria-label="nama" value="{{ old('nama_perusahaan') }}">
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-md-3">
                             <label>Nama Pemilik <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
                                 <input name="nama_pemilik" type="text" class="form-control" placeholder="Masukkan nama pemilik"
                                     aria-label="nama" value="{{ old('nama_pemilik') }}">
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-md-3">
                             <label>Email <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
                                 <input name="email" type="email" class="form-control" placeholder="Masukkan email pelanggan"
                                     aria-label="email" value="{{ old('email') }}">
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
+                        <div class="col-md-3">
                             <label>No Hp <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
                                 <input name="no_hp" type="number" class="form-control" placeholder="Masukkan nomor hp"
                                     aria-label="no_hp" value="{{ old('no_hp') }}">
                             </div>
                         </div>
-                        <div class="col">
-                            <label>Jadwal Bayar <span class="text-danger">*</span></label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Jenis Rumus <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
-                                <select class="form-control px-2" aria-label="Jadwal Bayar" name="jadwal_bayar">
-                                    <option value="2">2 Minggu</option>
-                                    <option value="3">3 Minggu</option>
-                                    <option value="4">4 Minggu</option>
+                                <select class="form-control px-2" aria-label="Jenis Rumus" name="jenis_rumus" id="jenis_rumus">
+                                    <option value="normal">Normal</option>
+                                    <option value="turbin">Turbin</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-md-3">
+                            <label>Jadwal Bayar <span class="text-danger">*</span></label>
+                            <div class="input-group mb-3 input-group-outline">
+                                <select class="form-control px-2" aria-label="Jadwal Bayar" name="jadwal_bayar" id="jadwal_bayar">
+                                    <option value="2">2 Minggu</option>
+                                    <option value="3">3 Minggu</option>
+                                    <option value="4">4 Minggu / 1 Bulan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Harga Pelanggan <span class="text-danger">*</span></label>
+                            <div class="input-group mb-3 input-group-outline">
+                                <input name="harga" type="number" class="form-control" placeholder="Masukkan harga pelanggan"
+                                    aria-label="harga" value="{{ old('harga') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <label>BOP Pelanggan <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
                                 <input name="bop" type="number" class="form-control" placeholder="Masukkan bop pelanggan"
@@ -81,3 +97,15 @@
         </div>
     </div>
 </form>
+<script>
+    document.getElementById('jenis_rumus').addEventListener('change', function () {
+        var jadwalBayar = document.getElementById('jadwal_bayar');
+        if (this.value === 'turbin') {
+            jadwalBayar.value = '4';
+            jadwalBayar.setAttribute('disabled', true);
+        } else {
+            jadwalBayar.removeAttribute('disabled');
+            jadwalBayar.value = '2'; // Atur default sesuai kebutuhan
+        }
+    });
+</script>

@@ -22,6 +22,8 @@ class Pesanan extends Model
         'heating_value',
         'temperature',
         'tube_volume',
+        'vt',
+        'k',
 
         'harga_pesanan',
         'bop_pesanan',

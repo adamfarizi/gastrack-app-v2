@@ -25,6 +25,7 @@ class Pelanggan extends Model implements Authenticatable
         'no_hp',
         'bop_pelanggan',
         'harga_pelanggan',
+        'jenis_rumus',
         'jenis_pembayaran',
         'status',
     ];
