@@ -12,6 +12,7 @@ class Tagihan extends Model
     
     protected $fillable = [
         'tanggal_jatuh_tempo',
+        'tanggal_jatuh_tempo_lama',
         'jumlah_tagihan',
         'status_tagihan',
         'tanggal_pembayaran',

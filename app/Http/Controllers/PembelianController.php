@@ -127,6 +127,50 @@ class PembelianController extends Controller
         }
     }
 
+    public function perpanjang_jatuh_tempo(Request $request, $id_transaksi)
+    {
+        $request->validate([
+            'tanggal_jatuh_tempo' => 'required|date',
+        ]);
+
+        $transaksi = Transaksi::where('id_transaksi', $id_transaksi)
+            ->with('pelanggan')
+            ->first();
+
+        if (!$transaksi) {
+            return redirect()->back()->with('error', 'Transaksi tidak ditemukan !');
+        } else {
+            if ($transaksi->pelanggan->jenis_rumus === "turbin") {
+                return redirect()->back()->with('error', 'Pelanggan Turbin tidak bisa perpanjang !');
+            } else {
+                // Cek jika jatuh tempo tinggal 1 hari
+                $hari_ini = Carbon::now();
+                $tanggal_jatuh_tempo_sekarang = Carbon::parse($transaksi->tagihan->tanggal_jatuh_tempo);
+
+                // Cek jika jatuh tempo adalah besok (hari ini + 1 hari)
+                if ($tanggal_jatuh_tempo_sekarang->isSameDay($hari_ini->copy()->addDay())) {
+                    return redirect()->back()->with('error', 'Tidak bisa perpanjang, besok sudah jatuh tempo!');
+                }
+
+                // Cek jika jatuh tempo adalah hari ini
+                if ($hari_ini->isSameDay($tanggal_jatuh_tempo_sekarang)) {
+                    return redirect()->back()->with('error', 'Tidak bisa perpanjang, hari ini sudah jatuh tempo!');
+                }
+
+                if ($transaksi->tagihan->tanggal_jatuh_tempo_lama == null) {
+                    $tanggal_lama = $transaksi->tagihan->tanggal_jatuh_tempo;
+                    $transaksi->tagihan->tanggal_jatuh_tempo_lama = $tanggal_lama;
+                    $transaksi->tagihan->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
+                    $transaksi->tagihan->save();
+
+                    return redirect()->back()->with('success', 'Jatuh tempo berhasil diperpanjang !');
+                } else {
+                    return redirect()->back()->with('error', 'Tidak bisa perpanjang lebih dari sekali !');
+                }
+            }
+        }
+    }
+
     public function print_invoice($id_transaksi)
     {
         $data['title'] = 'Print Invoice';
@@ -297,7 +341,7 @@ class PembelianController extends Controller
             $sheet->setCellValue('G' . $row, $pesanan->pengiriman->kapasitas_gas_masuk ?? 0);
             $sheet->setCellValue('H' . $row, $pesanan->pengiriman->sisa_gas ?? 0);
             $sheet->setCellValue('I' . $row, $pesanan->pengiriman->kapasitas_gas_keluar ?? 0);
-            $sheet->setCellValue('J' . $row, 0); // Jika ada perhitungan selisih, ganti 0 dengan nilai yang sesuai
+            $sheet->setCellValue('J' . $row, $pesanan->tube_volume); // Jika ada perhitungan selisih, ganti 0 dengan nilai yang sesuai
             $sheet->setCellValue('K' . $row, $pesanan->jumlah_m3 ?? 0);
             $sheet->setCellValue('L' . $row, $pesanan->harga_pesanan);
 
@@ -353,6 +397,141 @@ class PembelianController extends Controller
         exit;
     }
 
+    public function exportExcelTurbin(Request $request, $id_transaksi)
+    {
+        $transaksi = Transaksi::where('id_transaksi', $id_transaksi)
+            ->with('pelanggan')
+            ->first();
+
+        // Ambil data sesuai filter jika ada
+        $pesanans = Pesanan::where('id_transaksi', $id_transaksi)
+            ->with(['pengiriman.sopir', 'pengiriman.mobil', 'transaksi.pelanggan', 'transaksi.tagihan', 'transaksi.admin'])
+            ->first();
+
+        // Membuat spreadsheet baru
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Menambahkan judul di A2
+        $sheet->setCellValue('A2', 'REKAPITULASI PESANAN GAS');
+        $sheet->mergeCells('A2:C2');
+        $sheet->getStyle('A2')->getFont()->setBold(true);
+        $sheet->getStyle('A2')->getAlignment()->setHorizontal('left');
+
+        // Menambahkan Customer di A3
+        $sheet->setCellValue('A3', 'Customer: ' . $transaksi->pelanggan->nama_perusahaan);
+        $sheet->mergeCells('A3:C3');
+        $sheet->getStyle('A3')->getFont()->setBold(true);
+        $sheet->getStyle('A3')->getAlignment()->setHorizontal('left');
+
+        // Menambahkan periode tanggal di A4
+        $tanggalPesanan = $pesanans->pluck('tanggal_pesanan')->map(function ($date) {
+            return Carbon::parse($date);
+        });
+        $tanggalAwal = $tanggalPesanan->min()->format('d-M-Y');
+        $tanggalAkhir = $tanggalPesanan->max()->format('d-M-Y');
+
+        $sheet->setCellValue('A4', 'Periode tanggal: ' . $tanggalAwal . ' - ' . $tanggalAkhir);
+        $sheet->mergeCells('A4:C4');
+        $sheet->getStyle('A4')->getFont()->setBold(true);
+        $sheet->getStyle('A4')->getAlignment()->setHorizontal('left');
+
+        // Menetapkan judul kolom
+        $sheet->setCellValue('A6', 'No')->mergeCells('A6:A7');
+        $sheet->setCellValue('B6', 'Pelanggan')->mergeCells('B6:B7');
+        $sheet->setCellValue('C6', 'Hari')->mergeCells('C6:C7');
+        $sheet->setCellValue('D6', 'Tanggal')->mergeCells('D6:D7');
+
+        // Set header Tekanan dengan colspan
+        $sheet->setCellValue('E6', 'Tekanan')->mergeCells('E6:G6');
+
+        // Menetapkan sub-header untuk Tekanan
+        $sheet->setCellValue('E7', 'Awal');
+        $sheet->setCellValue('F7', 'Akhir');
+        $sheet->setCellValue('G7', 'Selisih');
+
+        // Menetapkan kolom lainnya
+        $sheet->setCellValue('H6', 'Volume LWC/m3')->mergeCells('H6:H7');
+        $sheet->setCellValue('I6', 'Total Harga')->mergeCells('I6:I7');
+
+        // Mengatur format header
+        $sheet->getStyle('A6:I7')->getFont()->setBold(true);
+        $sheet->getStyle('A6:I7')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('A6:I7')->getAlignment()->setVertical('center'); // Vertical Align Center
+
+        // Mengisi data
+        $row = 8; // Mulai dari baris ketujuh setelah header
+        $totalJumlahM3 = 0;
+        $totalHarga = 0;
+
+        if ($pesanans) {
+            $pesanan = $pesanans;
+
+            $sheet->setCellValue('A' . $row, 1); // No
+            $sheet->setCellValue('B' . $row, $pesanan->transaksi->pelanggan->nama_perusahaan);
+
+            // Mengonversi tanggal_pesanan menjadi Carbon jika perlu
+            $tanggalPesanan = Carbon::parse($pesanan->tanggal_pesanan);
+            $sheet->setCellValue('C' . $row, $tanggalPesanan->format('l')); // Hari
+            $sheet->setCellValue('D' . $row, $tanggalPesanan->format('d-M-Y')); // Tanggal
+            $sheet->setCellValue('E' . $row, $pesanan->pengiriman->kapasitas_gas_masuk ?? 0);
+            $sheet->setCellValue('F' . $row, $pesanan->pengiriman->sisa_gas ?? 0);
+            $sheet->setCellValue('G' . $row, $pesanan->pengiriman->kapasitas_gas_keluar ?? 0);
+            $sheet->setCellValue('H' . $row, $pesanan->jumlah_m3 ?? 0);
+            $sheet->setCellValue('I' . $row, $pesanan->harga_pesanan);
+
+            // Menjumlahkan total
+            $totalJumlahM3 += $pesanan->jumlah_m3 ?? 0;
+            $totalHarga += $pesanan->harga_pesanan ?? 0;
+            $row++;
+        }
+
+        // Menambahkan baris jumlah total
+        $sheet->setCellValue('A' . $row, 'Jumlah')->mergeCells('A' . $row . ':G' . $row);
+        $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal('center'); // Center align Jumlah
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true); // Center align Jumlah
+        $sheet->setCellValue('H' . $row, $totalJumlahM3);
+        $sheet->getStyle('H' . $row)->getFont()->setBold(true); // Center align Jumlah
+        $sheet->setCellValue('I' . $row, $totalHarga);
+        $sheet->getStyle('I' . $row)->getFont()->setBold(true); // Center align Jumlah
+
+        // Mengatur lebar kolom agar sesuai dengan konten
+        foreach (range('A', 'I') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        // Menambahkan border pada semua sel
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ],
+            ],
+        ];
+        $sheet->getStyle('A6:I' . ($row))->applyFromArray($styleArray);
+
+        // Mengatur warna latar belakang dan teks di L5
+        $sheet->getStyle('A6:I7')->applyFromArray([
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'e12c6c'],
+            ],
+            'font' => [
+                'color' => ['argb' => 'FFFFFF'],
+            ],
+        ]);
+
+        // Menentukan format header
+        $filename = 'data_pesanan_turbin_' . $transaksi->pelanggan->nama_perusahaan . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
     public function exportPDF(Request $request, $id_transaksi)
     {
         $transaksi = Transaksi::where('id_transaksi', $id_transaksi)
@@ -371,12 +550,20 @@ class PembelianController extends Controller
             $queryPesanan = $queryPesanan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir]);
         }
 
-        $pesanans = $queryPesanan->orderBy('tanggal_pesanan', 'desc')->get();
-        $totalJumlahM3 = $pesanans->sum('jumlah_m3');
-        $totalHargaPesanan = $pesanans->sum('harga_pesanan');
+        $pesanans_normal = $queryPesanan->orderBy('tanggal_pesanan', 'desc')->get();
+        $totalJumlahM3 = $pesanans_normal->sum('jumlah_m3');
+        $totalHargaPesanan = $pesanans_normal->sum('harga_pesanan');
+
+        $pesanans_turbin = Pesanan::where('id_transaksi', $id_transaksi)
+            ->with(['pengiriman.sopir', 'pengiriman.mobil', 'transaksi.pelanggan', 'transaksi.tagihan', 'transaksi.admin'])
+            ->first();
 
         // Render view PDF
-        $pdf = PDF::loadView('auth.pembelian.more.pesanan_pdf', compact('transaksi', 'pesanans', 'totalJumlahM3', 'totalHargaPesanan'));
+        if ($transaksi->pelanggan->jenis_rumus === 'normal') {
+            $pdf = PDF::loadView('auth.pembelian.more.print.normal_pdf', compact('transaksi', 'pesanans_normal', 'totalJumlahM3', 'totalHargaPesanan'));
+        } else {
+            $pdf = PDF::loadView('auth.pembelian.more.print.turbin_pdf', compact('transaksi', 'pesanans_turbin', 'totalJumlahM3', 'totalHargaPesanan'));
+        }
 
         // Stream PDF ke browser
         return $pdf->stream('data_pesanan_' . $transaksi->pelanggan->nama_perusahaan . '.pdf');

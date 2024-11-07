@@ -183,12 +183,28 @@
                                         <span class="ms-1 col fw-light text-second">{{ $transaksi->pelanggan->nama_perusahaan }}</span>
                                     </p>
                                 </div>
-                                <div class="row">
-                                    <p class="col-4 fw-bold text-dark mb-0">Jatuh Tempo</p>
-                                    <p class="col fw-bold text-dark mb-0">: 
-                                        <span class="ms-1 col fw-light text-second">{{ date('d/M/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</span>
-                                    </p>
-                                </div>
+                                @if (!$transaksi->tagihan->tanggal_jatuh_tempo_lama)
+                                    <div class="row">
+                                        <p class="col-4 fw-bold text-dark mb-0">Jatuh Tempo</p>
+                                        <p class="col fw-bold text-dark mb-0">: 
+                                            <span class="ms-1 col fw-light text-second">{{ date('d/M/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</span>
+                                            <span class="ms-1 col fw-light text-second"><a type="button" data-bs-toggle="modal" data-bs-target="#perpanjang"><i class="fa-solid fa-clock-rotate-left"></i></a></span>
+                                        </p>
+                                    </div>
+                                @else
+                                    <div class="row">
+                                        <p class="col-4 fw-bold text-dark mb-0">Jatuh Tempo Lama</p>
+                                        <p class="col fw-bold text-dark mb-0">: 
+                                            <span class="ms-1 col fw-light text-danger">{{ date('d/M/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo_lama)) }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-4 fw-bold text-dark mb-0 pe-0">Perpanjang Jatuh Tempo</p>
+                                        <p class="col fw-bold text-dark mb-0">: 
+                                            <span class="ms-1 col fw-light text-second">{{ date('d/M/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</span>
+                                        </p>
+                                    </div>
+                                @endif
                                 @if ($transaksi->tagihan->status_tagihan === "Belum Bayar")
                                     <div class="row">
                                         <p class="col-4 fw-bold text-dark mb-0">Waktu Mundur</p>
@@ -258,7 +274,33 @@
                 </div>
             </div>
         </div>
+
+        {{-- Modal perpanjang --}}
+        <div class="modal fade" id="perpanjang" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title font-weight-bold">Perpanjang Jatuh Tempo Pembayaran</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi . '/perpanjang') }}" method="POST">
+                            @csrf
+                            <label>Tanggal Jatuh Tempo <span class="text-danger">*</span></label>
+                            <div class="input-group mb-3 input-group-outline">
+                                <input name="tanggal_jatuh_tempo" type="date" class="form-control"
+                                    aria-label="tanggal_jatuh_tempo" value="{{ $transaksi->tagihan->tanggal_jatuh_tempo }}">
+                            </div>
+                            <div class="text-center ">
+                                <button type="submit" name="submit" class="btn bg-gradient-primary w-100 mt-4 mb-0"
+                                    values="Update">Ubah</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endforeach
+
 @endsection
 @section('js')
     <script>

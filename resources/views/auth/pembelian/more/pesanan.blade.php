@@ -241,31 +241,42 @@
                         <div class="row py-0">
                             {{-- Filter Tabel --}}
                             <div class="row col-6 p-0 m-0">
-                                <div class="col-md-3">
-                                    <label for="filterTanggalAwal" class="form-label">Tanggal Awal</label>
-                                    <div class="input-group border rounded-2">
-                                        <input type="date" id="filterTanggalAwal" class="form-control px-1">
+                                @if ($transaksi->pelanggan->jenis_rumus === 'normal')
+                                    <div class="col-md-3">
+                                        <label for="filterTanggalAwal" class="form-label">Tanggal Awal</label>
+                                        <div class="input-group border rounded-2">
+                                            <input type="date" id="filterTanggalAwal" class="form-control px-1">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="filterTanggalAkhir" class="form-label">Tanggal Akhir</label>
-                                    <div class="input-group border rounded-2">
-                                        <input type="date" id="filterTanggalAkhir" class="form-control px-1">
+                                    <div class="col-md-3">
+                                        <label for="filterTanggalAkhir" class="form-label">Tanggal Akhir</label>
+                                        <div class="input-group border rounded-2">
+                                            <input type="date" id="filterTanggalAkhir" class="form-control px-1">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2 align-self-end">
-                                    <button id="applyFilter" class="btn btn-primary m-0 mt-2">Filter</button>
-                                </div>
+                                    <div class="col-md-2 align-self-end">
+                                        <button id="applyFilter" class="btn btn-primary m-0 mt-2">Filter</button>
+                                    </div>
+                                @endif
                             </div>
                             {{-- Export Tabel --}}
                             <div class="row col-6 p-0 m-0 justify-content-end">
                                 <div class="col-md-2 align-self-end px-0 mx-0">
-                                    <a id="exportExcel"
-                                        href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_excel') }}"
-                                        class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button">
-                                        <span class="btn-inner--icon"><i class="fa-regular fa-file-excel"></i></span>
-                                        <span class="btn-inner--text">Excel</span>
-                                    </a>
+                                    @if ($transaksi->pelanggan->jenis_rumus === 'normal')
+                                        <a id="exportExcel"
+                                            href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_excel') }}"
+                                            class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button">
+                                            <span class="btn-inner--icon"><i class="fa-regular fa-file-excel"></i></span>
+                                            <span class="btn-inner--text">Excel</span>
+                                        </a>
+                                    @else
+                                        <a id="exportExcel"
+                                            href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_excel_turbin') }}"
+                                            class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button">
+                                            <span class="btn-inner--icon"><i class="fa-regular fa-file-excel"></i></span>
+                                            <span class="btn-inner--text">Excel</span>
+                                        </a>
+                                    @endif
                                 </div>
                                 <div class="col-md-2 align-self-end px-0 mx-0">
                                     <a id="exportPDF"

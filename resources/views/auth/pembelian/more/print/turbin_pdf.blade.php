@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('assets/img/local/logo1.png') }}">
-    <title>Data Pesanan {{ $transaksi->pelanggan->nama_perusahaan }}</title>
+    <title>Data Pesanan Turbin | {{ $transaksi->pelanggan->nama_perusahaan }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
@@ -49,12 +49,10 @@
             <thead class="text-center" style="font-size: 12px">
                 <tr>
                     <th class="px-0 align-middle" rowspan="2">No</th>
-                    <th class="px-0 align-middle" rowspan="2" style="width: 10%">Resi</th>
+                    <th class="px-0 align-middle" rowspan="2">Pelanggan</th>
                     <th class="px-0 align-middle" rowspan="2">Hari</th>
                     <th class="px-0 align-middle" rowspan="2">Tanggal</th>
-                    <th class="px-0 align-middle" rowspan="2">Pelanggan</th>
-                    <th class="px-0 align-middle" rowspan="2">No. Pol</th>
-                    <th class="px-0 align-middle" colspan="4">Tekanan</th>
+                    <th class="px-0 align-middle" colspan="3">Tekanan</th>
                     <th class="px-0 align-middle" rowspan="2">Volume<br>LWC/m<sup>3</sup></th>
                     <th class="px-0 align-middle" rowspan="2">Total Harga</th>
                 </tr>
@@ -62,12 +60,12 @@
                     <th class="px-0">Awal</th>
                     <th class="px-0">Akhir</th>
                     <th class="px-0">Selisih</th>
-                    <th class="px-0">LWC</th>
                 </tr>
             </thead>
             <tbody style="font-size: 11px;">
-                @forelse ($pesanans as $pesanan)
+                @if ($pesanans_turbin)
                     @php
+                        $pesanan = $pesanans_turbin;
                         // Daftar nama hari dan bulan dalam Bahasa Indonesia
                         $namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                         // Mengubah string tanggal ke timestamp
@@ -77,23 +75,16 @@
                     @endphp
                     <tr>
                         <td>
-                            <p>{{ $loop->iteration }}</p>
+                            <p>1</p>
                         </td>
                         <td>
-                            <p>{{ $pesanan->pengiriman->kode_pengiriman }}</p>
+                            <p>{{ $pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
                         </td>
                         <td>
                             <p>{{ $hari }}</p>
                         </td>
                         <td>
                             <p>{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('d-M-Y') }}</p>
-                        </td>
-                        <td>
-                            <p>{{ $pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
-                        </td>
-                        <td>
-                            <p>{{ $pesanan->pengiriman->mobil ? $pesanan->pengiriman->mobil->nopol_mobil : 'Belum Dikirim' }}
-                            </p>
                         </td>
                         <td>
                             <p>{{ $pesanan->pengiriman->kapasitas_gas_masuk ?? 0 }}</p>
@@ -105,22 +96,19 @@
                             <p>{{ $pesanan->pengiriman->kapasitas_gas_keluar ?? 0 }}</p>
                         </td>
                         <td>
-                            <p>0</p>
-                        </td>
-                        <td>
                             <p>{{ $pesanan->jumlah_m3 ?? 0 }}</p>
                         </td>
                         <td>
                             <p>Rp {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
                         </td>
                     </tr>
-                @empty
+                @else
                     <tr>
-                        <td colspan="12" class="text-center">Tidak ada data pesanan.</td>
+                        <td colspan="9" class="text-center">Tidak ada data pesanan.</td>
                     </tr>
-                @endforelse
+                @endif
                 <tr>
-                    <th class="text-center align-middle" colspan="10">Jumlah</th>
+                    <th class="text-center align-middle" colspan="7">Jumlah</th>
                     <td class="align-middle">
                         <p>{{ $totalJumlahM3 ?? 0 }}</p>
                     </td>

@@ -80,7 +80,7 @@ class ApiPembelianController extends Controller
                 //     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
                 // } else {
                 //     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
-                // }
+                // }e
                 //? Jatuh tempo ada yang 1 bulan
                 if ($pelanggan->jenis_pembayaran == 5) {
                     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');

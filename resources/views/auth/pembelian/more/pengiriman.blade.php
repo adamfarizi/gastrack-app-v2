@@ -411,8 +411,8 @@
                                             </div>
                                         </div>
                                         <div class="col-md-auto d-flex align-items-end">
-                                            {{-- Fitur foto haru ada semua --}}
-                                            {{-- @if (is_null($pengiriman->bukti_nota_pengisian) ||
+                                            {{-- Fitur foto harus ada semua --}}
+                                            @if (is_null($pengiriman->bukti_nota_pengisian) ||
                                                     is_null($pengiriman->bukti_nota_sopir) ||
                                                     is_null($pengiriman->bukti_gas_masuk) ||
                                                     is_null($pengiriman->bukti_gas_keluar))
@@ -426,12 +426,12 @@
                                                     <span class="btn-inner--icon">+</span>
                                                     <span class="btn-inner--text">Hitung</span>
                                                 </button>
-                                            @endif --}}
+                                            @endif
 
-                                            <button class="btn btn-icon btn-3 btn-primary m-0" type="submit">
+                                            {{-- <button class="btn btn-icon btn-3 btn-primary m-0" type="submit">
                                                 <span class="btn-inner--icon">+</span>
                                                 <span class="btn-inner--text">Hitung</span>
-                                            </button>
+                                            </button> --}}
                                         </div>
                                     </div>
                                 </form>
