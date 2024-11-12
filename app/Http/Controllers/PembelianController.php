@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use App\Helpers\Calculations;
 use App\Helpers\Calculations2;
 use Barryvdh\DomPDF\Facade\Pdf;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -292,7 +291,7 @@ class PembelianController extends Controller
         $tanggalAwal = $tanggalPesanan->min()->format('d-M-Y');
         $tanggalAkhir = $tanggalPesanan->max()->format('d-M-Y');
 
-        $sheet->setCellValue('A4', 'Periode tanggal: ' . $tanggalAwal . ' - ' . $tanggalAkhir);
+        $sheet->setCellValue('A4', 'Periode tanggal: ' . $tanggalAwal . ' sd ' . $tanggalAkhir);
         $sheet->mergeCells('A4:C4');
         $sheet->getStyle('A4')->getFont()->setBold(true);
         $sheet->getStyle('A4')->getAlignment()->setHorizontal('left');
@@ -375,6 +374,9 @@ class PembelianController extends Controller
         ];
         $sheet->getStyle('A6:L' . ($row))->applyFromArray($styleArray);
 
+        // Mengatur alignment teks untuk seluruh kolom agar vertikal tengah
+        $sheet->getStyle('A5:L' . $row)->getAlignment()->setVertical('center');
+
         // Mengatur warna latar belakang dan teks di L5
         $sheet->getStyle('A6:L7')->applyFromArray([
             'fill' => [
@@ -387,7 +389,7 @@ class PembelianController extends Controller
         ]);
 
         // Menentukan format header
-        $filename = 'data_pesanan_' . $transaksi->pelanggan->nama_perusahaan . '.xlsx';
+        $filename = 'data_pesanan_' . $transaksi->pelanggan->nama_perusahaan . '_' . $tanggalAwal .'_sd_'. $tanggalAkhir .'.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
@@ -510,6 +512,9 @@ class PembelianController extends Controller
         ];
         $sheet->getStyle('A6:I' . ($row))->applyFromArray($styleArray);
 
+        // Mengatur alignment teks untuk seluruh kolom agar vertikal tengah
+        $sheet->getStyle('A5:L' . $row)->getAlignment()->setVertical('center');
+
         // Mengatur warna latar belakang dan teks di L5
         $sheet->getStyle('A6:I7')->applyFromArray([
             'fill' => [
@@ -522,7 +527,7 @@ class PembelianController extends Controller
         ]);
 
         // Menentukan format header
-        $filename = 'data_pesanan_turbin_' . $transaksi->pelanggan->nama_perusahaan . '.xlsx';
+        $filename = 'data_pesanan_turbin_' . $transaksi->pelanggan->nama_perusahaan . '_' . $tanggalAwal .'_sd_'. $tanggalAkhir .'.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');

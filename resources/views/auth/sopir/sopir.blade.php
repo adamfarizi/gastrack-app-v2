@@ -38,13 +38,69 @@
                         <span class="nav-link-text ms-1">Pengiriman</span>
                     </a>
                 </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Laporan
+                    </h6>
+                </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/laporan') }}">
+                    <a class="nav-link text-dark" href="{{ url('/laporan/detail_penjualan') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">receipt_long</i>
                         </div>
-                        <span class="nav-link-text ms-1">Laporan</span>
+                        <span class="nav-link-text ms-1">Detail Penjualan</span>
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/laporan/omzet_penjualan') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">receipt_long</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Omzet Penjualan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/laporan/laporan_bop') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">receipt_long</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Laporan BOP</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/laporan/modal_tambahan') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">receipt_long</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Modal Tambahan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/laporan/kas_keluar') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">receipt_long</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Kas Keluar</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark " href="{{ url('/laporan/laba_rugi') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">receipt_long</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Laba Rugi</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="{{ url('/laporan/buku_besar') }}">
+                        <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">receipt_long</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Buku Besar</span>
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-8">Sopir dan BOP
+                    </h6>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/sopir&kendaraan') }}">
@@ -112,9 +168,9 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Sopir</li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Sopir & Kendaraan</li>
                 </ol>
-                <h6 class="font-weight-bolder mb-0">Sopir</h6>
+                <h6 class="font-weight-bolder mb-0">Sopir & Kendaraan</h6>
             </nav>
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                 <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -407,7 +463,6 @@
             </div>
         </div>
     </form>
- 
 
     {{-- Modal Konfirmasi delete kendaraan --}}
     <form action="{{ url('/kendaraan/delete/' . $kendaraan->id_mobil) }}" method="POST" enctype="multipart/form-data">

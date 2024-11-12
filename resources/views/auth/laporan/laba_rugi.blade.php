@@ -23,7 +23,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/pembelian') }}">
+                    <a class="nav-link text-dark" href="{{ url('/pembelian') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">shopping_cart</i>
                         </div>
@@ -31,7 +31,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/pengiriman') }}">
+                    <a class="nav-link text-dark" href="{{ url('/pengiriman') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa fa-solid fa-dolly" style="color: #344767;"></i>
                         </div>
@@ -51,7 +51,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/laporan/omzet_penjualan') }}">
+                    <a class="nav-link text-dark" href="{{ url('/laporan/omzet_penjualan') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">receipt_long</i>
                         </div>
@@ -59,7 +59,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/laporan/laporan_bop') }}">
+                    <a class="nav-link text-dark" href="{{ url('/laporan/laporan_bop') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">receipt_long</i>
                         </div>
@@ -67,7 +67,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/laporan/modal_tambahan') }}">
+                    <a class="nav-link text-dark" href="{{ url('/laporan/modal_tambahan') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">receipt_long</i>
                         </div>
@@ -75,7 +75,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/laporan/kas_keluar') }}">
+                    <a class="nav-link text-dark" href="{{ url('/laporan/kas_keluar') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">receipt_long</i>
                         </div>
@@ -83,7 +83,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark " href="{{ url('/laporan/laba_rugi') }}">
+                    <a class="nav-link text-white active bg-gradient-primary" href="{{ url('/laporan/laba_rugi') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">receipt_long</i>
                         </div>
@@ -91,7 +91,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ url('/laporan/buku_besar') }}">
+                    <a class="nav-link text-dark " href="{{ url('/laporan/buku_besar') }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">receipt_long</i>
                         </div>
@@ -132,7 +132,7 @@
                 </li>
                 @if (Auth::user()->role == 'Super Admin')
                     <li class="nav-item">
-                        <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/pengguna_admin') }}">
+                        <a class="nav-link text-dark" href="{{ url('/pengguna_admin') }}">
                             <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                                 <i class="material-icons opacity-10">group</i>
                             </div>
@@ -168,9 +168,9 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Pengguna Admin</li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Laba Rugi</li>
                 </ol>
-                <h6 class="font-weight-bolder mb-0">Pengguna Admin</h6>
+                <h6 class="font-weight-bolder mb-0">Laba Rugi</h6>
             </nav>
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                 <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -207,174 +207,156 @@
 @endsection
 @section('content')
     <div class="row">
-        {{-- Total pengguna --}}
-        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+        {{-- Tabel --}}
+        <div class="col-12 mb-4">
             <div class="card">
-                <div class="card p-3 pt-2">
-                    <div
-                        class="icon icon-lg icon-shape bg-gradient-primary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
-                        <i class="material-symbols-outlined opacity-10">groups</i>
+                <div class="card-header pb-0">
+                    <div class="row mb-3">
+                        <div class="col d-flex align-items-center">
+                            <h4 class="card-title">Laba Rugi</h4>
+                        </div>
                     </div>
-                    <div class="text-end pt-1">
-                        <p class="text-sm mb-0 text-capitalize">Total Pengguna</p>
-                        <div class="d-flex flex-row-reverse">
-                            <span class="h5 ms-2 text-dark font-weight-bolder">akun</span>
-                            <h5 class="mb-0" id="total_pesanan">{{ $total_pengguna }}</h5>
+                    <div class="row justify-content-between mb-3">
+                        <div class="col-md-12 justify-content-between">
+                            <div class="row mb-3">
+                                <div class="row col-md-12 pe-0 d-flex justify-content-between align-items-center">
+                                    <form  class="col-md-3" method="GET" action="{{ url('/laporan/laba_rugi') }}" id="formLaporan">
+                                        @csrf
+                                        <div>
+                                            <label for="tanggal" class="form-label">Tanggal</label>
+                                            <div class="input-group border rounded-2">
+                                                <input type="date" id="tanggal" name="tanggal"
+                                                    class="form-control px-1"
+                                                    value="{{ request('tanggal', \Carbon\Carbon::today()->format('Y-m-d')) }}"
+                                                    onchange="this.form.submit()">
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- Tombol Export -->
+                                    <div class="col-md-3 mt-4 d-flex justify-content-end align-items-center">
+                                        <!-- Export Excel Form -->
+                                        <form method="GET" action="{{ url('/laporan/laba_rugi/export_excel') }}">
+                                            @csrf
+                                            <input type="hidden" name="tanggal" id="excelTanggal"
+                                                value="{{ request('tanggal', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                                            <button type="submit" class="btn btn-icon btn-3 btn-primary m-0"
+                                                style="padding-left: 43px; padding-right: 43px;">
+                                                <span class="btn-inner--icon"><i
+                                                        class="fa-regular fa-file-excel"></i></span>
+                                                <span class="btn-inner--text">Excel</span>
+                                            </button>
+                                        </form>
+
+                                        <!-- Export PDF Form -->
+                                        <form class="ms-2" method="GET"
+                                            action="{{ url('/laporan/laba_rugi/export_pdf') }}" target="_blank">
+                                            @csrf
+                                            <input type="hidden" name="tanggal" id="pdfTanggal"
+                                                value="{{ request('tanggal', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                                            <button type="submit" class="btn btn-icon btn-3 btn-primary m-0"
+                                                style="padding-left: 43px; padding-right: 43px;">
+                                                <span class="btn-inner--icon"><i
+                                                        class="fa-regular fa-file-pdf"></i></span>
+                                                <span class="btn-inner--text">PDF</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        {{-- Total pelanggan --}}
-        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
-            <div class="card">
-                <div class="card p-3 pt-2">
-                    <div
-                        class="icon icon-lg icon-shape bg-gradient-primary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
-                        <i class="material-icons opacity-10">factory</i>
-                    </div>
-                    <div class="text-end pt-1">
-                        <p class="text-sm mb-0 text-capitalize">Total Pelanggan</p>
-                        <div class="d-flex flex-row-reverse">
-                            <span class="h5 ms-2 text-dark font-weight-bolder">akun</span>
-                            <h5 class="mb-0" id="total_pesanan">{{ $total_pelanggan }}</h5>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {{-- Total admin --}}
-        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
-            <div class="card">
-                <div class="card p-3 pt-2">
-                    <div
-                        class="icon icon-lg icon-shape bg-gradient-primary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
-                        <i class="material-icons opacity-10">support_agent</i>
-                    </div>
-                    <div class="text-end pt-1">
-                        <p class="text-sm mb-0 text-capitalize">Total Admin</p>
-                        <div class="d-flex flex-row-reverse">
-                            <span class="h5 ms-2 text-dark font-weight-bolder">akun</span>
-                            <h5 class="mb-0" id="total_pesanan">{{ $total_admin }}</h5>
-                        </div>
+                <div class="card-body px-4 pt-0 pb-2 mb-5">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0" id="table_Data" style="border: 1px solid #ddd;">
+                            <tbody id="table_Data_body" class="text-dark">
+                                <tr style="border-bottom: 1px solid #ddd; background-color:#e7e7e7 ">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark fw-bold">PENDAPATAN PENJUALAN</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark fw-bold">Rp.
+                                            {{ number_format($totalPenjualan ?? 0, 0, ',', '.') }}</p>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark fw-bold">TAMBAHAN MODAL</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;"></td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark">JUMLAH TAMBAHAN MODAL</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark">Rp.
+                                            {{ number_format($totalModalTambahan ?? 0, 0, ',', '.') }} (+)</p>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd; background-color:#e7e7e7 ">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark fw-bold">LABA KOTOR</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark fw-bold">Rp.
+                                            {{ number_format($totalPenjualan + $totalModalTambahan ?? 0, 0, ',', '.') }}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark fw-bold">PENGELUARAN/PENGURANGAN</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;"></td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark">BOP PENGIRIMAN</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark">Rp. {{ number_format($totalBOP ?? 0, 0, ',', '.') }} (-)
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark">KAS KELUAR</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-dark">Rp.
+                                            {{ number_format($totalKasKeluar ?? 0, 0, ',', '.') }} (-)</p>
+                                    </td>
+                                </tr>
+                                <tr class="bg-primary" style="border-bottom: 1px solid #ddd;">
+                                    <td style="border-right: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-white fw-bold">LABA BERSIH</p>
+                                    </td>
+                                    <td style="padding: 8px; vertical-align: middle;">
+                                        <p class="mb-0 text-white fw-bold">Rp.
+                                            {{ number_format($labaRugi ?? 0, 0, ',', '.') }}</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row mt-3">
-        <div class="row">
-            {{-- Tabel admin --}}
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header pb-0">
-                        <div class="row">
-                            <div class="col d-flex">
-                                <h4 class="card-title">Admin</h4>
-                            </div>
-                            <div class="col-md-2 col-sm-6 ml-auto mb-2">
-                                <a type="button" class="py-2 btn btn-sm bg-gradient-primary border-end"
-                                    data-bs-toggle="modal" data-bs-target="#tambahadmin">
-                                    <span> <i class="fa fa-solid fa-plus me-2" style="color: #ffffff;"></i></span>
-                                    Tambah Admin
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
-                        <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
-                            <table class="table align-items-center mb-0">
-                                <thead class="sticky-top bg-white z-index-1">
-                                    <tr>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Pengguna</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Role</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                            Status</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        </th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($admins as $admin)
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex px-2 py-1">
-                                                    <div class="avatar avatar-sm me-3 bg-dark">
-                                                        <i class="material-icons opacity-10">support_agent</i>
-                                                    </div>
-                                                    <div class="d-flex flex-column justify-content-center">
-                                                        <h6 class="mb-0 text-sm">{{ $admin->nama }}</h6>
-                                                        <p class="text-xs text-secondary mb-0">{{ $admin->email }}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <p class="text-xs font-weight-bold mb-0">{{ $admin->role }}</p>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge badge-sm bg-gradient-success">Aktif</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="{{ url('/pengguna/admin/edit/' . $admin->id_admin) }}"
-                                                    class="text-dark font-weight-bold" data-toggle="tooltip"
-                                                    data-original-title="Edit user">
-                                                    <i class="fa fa-solid fa-pen" style="color: #252f40;"></i>
-                                                </a>
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="#" class="dropdown-item border-radius-md"
-                                                    data-bs-toggle="modal" data-bs-target="#confirmDeleteAdmin">
-                                                    <i class="fa fa-solid fa-trash" style="color: #ea0606;"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Modal Konfirmasi delete admin --}}
-    <form action="{{ url('/pengguna/admin/delete/' . $admin->id_admin) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('DELETE')
-        <div class="modal fade" id="confirmDeleteAdmin" tabindex="-1" role="dialog"
-            aria-labelledby="confirmDeleteAdminLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmDeleteAdminLabel">Konfirmasi Hapus</h5>
-                    </div>
-                    <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus admin ini?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn" onclick="closeModalAdmin()">Batal</button>
-                        <button type="submit" class="btn btn-danger">Hapus</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
+@endsection
+@section('js')
     <script>
-        function closeModalAdmin() {
-            $('#confirmDeleteAdmin').modal('hide');
-        }
+        // Menambahkan event listener untuk form submission otomatis saat tanggal berubah
+        document.getElementById('tanggal').addEventListener('change', function() {
+            document.getElementById('formLaporan').submit();
+        });
     </script>
-
-    @include('auth.pengguna.create.create_admin')
+    <script>
+        document.getElementById('tanggal').addEventListener('change', function() {
+            document.getElementById('excelTanggal').value = this.value;
+            document.getElementById('pdfTanggal').value = this.value;
+        });
+    </script>
 @endsection

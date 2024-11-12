@@ -61,8 +61,42 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengiriman/more/print/{id}', [PengirimanController::class, 'print_suratjalan']);
     Route::get('/pengiriman/more/info_pengiriman/{id}', [PengirimanController::class, 'detail_pengiriman']);
 
-    Route::get('/laporan', [LaporanController::class,'index'])->name('Laporan');
+    //? Laporan Baru
+    Route::get('/laporan/detail_penjualan', [LaporanController::class,'indexDetailPenjualan']);
+    Route::get('/laporan/detail_penjualan/export_pdf', [LaporanController::class,'pdfDetailPenjualan']);
+    Route::get('/laporan/detail_penjualan/export_excel', [LaporanController::class,'excelDetailPenjualan']);
+
+    Route::get('/laporan/omzet_penjualan', [LaporanController::class,'indexOmzetPenjualan']);
+    Route::get('/laporan/omzet_penjualan/export_pdf', [LaporanController::class,'pdfOmzetPenjualan']);
+    Route::get('/laporan/omzet_penjualan/export_excel', [LaporanController::class,'excelOmzetPenjualan']);
+
+    Route::get('/laporan/laporan_bop', [LaporanController::class,'indexLaporanBOP']);
+    Route::get('/laporan/laporan_bop/export_pdf', [LaporanController::class,'pdfLaporanBOP']);
+    Route::get('/laporan/laporan_bop/export_excel', [LaporanController::class,'excelLaporanBOP']);
+
+    Route::get('/laporan/modal_tambahan', [LaporanController::class,'indexModalTambahan']);
+    Route::get('/laporan/modal_tambahan/export_pdf', [LaporanController::class,'pdfModalTambahan']);
+    Route::get('/laporan/modal_tambahan/export_excel', [LaporanController::class,'excelModalTambahan']);
+    Route::post('/laporan/modal_tambahan/create', [LaporanController::class,'createModalTambahan']);
+    Route::post('/laporan/modal_tambahan/edit/{id}', [LaporanController::class,'editKeuangan']);
+    Route::delete('/laporan/modal_tambahan/delete/{id}', [LaporanController::class,'deleteKeuangan']);
+
+    Route::get('/laporan/kas_keluar', [LaporanController::class,'indexKasKeluar']);
+    Route::get('/laporan/kas_keluar/export_pdf', [LaporanController::class,'pdfKasKeluar']);
+    Route::get('/laporan/kas_keluar/export_excel', [LaporanController::class,'excelKasKeluar']);
+    Route::post('/laporan/kas_keluar/create', [LaporanController::class,'createKasKeluar']);
+    Route::post('/laporan/kas_keluar/edit/{id}', [LaporanController::class,'editKeuangan']);
+    Route::delete('/laporan/kas_keluar/delete/{id}', [LaporanController::class,'deleteKeuangan']);
+
+    Route::get('/laporan/laba_rugi', [LaporanController::class,'indexLabaRugi']);
+    Route::get('/laporan/laba_rugi/export_pdf', [LaporanController::class,'pdfLabaRugi']);
+    Route::get('/laporan/laba_rugi/export_excel', [LaporanController::class,'excelLabaRugi']);
     
+    Route::get('/laporan/buku_besar', [LaporanController::class,'indexBukuBesar']);
+    Route::get('/laporan/buku_besar/export_pdf', [LaporanController::class,'pdfBukuBesar']);
+    Route::get('/laporan/buku_besar/export_excel', [LaporanController::class,'excelBukuBesar']);
+    //? Laporan Baru
+
     Route::get('/sopir&kendaraan', [SopirController::class,'index'])->name('sopir');
     Route::post('/sopir/create', [SopirController::class,'tambah_sopir_action']);
     Route::get('/sopir/edit/{id}', [SopirController::class,'edit_sopir']);

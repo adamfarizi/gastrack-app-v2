@@ -20,7 +20,7 @@ class CreateTagihanTable extends Migration
             $table->unsignedBigInteger('id_pelanggan');
             $table->timestamps();
 
-            $table->foreign('id_pelanggan')->references('id_pelanggan')->on('pelanggan');
+            $table->foreign('id_pelanggan')->references('id_pelanggan')->on('pelanggan')->onDelete('cascade');
             
         });
     }

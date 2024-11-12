@@ -39,10 +39,20 @@
 </head>
 
 <body>
-    <div>
-        <p class="mb-0"><strong>REKAPITULASI PESANAN GAS</strong></p>
-        <p style="font-size: 12px;">Customer : {{ $transaksi->pelanggan->nama_perusahaan }}</p>
-    </div>
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 150px; vertical-align: top;">
+                <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/img/local/logo5.png'))) }}"
+                    alt="main_logo" style="width: 100%;">
+            </td>
+            <td style="vertical-align: top; text-align: right;">
+                <div>
+                    <p class="mb-0"><strong>REKAPITULASI PESANAN GAS</strong></p>
+                    <p style="font-size: 12px;">Customer : {{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                </div>
+            </td>
+        </tr>
+    </table>
     <hr class="border" style="width: 100%; color: #cccfd6;">
     <div>
         <table class="table table-sm table-bordered">

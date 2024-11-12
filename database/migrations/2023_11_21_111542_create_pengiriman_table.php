@@ -28,9 +28,9 @@ class CreatePengirimanTable extends Migration
             $table->unsignedBigInteger('id_mobil')->nullable();
             $table->timestamps();
 
-            $table->foreign('id_pesanan')->references('id_pesanan')->on('pesanan');
-            $table->foreign('id_sopir')->references('id_sopir')->on('sopir');
-            $table->foreign('id_mobil')->references('id_mobil')->on('mobil');
+            $table->foreign('id_pesanan')->references('id_pesanan')->on('pesanan')->onDelete('cascade');
+            $table->foreign('id_sopir')->references('id_sopir')->on('sopir')->onDelete('cascade');
+            $table->foreign('id_mobil')->references('id_mobil')->on('mobil')->onDelete('cascade');
         });
     }
 

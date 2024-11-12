@@ -29,4 +29,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Penarikanbop::class, 'id_admin');
     }
+
+    public function keuangan()
+    {
+        return $this->hasMany(Keuangan::class, 'id_admin');
+    }
 }
