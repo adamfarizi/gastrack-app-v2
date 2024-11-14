@@ -12,8 +12,10 @@ use App\Models\Pengiriman;
 use App\Events\Chart2Event;
 use Illuminate\Http\Request;
 use App\Helpers\Calculations;
+use App\Models\MasterPayment;
 use App\Helpers\Calculations2;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Helpers\TerbilangHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -86,6 +88,42 @@ class PembelianController extends Controller
             'pesananAkhir' => $pesananAkhir,
             'pengirimans' => $pengirimans,
         ], $data);
+    }
+
+    public function cetakInvoice(Request $request, $id_transaksi)
+    {
+        $transaksi = Transaksi::where('id_transaksi', $id_transaksi)
+            ->with('pelanggan')
+            ->first();
+
+        // Ambil data sesuai filter jika ada
+        $queryPesanan = Pesanan::where('id_transaksi', $id_transaksi)
+            ->with(['pengiriman.sopir', 'pengiriman.mobil', 'transaksi.pelanggan', 'transaksi.tagihan', 'transaksi.admin']);
+
+        // Cek jika tanggal_awal dan tanggal_akhir ada dalam request
+        if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
+            $tanggal_awal = Carbon::parse($request->tanggal_awal)->startOfDay();
+            $tanggal_akhir = Carbon::parse($request->tanggal_akhir)->endOfDay();
+
+            $queryPesanan = $queryPesanan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir]);
+        }
+
+        $pesanans_normal = $queryPesanan->orderBy('tanggal_pesanan', 'desc')->get();
+        $totalJumlahM3 = $pesanans_normal->sum('jumlah_m3');
+        $totalHargaPesanan = $pesanans_normal->sum('harga_pesanan');
+        $totalTerbilang = TerbilangHelper::terbilang($totalHargaPesanan);
+
+        $master_payment = MasterPayment::first();
+
+        $bulan = Carbon::parse($transaksi->tanggal_transaksi)->format('M_Y');
+
+        // Render view PDF
+        $pdf = PDF::loadView('auth.pembelian.more.print.invoice_pdf', compact('transaksi', 'pesanans_normal', 'totalJumlahM3', 'totalHargaPesanan', 'totalTerbilang', 'master_payment'))
+            ->setPaper('a4', 'portrait');
+
+        // Stream PDF ke browser
+        return $pdf->stream('invoice_' . $transaksi->pelanggan->nama_perusahaan . '_' . $bulan . '.pdf');
+
     }
 
     public function detail_tagihan($id_transaksi)
@@ -389,7 +427,7 @@ class PembelianController extends Controller
         ]);
 
         // Menentukan format header
-        $filename = 'data_pesanan_' . $transaksi->pelanggan->nama_perusahaan . '_' . $tanggalAwal .'_sd_'. $tanggalAkhir .'.xlsx';
+        $filename = 'data_pesanan_' . $transaksi->pelanggan->nama_perusahaan . '_' . $tanggalAwal . '_sd_' . $tanggalAkhir . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
@@ -527,7 +565,7 @@ class PembelianController extends Controller
         ]);
 
         // Menentukan format header
-        $filename = 'data_pesanan_turbin_' . $transaksi->pelanggan->nama_perusahaan . '_' . $tanggalAwal .'_sd_'. $tanggalAkhir .'.xlsx';
+        $filename = 'data_pesanan_turbin_' . $transaksi->pelanggan->nama_perusahaan . '_' . $tanggalAwal . '_sd_' . $tanggalAkhir . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');

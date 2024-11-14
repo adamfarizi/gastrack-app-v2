@@ -317,6 +317,14 @@
                             </div>
                             {{-- Export Tabel --}}
                             <div class="row col-6 p-0 m-0 justify-content-end">
+                                <div class="col-md-2 align-self-end px-0 mx-1">
+                                    <a id="exportPDF"
+                                        href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/invoice') }}"
+                                        class="btn btn-icon btn-3 btn-warning m-0 mt-2" type="button" target="_blank">
+                                        <span class="btn-inner--icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                        <span class="btn-inner--text" style="font-size: 10px">Invoice</span>
+                                    </a>
+                                </div>
                                 <div class="col-md-2 align-self-end px-0 mx-0">
                                     @if ($transaksi->pelanggan->jenis_rumus === 'normal')
                                         <a id="exportExcel"

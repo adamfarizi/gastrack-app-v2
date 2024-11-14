@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pembelian/tambah_data', [PembelianController::class, 'create']);
     Route::get('/pembelian/more/pesanan/{id}', [PembelianController::class, 'detail_pesanan']);
     //? Pembelian Baru
+    Route::get('/pembelian/more/pesanan/{id}/invoice', [PembelianController::class, 'cetakInvoice']);
     Route::get('/pembelian/more/pesanan/{id}/data', [PembelianController::class, 'realtimeDataPesanan']);
     Route::get('/pembelian/more/pesanan/{id}/export_excel', [PembelianController::class, 'exportExcel']);
     Route::get('/pembelian/more/pesanan/{id}/export_excel_turbin', [PembelianController::class, 'exportExcelTurbin']);

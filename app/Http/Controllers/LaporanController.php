@@ -88,7 +88,8 @@ class LaporanController extends Controller
         $nama_file = 'detail_penjualan_' . $tanggal_awal . '_sd_' . $tanggal_akhir . '.pdf';
 
         // Buat PDF
-        $pdf = PDF::loadView('auth.laporan.print.detail_penjualan_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'));
+        $pdf = PDF::loadView('auth.laporan.print.detail_penjualan_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream($nama_file);
     }
@@ -306,7 +307,8 @@ class LaporanController extends Controller
         $nama_file = 'omzet_penjualan_' . $tanggal_awal . '_sd_' . $tanggal_akhir . '.pdf';
 
         // Buat PDF
-        $pdf = PDF::loadView('auth.laporan.print.omzet_penjualan_pdf', compact('data_table', 'totalHargaPesanan', 'tanggal_awal', 'tanggal_akhir'));
+        $pdf = PDF::loadView('auth.laporan.print.omzet_penjualan_pdf', compact('data_table', 'totalHargaPesanan', 'tanggal_awal', 'tanggal_akhir'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream($nama_file);
     }
@@ -504,7 +506,8 @@ class LaporanController extends Controller
         $nama_file = 'laporan_bop_' . $tanggal_awal . '_sd_' . $tanggal_akhir . '.pdf';
 
         // Buat PDF
-        $pdf = PDF::loadView('auth.laporan.print.laporan_bop_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'));
+        $pdf = PDF::loadView('auth.laporan.print.laporan_bop_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream($nama_file);
     }
@@ -703,7 +706,8 @@ class LaporanController extends Controller
         $nama_file = 'modal_tambahan_' . $tanggal_awal . '_sd_' . $tanggal_akhir . '.pdf';
 
         // Buat PDF
-        $pdf = PDF::loadView('auth.laporan.print.modal_tambahan_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'));
+        $pdf = PDF::loadView('auth.laporan.print.modal_tambahan_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream($nama_file);
     }
@@ -914,7 +918,8 @@ class LaporanController extends Controller
         $nama_file = 'kas_keluar_' . $tanggal_awal . '_sd_' . $tanggal_akhir . '.pdf';
 
         // Buat PDF
-        $pdf = PDF::loadView('auth.laporan.print.kas_keluar_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'));
+        $pdf = PDF::loadView('auth.laporan.print.kas_keluar_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream($nama_file);
     }
@@ -1216,7 +1221,8 @@ class LaporanController extends Controller
         $nama_file = 'laba_rugi_' . $tanggal . '.pdf';
 
         // Buat PDF
-        $pdf = PDF::loadView('auth.laporan.print.laba_rugi_pdf', compact('totalPenjualan', 'totalModalTambahan', 'totalKasKeluar', 'totalBOP', 'labaRugi', 'tanggal'));
+        $pdf = PDF::loadView('auth.laporan.print.laba_rugi_pdf', compact('totalPenjualan', 'totalModalTambahan', 'totalKasKeluar', 'totalBOP', 'labaRugi', 'tanggal'))
+            ->setPaper('a4', 'portrait');
 
 
         return $pdf->stream($nama_file);
@@ -1590,7 +1596,8 @@ class LaporanController extends Controller
         $nama_file = 'buku_besar_' . $tanggal_awal . '_sd_' . $tanggal_akhir . '.pdf';
 
         // Buat PDF
-        $pdf = PDF::loadView('auth.laporan.print.buku_besar_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir', 'totalDebet', 'totalKredit'));
+        $pdf = PDF::loadView('auth.laporan.print.buku_besar_pdf', compact('data_table', 'tanggal_awal', 'tanggal_akhir', 'totalDebet', 'totalKredit'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream($nama_file);
     }

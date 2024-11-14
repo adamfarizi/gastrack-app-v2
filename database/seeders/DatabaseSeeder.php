@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             // TransaksiSeeder::class,
             // PesananSeeder::class,
             // PengirimanSeeder::class,
+            MasterPaymentSeeder::class,
         ]);
     }
 }
