@@ -114,7 +114,8 @@ class ApiSopirController extends Controller
                     'pelanggan.alamat AS alamat_perusahaan',
                     'pesanan.jumlah_bar',
                     'pesanan.jumlah_m3',
-                    'pesanan.tanggal_pesanan AS tanggal_pemesanaan'
+                    'pesanan.tanggal_pesanan AS tanggal_pemesanaan',
+                    'pesanan.bukti_pesanan AS bukti_pesanan',
                 )->first();
 
             if ($data) {
@@ -154,6 +155,8 @@ class ApiSopirController extends Controller
                     'waktu_diterima',
                     'kapasitas_gas_keluar',
                     'bukti_gas_keluar',
+                    'bukt_nota_pengisian',
+                    'bukt_nota_sopir',
                     'status_pengiriman',
                     'sisa_gas'
                 )->first();

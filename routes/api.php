@@ -35,6 +35,9 @@ Route::middleware(['auth:sanctum', 'check.pelanggan'])->group(function () {
     Route::get('/pelanggan/index/{id}', [ApiPembelianController::class, 'index_transaksi']);
     Route::get('/pelanggan/transaksi/{id}', [ApiPelangganController::class, 'getTransaksi']);
     Route::get('/pelanggan/detailtransaksi/{id}', [ApiPelangganController::class, 'getDetailTransaksi']);
+    //? Pelanggan Baru
+    Route::get('/pelanggan/pesanans/{id}', [ApiPelangganController::class, 'getAllPesanan']);
+    //? Pelanggan Baru
     Route::get('/pembelian/belum_bayar', [ApiPembelianController::class, 'transaksi_belum_bayar']);
     Route::get('/pembelian/sudah_bayar', [ApiPembelianController::class, 'transaksi_sudah_bayar']);
     Route::post('/pelanggan/pembelian', [ApiPembelianController::class, 'create_transaksi']);
