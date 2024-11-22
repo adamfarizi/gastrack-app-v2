@@ -186,10 +186,12 @@ class ApiSopirController extends Controller
         // Validasi request
         $request->validate([
             'bukti_gas_masuk' => 'required|image|mimes:jpeg,jpg,png',
+            'mobil_ditinggal' => 'required|in:true,false'
         ]);
 
         // Ambil data pengiriman sebelumnya
         $pengiriman_lama = Pengiriman::where('id_pengiriman', '<', $id_pengiriman)
+            ->with('sopir', 'mobil')
             ->whereNull('bukti_gas_keluar')
             ->orderBy('id_pengiriman', 'desc')
             ->first();
@@ -220,9 +222,16 @@ class ApiSopirController extends Controller
             $pengiriman_baru->waktu_pengiriman = now();
             $pengiriman_baru->save();
 
+            $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
+            if ($mobilDitinggal) {
+                $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
+                $pengiriman_baru->sopir->save();
+            } 
+
             return response()->json([
                 'success' => true,
-                'message' => 'Data pengiriman berhasil diupdate'
+                'message' => 'Data pengiriman berhasil diupdate',
+                'mobil_ditinggal' => $mobilDitinggal
             ], 200);
         } else {
             return response()->json([
@@ -863,8 +872,14 @@ class ApiSopirController extends Controller
         }
 
         $pengiriman->status_pengiriman = 'Diterima';
-        $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
-        $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+        if ($pengiriman->sopir->ketersediaan_sopir === 'tersedia' && $pengiriman->mobil->ketersediaan_mobil !== 'tersedia') {
+            $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+            $ambil_mobil_lama = true;
+        } else {
+            $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+            $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+            $ambil_mobil_lama = false;
+        }
         $pengiriman->push();
 
         // Notif Gas Diterima
@@ -876,6 +891,7 @@ class ApiSopirController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data pengiriman berhasil diupdate',
+            'ambil_mobil_lama' => $ambil_mobil_lama,
             'data' => $pengiriman->bukti_nota_pengisian,
         ], 200);
     }
