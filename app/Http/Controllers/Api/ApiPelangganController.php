@@ -569,19 +569,19 @@ class ApiPelangganController extends Controller
             $data = [
                 [
                     "menu" => "Baru",
-                    "data" => null,
+                    "data" => [],
                 ],
                 [
                     "menu" => "Dikirim",
-                    "data" => null,
+                    "data" => [],
                 ],
                 [
                     "menu" => "Proses",
-                    "data" => null,
+                    "data" => [],
                 ],
                 [
                     "menu" => "Selesai",
-                    "data" => null,
+                    "data" => [],
                 ],
             ];
 
@@ -641,19 +641,19 @@ class ApiPelangganController extends Controller
         $data = [
             [
                 "menu" => "Baru",
-                "data" => $pesananBaru->isEmpty() ? null : $pesananBaru,
+                "data" => $pesananBaru->isEmpty() ? [] : $pesananBaru,
             ],
             [
                 "menu" => "Dikirim",
-                "data" => $pesananDikirim->isEmpty() ? null : $pesananDikirim,
+                "data" => $pesananDikirim->isEmpty() ? [] : $pesananDikirim,
             ],
             [
                 "menu" => "Proses",
-                "data" => $pesananProses->isEmpty() ? null : $pesananProses,
+                "data" => $pesananProses->isEmpty() ? [] : $pesananProses,
             ],
             [
                 "menu" => "Selesai",
-                "data" => $pesananSelesai->isEmpty() ? null : $pesananSelesai,
+                "data" => $pesananSelesai->isEmpty() ? [] : $pesananSelesai,
             ],
         ];
 
