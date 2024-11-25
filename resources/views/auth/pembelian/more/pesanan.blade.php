@@ -588,7 +588,7 @@
                                 var gasKeluar = pesanan.pengiriman.kapasitas_gas_keluar ? pesanan
                                     .pengiriman
                                     .kapasitas_gas_keluar : 0;
-                                var lwc = pesanan.lwc ? pesanan.lwc : 0;
+                                var lwc = pesanan.tube_volume ? pesanan.tube_volume : 0;
                                 var sisaGas = pesanan.pengiriman.sisa_gas ? pesanan.pengiriman
                                     .sisa_gas : 0;
                                 var m3 = pesanan.jumlah_m3 ? pesanan.jumlah_m3 : 0;
