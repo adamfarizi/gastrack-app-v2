@@ -527,49 +527,53 @@ class ApiPembelianController extends Controller
     public function updatePengirimanLWC(Request $request, $id_pesanan)
     {
         // Validasi request
-        $request->validate([
+        $validatedData = $request->validate([
             'gas_masuk' => 'required|integer',
             'sisa_gas' => 'required|integer',
             'tube_volume' => 'required|integer',
         ]);
 
-        // Ambil data pesanan berdasarkan ID dan filter kondisi pengiriman
-        $pesanan = Pesanan::where('id_pesanan', $id_pesanan)
-            ->where(function ($query) {
-                $query->whereNull('tube_volume')
-                    ->orWhere('tube_volume', 0); // Cek lwc null atau 0
-            })
-            ->whereHas('pengiriman', function ($query) {
-                $query->whereNull('kapasitas_gas_masuk')
-                    ->whereNull('kapasitas_gas_keluar')
-                    ->whereNull('sisa_gas');
-            })
-            ->with('pengiriman')
-            ->first();
+        // Ambil data pesanan berdasarkan ID dan relasi pengiriman
+        $pesanan = Pesanan::with('pengiriman')->find($id_pesanan);
 
         if (!$pesanan) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data tidak ditemukan!',
             ], 422);
-        } else {
-            // Update data pengiriman
-            $pengiriman = $pesanan->pengiriman;
-            $pengiriman->kapasitas_gas_masuk = $request->gas_masuk;
-            $pengiriman->kapasitas_gas_keluar = $request->gas_masuk - $request->sisa_gas;
-            $pengiriman->sisa_gas = $request->sisa_gas;
-            $pengiriman->save();  // Simpan perubahan pada pengiriman
-
-            // Update data pesanan
-            $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
-            $pesanan->tube_volume = $request->tube_volume;
-            $pesanan->save();  // Simpan perubahan pada pesanan
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Data pengiriman berhasil diupdate',
-            ], 200);
         }
+
+        $pengiriman = $pesanan->pengiriman;
+
+        if ($pengiriman->sisa_gas != null && $pengiriman->kapasitas_gas_keluar != null && $pengiriman->kapasitas_gas_masuk != null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data sudah diisi!',
+            ], 422);
+
+        } else if ($validatedData['sisa_gas'] == 0) {
+            $pengiriman->kapasitas_gas_keluar = null;
+            $pengiriman->sisa_gas = null;
+
+        } else {
+            $pengiriman->kapasitas_gas_keluar = $validatedData['gas_masuk'] - $validatedData['sisa_gas'];
+            $pengiriman->sisa_gas = $validatedData['sisa_gas'];
+
+        }
+
+        // Update data pesanan
+        $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
+        $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
+        $pesanan->tube_volume = $validatedData['tube_volume'];
+
+        // Simpan perubahan
+        $pengiriman->save();
+        $pesanan->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pengiriman berhasil diupdate',
+        ], 200);
     }
 
     public function uploadGasMasuk(Request $request, $id_transaksi)
