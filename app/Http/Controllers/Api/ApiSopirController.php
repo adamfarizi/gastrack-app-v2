@@ -115,6 +115,7 @@ class ApiSopirController extends Controller
                     'pesanan.jumlah_bar',
                     'pesanan.jumlah_m3',
                     'pesanan.tanggal_pesanan AS tanggal_pemesanaan',
+                    'pesanan.deskripsi_pesanan AS pesan',
                     'pesanan.bukti_pesanan AS bukti_pesanan',
                 )->first();
 
