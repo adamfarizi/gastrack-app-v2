@@ -551,18 +551,41 @@ class ApiPembelianController extends Controller
                 'message' => 'Data sudah diisi!',
             ], 422);
 
-        } else if ($validatedData['sisa_gas'] == 0) {
+        // kondisi mencegah user mengupdate gas keluar sebelum update gas masuk atau sopir belum upload bukti gas keluar
+        } else if ($validatedData['sisa_gas'] != 0) {
+            if ($pengiriman->kapasitas_gas_masuk == null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Harap masukkan data gas masuk dahulu!',
+                ], 403);
+            } else if ($pengiriman->bukti_gas_keluar == null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Harap menunggu data foto gas keluar dahulu!',
+                ], 403);
+            }
+
+        // kondisi ingin memasukkan LWC saja
+        } else if ($validatedData['sisa_gas'] == 0 && $validatedData['gas_masuk'] == 0) {
+            $pengiriman->kapasitas_gas_masuk = null;
             $pengiriman->kapasitas_gas_keluar = null;
             $pengiriman->sisa_gas = null;
 
+        // kondisi ingin memasukkan gas masuk dan LWC saja
+        } else if ($validatedData['sisa_gas'] == 0) {
+            $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
+            $pengiriman->kapasitas_gas_keluar = null;
+            $pengiriman->sisa_gas = null;
+
+        // kondisi ingin memasukkan semua data
         } else {
+            $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
             $pengiriman->kapasitas_gas_keluar = $validatedData['gas_masuk'] - $validatedData['sisa_gas'];
             $pengiriman->sisa_gas = $validatedData['sisa_gas'];
 
         }
 
-        // Update data pesanan
-        $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
+        // Update data pesanan pada tube volume (LWC) dan jumlah bar
         $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
         $pesanan->tube_volume = $validatedData['tube_volume'];
 
@@ -572,7 +595,7 @@ class ApiPembelianController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Data pengiriman berhasil diupdate',
+            'message' => 'Data berhasil disimpan',
         ], 200);
     }
 

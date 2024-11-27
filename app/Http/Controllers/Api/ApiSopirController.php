@@ -155,8 +155,8 @@ class ApiSopirController extends Controller
                     'waktu_diterima',
                     'kapasitas_gas_keluar',
                     'bukti_gas_keluar',
-                    'bukt_nota_pengisian',
-                    'bukt_nota_sopir',
+                    'bukti_nota_pengisian',
+                    'bukti_nota_sopir',
                     'status_pengiriman',
                     'sisa_gas'
                 )->first();
