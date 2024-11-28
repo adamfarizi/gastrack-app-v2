@@ -93,10 +93,12 @@ class ApiSopirController extends Controller
     {
         Carbon::setLocale('id');
         $pengiriman = Pengiriman::where('status_pengiriman', 'Dikirim')
-            ->where('id_sopir', $id)
+            ->where('pengiriman.id_sopir', $id)
             ->join('pesanan', 'pengiriman.id_pesanan', '=', 'pesanan.id_pesanan')
             ->join('transaksi', 'pesanan.id_transaksi', '=', 'transaksi.id_transaksi')
             ->join('pelanggan', 'transaksi.id_pelanggan', '=', 'pelanggan.id_pelanggan')
+            ->join('sopir', 'pengiriman.id_sopir', '=', 'sopir.id_sopir')
+            ->join('mobil', 'pengiriman.id_mobil', '=', 'mobil.id_mobil')
             ->orderByDesc('pengiriman.created_at');
 
         if (!$pengiriman->exists()) {
@@ -108,7 +110,7 @@ class ApiSopirController extends Controller
             $data = $pengiriman
                 ->select(
                     'pengiriman.id_pengiriman',
-                    'transaksi.resi_transaksi AS resi',
+                    'pengiriman.kode_pengiriman AS resi',
                     'pelanggan.koordinat',
                     'pelanggan.nama_perusahaan',
                     'pelanggan.alamat AS alamat_perusahaan',
@@ -117,16 +119,25 @@ class ApiSopirController extends Controller
                     'pesanan.tanggal_pesanan AS tanggal_pemesanaan',
                     'pesanan.deskripsi_pesanan AS pesan',
                     'pesanan.bukti_pesanan AS bukti_pesanan',
+                    'sopir.ketersediaan_sopir AS ketersediaan_sopir',
+                    'mobil.ketersediaan_mobil AS ketersediaan_mobil',
                 )->first();
 
             if ($data) {
-                $formattedTanggal = Carbon::parse($data->tanggal_pemesanaan)->isoFormat('DD MMMM YYYY');
-                $data->tanggal_pemesanaan = $formattedTanggal;
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data berhasil ditemukan',
-                    'data' => $data,
-                ], 200);
+                if ($data->ketersediaan_sopir == 'tidak tersedia' && $data->ketersediaan_mobil == 'tidak tersedia') {
+                    $formattedTanggal = Carbon::parse($data->tanggal_pemesanaan)->isoFormat('DD MMMM YYYY');
+                    $data->tanggal_pemesanaan = $formattedTanggal;
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Data berhasil ditemukan',
+                        'data' => $data,
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Data tidak ditemukan!',
+                    ], 422);
+                }
             } else {
                 return response()->json([
                     'success' => false,
@@ -227,17 +238,18 @@ class ApiSopirController extends Controller
             if ($mobilDitinggal) {
                 $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
                 $pengiriman_baru->sopir->save();
-            } 
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data pengiriman berhasil diupdate',
+                'message' => 'Bukti gas masuk berhasil diunggah',
                 'mobil_ditinggal' => $mobilDitinggal
             ], 200);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Masukkan Gas Keluar pesanan sebelumnya dahulu!',
+                'data_lama' => $pengiriman_lama
             ], 422);
         }
     }
@@ -274,9 +286,32 @@ class ApiSopirController extends Controller
             ]);
         }
 
+        //update mobil
+        if ($pengiriman->mobil->ketersediaan_mobil == 'tidak tersedia') {
+            $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+            $pengiriman->mobil->save();
+        }
+
+        //update sopir untuk sopir yang input gas keluar bukan sopir baru
+        if ($pengiriman->sopir->ketersediaan_sopir == 'tidak tersedia') {
+
+            //cek sopir untuk mengetahui apakah sopir mengirim pesanan baru pada pelanggan yang sama atau tidak
+            $checkpengirimansopir = Pengiriman::where('id_sopir', $pengiriman->id_sopir)
+                ->whereNull('bukti_gas_masuk')
+                ->first();
+
+            //jika sopir tidak memenuhi kondisi artinya sopir tidak meninggalkan mobil (mobil ditunggu) maka ubah status
+            //jika sopir memenuhi kondisi artinya sopir meninggalkan mobil dan sopir sedang mengirim pesanan ke 2 
+            //dengan pelanggan yang sama dan status tetap tidak tersedia, karena harup upload gas masuk pesanan ke 2
+            if (!$checkpengirimansopir) {
+                $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+                $pengiriman->sopir->save();
+            }
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Data pengiriman berhasil diupdate',
+            'message' => 'Bukti gas keluar berhasil diunggah',
         ], 200);
     }
 
@@ -704,7 +739,7 @@ class ApiSopirController extends Controller
         if (!$pengiriman) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak ditemukan!',
+                'message' => 'Data pesanan sudah dikirim!',
             ], 422);
         } else {
             $sopir = Sopir::where('id_sopir', $request->id_sopir)
@@ -717,31 +752,38 @@ class ApiSopirController extends Controller
                 ->where('status_mobil', 'aktif')
                 ->first();
 
-            if (!$mobil || !$sopir) {
+            if (!$sopir) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Sopir dan Mobil tidak tersedia!',
+                    'message' => 'Anda hanya dapat mengirim satu pesanan!',
                 ], 422);
             } else {
-                $bop_pelanggan = $pengiriman->pesanan->transaksi->pelanggan->bop_pelanggan;
+                if (!$mobil) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Mobil tidak tersedia!',
+                    ], 422);
+                } else {
+                    $bop_pelanggan = $pengiriman->pesanan->transaksi->pelanggan->bop_pelanggan;
 
-                $sopir->ketersediaan_sopir = 'tidak tersedia';
-                $sopir->bop_sopir = $sopir->bop_sopir + $bop_pelanggan;
-                $sopir->save();
+                    $sopir->ketersediaan_sopir = 'tidak tersedia';
+                    $sopir->bop_sopir = $sopir->bop_sopir + $bop_pelanggan;
+                    $sopir->save();
 
-                $mobil->ketersediaan_mobil = 'tidak tersedia';
-                $mobil->save();
+                    $mobil->ketersediaan_mobil = 'tidak tersedia';
+                    $mobil->save();
 
-                $pengiriman->status_pengiriman = 'Dikirim';
-                $pengiriman->id_sopir = $request->id_sopir;
-                $pengiriman->id_mobil = $request->id_mobil;
-                $pengiriman->save();
+                    $pengiriman->status_pengiriman = 'Dikirim';
+                    $pengiriman->id_sopir = $request->id_sopir;
+                    $pengiriman->id_mobil = $request->id_mobil;
+                    $pengiriman->save();
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data pengiriman berhasil diupdate',
-                    'data' => $pengiriman,
-                ], 200);
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Pesanan berhasil dipilih, lakukan pengiriman!',
+                        'data' => $pengiriman,
+                    ], 200);
+                }
             }
         }
     }
