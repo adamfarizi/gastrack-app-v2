@@ -201,12 +201,24 @@ class ApiSopirController extends Controller
             'mobil_ditinggal' => 'required|in:true,false'
         ]);
 
-        // Ambil data pengiriman sebelumnya
+        $id_pelanggan = Pengiriman::where('id_pengiriman', $id_pengiriman)
+            ->join('pesanan', 'pengiriman.id_pesanan', '=', 'pesanan.id_pesanan')
+            ->join('transaksi', 'pesanan.id_transaksi', '=', 'transaksi.id_transaksi')
+            ->join('pelanggan', 'transaksi.id_pelanggan', '=', 'pelanggan.id_pelanggan')
+            ->select('pelanggan.id_pelanggan')
+            ->pluck('id_pelanggan')
+            ->first();
+
         $pengiriman_lama = Pengiriman::where('id_pengiriman', '<', $id_pengiriman)
+            ->whereHas('pesanan.transaksi.pelanggan', function ($query) use ($id_pelanggan) {
+                $query->where('id_pelanggan', $id_pelanggan);
+            })
             ->with('sopir', 'mobil')
             ->whereNull('bukti_gas_keluar')
             ->orderBy('id_pengiriman', 'desc')
             ->first();
+
+        // dd($pengiriman_lama);
 
         if (!$pengiriman_lama) {
             // Ambil pengiriman sekarang
