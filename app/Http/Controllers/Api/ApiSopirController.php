@@ -262,7 +262,7 @@ class ApiSopirController extends Controller
                 'success' => false,
                 'message' => 'Masukkan Gas Keluar pesanan sebelumnya dahulu!',
                 'data_lama' => $pengiriman_lama
-            ], 422);
+            ], 403);
         }
     }
 

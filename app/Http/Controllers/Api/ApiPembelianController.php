@@ -551,37 +551,42 @@ class ApiPembelianController extends Controller
                 'message' => 'Data sudah diisi!',
             ], 422);
 
-        // kondisi mencegah user mengupdate gas keluar sebelum update gas masuk atau sopir belum upload bukti gas keluar
-        } else if ($validatedData['sisa_gas'] != 0) {
-            if ($pengiriman->kapasitas_gas_masuk == null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Harap masukkan data gas masuk dahulu!',
-                ], 403);
-            } else if ($pengiriman->bukti_gas_keluar == null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Harap menunggu data foto gas keluar dahulu!',
-                ], 403);
-            }
-
-        // kondisi ingin memasukkan LWC saja
+            // kondisi ingin memasukkan LWC saja
         } else if ($validatedData['sisa_gas'] == 0 && $validatedData['gas_masuk'] == 0) {
             $pengiriman->kapasitas_gas_masuk = null;
             $pengiriman->kapasitas_gas_keluar = null;
             $pengiriman->sisa_gas = null;
 
-        // kondisi ingin memasukkan gas masuk dan LWC saja
+            // kondisi ingin memasukkan gas masuk dan LWC saja
         } else if ($validatedData['sisa_gas'] == 0) {
             $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
             $pengiriman->kapasitas_gas_keluar = null;
             $pengiriman->sisa_gas = null;
 
-        // kondisi ingin memasukkan semua data
+            // kondisi jika inputan sisa gas tidak 0
         } else {
-            $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
-            $pengiriman->kapasitas_gas_keluar = $validatedData['gas_masuk'] - $validatedData['sisa_gas'];
-            $pengiriman->sisa_gas = $validatedData['sisa_gas'];
+
+            // kondisi mencegah user mengupdate gas keluar sebelum update gas masuk 
+            if ($pengiriman->kapasitas_gas_masuk == null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Harap masukkan data gas masuk dahulu!',
+                ], 403);
+
+            // kondisi mencegah user mengupdate gas keluar sebelum sopir belum upload bukti gas keluar 
+            } else if ($pengiriman->bukti_gas_keluar == null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Harap menunggu data foto gas keluar dahulu!',
+                ], 403);
+
+            // jika tidak memenuhi semua kondisi maka semua data di update
+            } else {
+                $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
+                $pengiriman->kapasitas_gas_keluar = $validatedData['gas_masuk'] - $validatedData['sisa_gas'];
+                $pengiriman->sisa_gas = $validatedData['sisa_gas'];
+
+            }
 
         }
 
