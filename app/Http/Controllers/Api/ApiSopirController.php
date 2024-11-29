@@ -271,6 +271,7 @@ class ApiSopirController extends Controller
         // Validasi request
         $request->validate([
             'bukti_gas_keluar' => 'required|image|mimes:jpeg,jpg,png',
+            'bukti_nota_sopir' => 'required|image|mimes:jpeg,jpg,png',
         ]);
 
         // Ambil data pengiriman berdasarkan ID
@@ -298,6 +299,17 @@ class ApiSopirController extends Controller
             ]);
         }
 
+        if ($request->hasFile('bukti_nota_sopir')) {
+            $file = $request->file('bukti_nota_sopir');
+            $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman->kode_pengiriman);
+            $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+            $file->move(public_path('img/NotaSopir'), $fileName);
+
+            $pengiriman->update([
+                'bukti_nota_sopir' => $fileName,
+            ]);
+        }
+
         //update mobil
         if ($pengiriman->mobil->ketersediaan_mobil == 'tidak tersedia') {
             $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
@@ -321,9 +333,20 @@ class ApiSopirController extends Controller
             }
         }
 
+        // Ubah status pengiriman
+        $pengiriman->status_pengiriman = 'Diterima';
+        $pengiriman->push();
+
+        // Notif Gas Diterima
+        $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
+        $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
+        $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
+        broadcast(new GasKeluarEvent($nama_perusahaan));
+
         return response()->json([
             'success' => true,
-            'message' => 'Bukti gas keluar berhasil diunggah',
+            'status pesanan' => 'Diterima',
+            'message' => 'Bukti gas keluar dan nota sopir berhasil diunggah',
         ], 200);
     }
 
