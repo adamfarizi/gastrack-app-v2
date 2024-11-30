@@ -598,10 +598,11 @@ class ApiPelangganController extends Controller
 
         $pesananBaru = $pesanan->clone()
             ->whereHas('pengiriman', function ($query) {
-                $query->whereNull('id_sopir')
-                    ->whereNull('bukti_nota_pengisian')
+                $query->whereNull('bukti_nota_pengisian')
                     ->whereNull('bukti_gas_masuk')
                     ->whereNull('bukti_gas_keluar');
+                    // ->whereNull('id_sopir')
+                    
             })
             ->latest('created_at')
             ->get();

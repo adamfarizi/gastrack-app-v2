@@ -287,67 +287,77 @@ class ApiSopirController extends Controller
             ], 422);
         }
 
-        $pengiriman->waktu_diterima = now();
+        // kondisi mencegah user mengupdate gas keluar sebelum update gas masuk 
+        if ($pengiriman->bukti_gas_masuk == null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Harap masukkan bukti gas awal dahulu!',
+            ], 422);
 
-        if ($request->hasFile('bukti_gas_keluar')) {
-            $file = $request->file('bukti_gas_keluar');
-            $fileName = $file->getClientOriginalName();
-            $file->move(public_path('img/GasKeluar'), $fileName);
+        } else {
 
-            $pengiriman->update([
-                'bukti_gas_keluar' => $fileName,
-            ]);
-        }
+            $pengiriman->waktu_diterima = now();
 
-        if ($request->hasFile('bukti_nota_sopir')) {
-            $file = $request->file('bukti_nota_sopir');
-            $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman->kode_pengiriman);
-            $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
-            $file->move(public_path('img/NotaSopir'), $fileName);
+            if ($request->hasFile('bukti_gas_keluar')) {
+                $file = $request->file('bukti_gas_keluar');
+                $fileName = $file->getClientOriginalName();
+                $file->move(public_path('img/GasKeluar'), $fileName);
 
-            $pengiriman->update([
-                'bukti_nota_sopir' => $fileName,
-            ]);
-        }
-
-        //update mobil
-        if ($pengiriman->mobil->ketersediaan_mobil == 'tidak tersedia') {
-            $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
-            $pengiriman->mobil->save();
-        }
-
-        //update sopir untuk sopir yang input gas keluar bukan sopir baru
-        if ($pengiriman->sopir->ketersediaan_sopir == 'tidak tersedia') {
-
-            //cek sopir untuk mengetahui apakah sopir mengirim pesanan baru pada pelanggan yang sama atau tidak
-            $checkpengirimansopir = Pengiriman::where('id_sopir', $pengiriman->id_sopir)
-                ->whereNull('bukti_gas_masuk')
-                ->first();
-
-            //jika sopir tidak memenuhi kondisi artinya sopir tidak meninggalkan mobil (mobil ditunggu) maka ubah status
-            //jika sopir memenuhi kondisi artinya sopir meninggalkan mobil dan sopir sedang mengirim pesanan ke 2 
-            //dengan pelanggan yang sama dan status tetap tidak tersedia, karena harup upload gas masuk pesanan ke 2
-            if (!$checkpengirimansopir) {
-                $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
-                $pengiriman->sopir->save();
+                $pengiriman->update([
+                    'bukti_gas_keluar' => $fileName,
+                ]);
             }
+
+            if ($request->hasFile('bukti_nota_sopir')) {
+                $file = $request->file('bukti_nota_sopir');
+                $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman->kode_pengiriman);
+                $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+                $file->move(public_path('img/NotaSopir'), $fileName);
+
+                $pengiriman->update([
+                    'bukti_nota_sopir' => $fileName,
+                ]);
+            }
+
+            //update mobil
+            if ($pengiriman->mobil->ketersediaan_mobil == 'tidak tersedia') {
+                $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+                $pengiriman->mobil->save();
+            }
+
+            //update sopir untuk sopir yang input gas keluar bukan sopir baru
+            if ($pengiriman->sopir->ketersediaan_sopir == 'tidak tersedia') {
+
+                //cek sopir untuk mengetahui apakah sopir mengirim pesanan baru pada pelanggan yang sama atau tidak
+                $checkpengirimansopir = Pengiriman::where('id_sopir', $pengiriman->id_sopir)
+                    ->whereNull('bukti_gas_masuk')
+                    ->first();
+
+                //jika sopir tidak memenuhi kondisi artinya sopir tidak meninggalkan mobil (mobil ditunggu) maka ubah status
+                //jika sopir memenuhi kondisi artinya sopir meninggalkan mobil dan sopir sedang mengirim pesanan ke 2 
+                //dengan pelanggan yang sama dan status tetap tidak tersedia, karena harup upload gas masuk pesanan ke 2
+                if (!$checkpengirimansopir) {
+                    $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+                    $pengiriman->sopir->save();
+                }
+            }
+
+            // Ubah status pengiriman
+            $pengiriman->status_pengiriman = 'Diterima';
+            $pengiriman->push();
+
+            // Notif Gas Diterima
+            $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
+            $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
+            $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
+            broadcast(new GasKeluarEvent($nama_perusahaan));
+
+            return response()->json([
+                'success' => true,
+                'status pesanan' => 'Diterima',
+                'message' => 'Bukti gas keluar dan nota sopir berhasil diunggah',
+            ], 200);
         }
-
-        // Ubah status pengiriman
-        $pengiriman->status_pengiriman = 'Diterima';
-        $pengiriman->push();
-
-        // Notif Gas Diterima
-        $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
-        $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
-        $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
-        broadcast(new GasKeluarEvent($nama_perusahaan));
-
-        return response()->json([
-            'success' => true,
-            'status pesanan' => 'Diterima',
-            'message' => 'Bukti gas keluar dan nota sopir berhasil diunggah',
-        ], 200);
     }
 
     public function detail_sopir(string $id)
