@@ -230,33 +230,44 @@ class ApiSopirController extends Controller
                     'success' => false,
                     'message' => 'Data tidak ditemukan!',
                 ], 422);
+            } else {
+
+                if ($pengiriman_baru->bukti_nota_pengisian == null) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Harap masukkan bukti nota pengisian dahulu!',
+                    ], 422);
+
+                } else {
+
+                    if ($request->hasFile('bukti_gas_masuk')) {
+                        $file = $request->file('bukti_gas_masuk');
+                        $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
+                        $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+                        $file->move(public_path('img/GasMasuk'), $fileName);
+
+                        $pengiriman_baru->update([
+                            'bukti_gas_masuk' => $fileName,
+                        ]);
+                    }
+
+                    $pengiriman_baru->waktu_pengiriman = now();
+                    $pengiriman_baru->save();
+
+                    $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
+                    if ($mobilDitinggal) {
+                        $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
+                        $pengiriman_baru->sopir->save();
+                    }
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Bukti gas masuk berhasil diunggah',
+                        'mobil_ditinggal' => $mobilDitinggal
+                    ], 200);
+                }
             }
 
-            if ($request->hasFile('bukti_gas_masuk')) {
-                $file = $request->file('bukti_gas_masuk');
-                $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
-                $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
-                $file->move(public_path('img/GasMasuk'), $fileName);
-
-                $pengiriman_baru->update([
-                    'bukti_gas_masuk' => $fileName,
-                ]);
-            }
-
-            $pengiriman_baru->waktu_pengiriman = now();
-            $pengiriman_baru->save();
-
-            $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
-            if ($mobilDitinggal) {
-                $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
-                $pengiriman_baru->sopir->save();
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Bukti gas masuk berhasil diunggah',
-                'mobil_ditinggal' => $mobilDitinggal
-            ], 200);
         } else {
             return response()->json([
                 'success' => false,
