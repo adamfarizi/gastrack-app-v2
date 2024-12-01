@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 
 class ApiPelangganController extends Controller
@@ -405,30 +406,42 @@ class ApiPelangganController extends Controller
     {
         $cek_data = Transaksi::where('id_pelanggan', $id_pelanggan)->first();
 
-        $transaksi = Transaksi::where('transaksi.id_pelanggan', $id_pelanggan)
-            ->join('pelanggan', 'transaksi.id_pelanggan', '=', 'pelanggan.id_pelanggan')
-            ->join('tagihan', 'transaksi.id_tagihan', '=', 'tagihan.id_tagihan');
-
         if (empty($cek_data)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Belum ada transaksi',
             ], 422);
         } else {
-            $data = $transaksi
+
+            $transaksi = Transaksi::where('transaksi.id_pelanggan', $id_pelanggan)
+                ->join('pelanggan', 'transaksi.id_pelanggan', '=', 'pelanggan.id_pelanggan')
+                ->join('tagihan', 'transaksi.id_tagihan', '=', 'tagihan.id_tagihan')
+                ->join('pesanan', 'transaksi.id_transaksi', '=', 'pesanan.id_transaksi')
                 ->select(
                     'transaksi.id_transaksi',
                     'transaksi.resi_transaksi',
+                    'transaksi.tanggal_transaksi',
                     'tagihan.jumlah_tagihan',
                     'tagihan.status_tagihan',
-                )->get();
+                    DB::raw('COUNT(pesanan.id_pesanan) as jumlah_pesanan')
+                )
+                ->groupBy(
+                    'transaksi.id_transaksi',
+                    'transaksi.resi_transaksi',
+                    'transaksi.tanggal_transaksi',
+                    'tagihan.jumlah_tagihan',
+                    'tagihan.status_tagihan'
+                )
+                ->get();
 
-            $formattedResult = $data->map(function ($item) {
+            $formattedResult = $transaksi->map(function ($item) {
                 return [
                     'id_transaksi' => $item->id_transaksi,
                     'resi' => $item->resi_transaksi,
+                    'tanggal_transaksi' => $item->tanggal_transaksi,
                     'total_tagihan' => number_format($item->jumlah_tagihan, 0, ',', '.'),
                     'status_pembayaran' => $item->status_tagihan,
+                    'jumlah_pesanan' => $item->jumlah_pesanan,
                 ];
             });
 
@@ -453,28 +466,17 @@ class ApiPelangganController extends Controller
                 'message' => 'Data tidak ditemukan!',
             ], 422);
         } else {
-            $pesanan_awal = Pesanan::select('tanggal_pesanan', 'jumlah_bar', 'harga_pesanan', )
-                ->where('id_transaksi', $id_transaksi)->orderBy('tanggal_pesanan', 'asc')->first();
-            $pesanan_akhir = Pesanan::select('tanggal_pesanan', 'jumlah_bar', 'harga_pesanan', )
-                ->where('id_transaksi', $id_transaksi)->orderBy('tanggal_pesanan', 'desc')->first();
-            $pesanan = Pesanan::select('tanggal_pesanan', 'jumlah_bar', 'harga_pesanan', )
-                ->where('id_transaksi', $id_transaksi)->get();
+            $pesanan = Pesanan::where('id_transaksi', $id_transaksi)
+                ->join('pengiriman', 'pesanan.id_pesanan', '=', 'pengiriman.id_pesanan')->get();
             Carbon::setLocale('id');
-            $formattedJumlahTagihan = number_format($pesanan_awal->harga_pesanan, 0, ',', '.');
-            $formattedTanggalJatuhTempo = Carbon::parse($pesanan_awal->tanggal_pesanan)->isoFormat('DD MMMM YYYY');
-
-            $formattedJumlahTagihanPesanan = number_format($pesanan_akhir->harga_pesanan, 0, ',', '.');
-            $formattedTanggalPesanan = Carbon::parse($pesanan_akhir->tanggal_pesanan)->isoFormat('DD MMMM YYYY');
-
-            $pesanan_akhir->tanggal_pesanan = $formattedTanggalPesanan;
-            $pesanan_akhir->harga_pesanan = $formattedJumlahTagihanPesanan;
-            $pesanan_awal->tanggal_pesanan = $formattedTanggalJatuhTempo;
-            $pesanan_awal->harga_pesanan = $formattedJumlahTagihan;
 
             $formattedPesanan = $pesanan->map(function ($item) {
                 return [
-                    'tanggal_pesanan' => Carbon::parse($item->tanggal_pesanan)->isoFormat('DD MMMM YYYY'),
+                    'tanggal_pesanan' => Carbon::parse($item->tanggal_pesanan)->isoFormat('DD MMM YYYY hh:mm'),
                     'jumlah_bar' => $item->jumlah_bar,
+                    'jumlah_m3' => $item->jumlah_m3,
+                    'gas_awal' => $item->kapasitas_gas_masuk,
+                    'gas_keluar' => $item->sisa_gas,
                     'harga_pesanan' => number_format($item->harga_pesanan, 0, ',', '.'),
                 ];
             });
@@ -496,8 +498,6 @@ class ApiPelangganController extends Controller
                 'pelanggan' => $data->pelanggan,
                 'no_hp' => $data->no_hp,
                 'alamat' => $data->alamat,
-                'pesanan_awal' => $pesanan_awal,
-                'pesanan_akhir' => $pesanan_akhir,
                 'pesanan' => $formattedPesanan
             ];
 
@@ -601,8 +601,8 @@ class ApiPelangganController extends Controller
                 $query->whereNull('bukti_nota_pengisian')
                     ->whereNull('bukti_gas_masuk')
                     ->whereNull('bukti_gas_keluar');
-                    // ->whereNull('id_sopir')
-                    
+                // ->whereNull('id_sopir')
+    
             })
             ->latest('created_at')
             ->get();
