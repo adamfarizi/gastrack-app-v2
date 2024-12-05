@@ -230,33 +230,44 @@ class ApiSopirController extends Controller
                     'success' => false,
                     'message' => 'Data tidak ditemukan!',
                 ], 422);
+            } else {
+
+                if ($pengiriman_baru->bukti_nota_pengisian == null) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Harap masukkan bukti nota pengisian dahulu!',
+                    ], 422);
+
+                } else {
+
+                    if ($request->hasFile('bukti_gas_masuk')) {
+                        $file = $request->file('bukti_gas_masuk');
+                        $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
+                        $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+                        $file->move(public_path('img/GasMasuk'), $fileName);
+
+                        $pengiriman_baru->update([
+                            'bukti_gas_masuk' => $fileName,
+                        ]);
+                    }
+
+                    $pengiriman_baru->waktu_pengiriman = now();
+                    $pengiriman_baru->save();
+
+                    $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
+                    if ($mobilDitinggal) {
+                        $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
+                        $pengiriman_baru->sopir->save();
+                    }
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Bukti gas masuk berhasil diunggah',
+                        'mobil_ditinggal' => $mobilDitinggal
+                    ], 200);
+                }
             }
 
-            if ($request->hasFile('bukti_gas_masuk')) {
-                $file = $request->file('bukti_gas_masuk');
-                $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
-                $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
-                $file->move(public_path('img/GasMasuk'), $fileName);
-
-                $pengiriman_baru->update([
-                    'bukti_gas_masuk' => $fileName,
-                ]);
-            }
-
-            $pengiriman_baru->waktu_pengiriman = now();
-            $pengiriman_baru->save();
-
-            $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
-            if ($mobilDitinggal) {
-                $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
-                $pengiriman_baru->sopir->save();
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Bukti gas masuk berhasil diunggah',
-                'mobil_ditinggal' => $mobilDitinggal
-            ], 200);
         } else {
             return response()->json([
                 'success' => false,
@@ -287,55 +298,64 @@ class ApiSopirController extends Controller
             ], 422);
         }
 
-        $pengiriman->waktu_diterima = now();
+        // kondisi mencegah user mengupdate gas keluar sebelum update gas masuk 
+        if ($pengiriman->bukti_gas_masuk == null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Harap masukkan bukti gas awal dahulu!',
+            ], 422);
 
-        if ($request->hasFile('bukti_gas_keluar')) {
-            $file = $request->file('bukti_gas_keluar');
-            $fileName = $file->getClientOriginalName();
-            $file->move(public_path('img/GasKeluar'), $fileName);
+        } else {
 
-            $pengiriman->update([
-                'bukti_gas_keluar' => $fileName,
-            ]);
-        }
+            $pengiriman->waktu_diterima = now();
 
-        if ($request->hasFile('bukti_nota_sopir')) {
-            $file = $request->file('bukti_nota_sopir');
-            $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman->kode_pengiriman);
-            $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
-            $file->move(public_path('img/NotaSopir'), $fileName);
+            if ($request->hasFile('bukti_gas_keluar')) {
+                $file = $request->file('bukti_gas_keluar');
+                $fileName = $file->getClientOriginalName();
+                $file->move(public_path('img/GasKeluar'), $fileName);
 
-            $pengiriman->update([
-                'bukti_nota_sopir' => $fileName,
-            ]);
-        }
-
-        //update mobil
-        if ($pengiriman->mobil->ketersediaan_mobil == 'tidak tersedia') {
-            $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
-            $pengiriman->mobil->save();
-        }
-
-        //update sopir untuk sopir yang input gas keluar bukan sopir baru
-        if ($pengiriman->sopir->ketersediaan_sopir == 'tidak tersedia') {
-
-            //cek sopir untuk mengetahui apakah sopir mengirim pesanan baru pada pelanggan yang sama atau tidak
-            $checkpengirimansopir = Pengiriman::where('id_sopir', $pengiriman->id_sopir)
-                ->whereNull('bukti_gas_masuk')
-                ->first();
-
-            //jika sopir tidak memenuhi kondisi artinya sopir tidak meninggalkan mobil (mobil ditunggu) maka ubah status
-            //jika sopir memenuhi kondisi artinya sopir meninggalkan mobil dan sopir sedang mengirim pesanan ke 2 
-            //dengan pelanggan yang sama dan status tetap tidak tersedia, karena harup upload gas masuk pesanan ke 2
-            if (!$checkpengirimansopir) {
-                $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
-                $pengiriman->sopir->save();
+                $pengiriman->update([
+                    'bukti_gas_keluar' => $fileName,
+                ]);
             }
-        }
 
-        // Ubah status pengiriman
-        $pengiriman->status_pengiriman = 'Diterima';
-        $pengiriman->push();
+            if ($request->hasFile('bukti_nota_sopir')) {
+                $file = $request->file('bukti_nota_sopir');
+                $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman->kode_pengiriman);
+                $fileName = $nomor_resi . "_" . $file->getClientOriginalName();
+                $file->move(public_path('img/NotaSopir'), $fileName);
+
+                $pengiriman->update([
+                    'bukti_nota_sopir' => $fileName,
+                ]);
+            }
+
+            //update mobil
+            if ($pengiriman->mobil->ketersediaan_mobil == 'tidak tersedia') {
+                $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+                $pengiriman->mobil->save();
+            }
+
+            //update sopir untuk sopir yang input gas keluar bukan sopir baru
+            if ($pengiriman->sopir->ketersediaan_sopir == 'tidak tersedia') {
+
+                //cek sopir untuk mengetahui apakah sopir mengirim pesanan baru pada pelanggan yang sama atau tidak
+                $checkpengirimansopir = Pengiriman::where('id_sopir', $pengiriman->id_sopir)
+                    ->whereNull('bukti_gas_masuk')
+                    ->first();
+
+                //jika sopir tidak memenuhi kondisi artinya sopir tidak meninggalkan mobil (mobil ditunggu) maka ubah status
+                //jika sopir memenuhi kondisi artinya sopir meninggalkan mobil dan sopir sedang mengirim pesanan ke 2 
+                //dengan pelanggan yang sama dan status tetap tidak tersedia, karena harup upload gas masuk pesanan ke 2
+                if (!$checkpengirimansopir) {
+                    $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+                    $pengiriman->sopir->save();
+                }
+            }
+
+            // Ubah status pengiriman
+            $pengiriman->status_pengiriman = 'Diterima';
+            $pengiriman->push();
 
         // Notif Gas Diterima
         $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
@@ -344,11 +364,12 @@ class ApiSopirController extends Controller
         $jenis_rumus = 'normal';
         broadcast(new GasKeluarEvent($nama_perusahaan, $jenis_rumus));
 
-        return response()->json([
-            'success' => true,
-            'status pesanan' => 'Diterima',
-            'message' => 'Bukti gas keluar dan nota sopir berhasil diunggah',
-        ], 200);
+            return response()->json([
+                'success' => true,
+                'status pesanan' => 'Diterima',
+                'message' => 'Bukti gas keluar dan nota sopir berhasil diunggah',
+            ], 200);
+        }
     }
 
     public function detail_sopir(string $id)
