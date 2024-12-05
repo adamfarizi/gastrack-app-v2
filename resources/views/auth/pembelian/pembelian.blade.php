@@ -145,7 +145,7 @@
                     </h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ url('/profil/'.Auth::user()->id_admin) }}">
+                    <a class="nav-link text-dark" href="{{ url('/profil/' . Auth::user()->id_admin) }}">
                         <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">person</i>
                         </div>
@@ -213,7 +213,7 @@
                 <div class="card p-3 pt-2">
                     <div
                         class="icon icon-lg icon-shape bg-gradient-primary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
-                        <i class="material-symbols-outlined opacity-10">area_chart</i>                    
+                        <i class="material-symbols-outlined opacity-10">area_chart</i>
                     </div>
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Total Transaksi</p>
@@ -231,7 +231,7 @@
                 <div class="card p-3 pt-2">
                     <div
                         class="icon icon-lg icon-shape bg-gradient-primary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
-                        <i class="material-symbols-outlined opacity-10">list_alt</i>                    
+                        <i class="material-symbols-outlined opacity-10">list_alt</i>
                     </div>
                     <div class="text-end pt-1">
                         <p class="text-sm mb-0 text-capitalize">Total Pesanan</p>
@@ -290,6 +290,25 @@
                             <div class="col d-flex">
                                 <h4 class="card-title"> Pembelian</h4>
                                 <span class="mt-1 ms-3">
+                                    <div class="d-flex align-items-center mt-1">
+                                        <label class="me-2 mb-0" for="purchaseSwitch" id="labelLeft" style="display: flex">
+                                            Turbin 
+                                            <span class="text-primary ms-1 mt-1">
+                                                <i id="labelTurbin" style="display:none" class="fa-solid fa-circle-exclamation me-2"></i>
+                                            </span>
+                                        </label>
+                                        
+                                        <div class="form-check form-switch me-2">
+                                            <input class="form-check-input" type="checkbox" id="purchaseSwitch" onchange="switchPurchaseType()" checked>
+                                        </div>
+                                        
+                                        <label class="mb-0" for="purchaseSwitch" id="labelRight" style="display: flex">
+                                            Normal 
+                                            <span class="text-primary ms-1 mt-1">
+                                                <i id="labelNormal" style="display:none" class="fa-solid fa-circle-exclamation"></i>
+                                            </span>
+                                        </label>
+                                    </div>
                                     <a class="me-2"></a>
                                 </span>
                             </div>
@@ -297,30 +316,96 @@
                                 <div class="input-group mb-3 border rounded-2">
                                     <span class="input-group-text text-body me-2"><i class="fas fa-search"
                                             aria-hidden="true"></i></span>
-                                    <input type="text" class="form-control ms-2" id="searchInput_Pembelian"
-                                        placeholder="Cari  ...">
+                                    <input type="text" class="form-control ms-2" id="searchInput_Pembelian_Normal"
+                                        placeholder="Cari  ..." style="display: none">
+                                    <input type="text" class="form-control ms-2" id="searchInput_Pembelian_Turbin"
+                                        placeholder="Cari  ..." style="display: none">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-body px-3 pt-0 pb-2" style="min-height: 430px;">
-                        {{-- Pembelian --}}
-                        <div class="table-responsive p-0" style="min-height:380px; max-height: 380px; overflow-y: auto;">
-                            <table class="table align-items-center mb-0" id="table_pembelian">
+                        {{-- Pembelian Normal --}}
+                        <div id="pembelianNormal" class="table-responsive p-0 mb-5"
+                            style="min-height:380px; max-height: 380px; overflow-y: auto; display: none;">
+                            <table class="table align-items-center mb-0" id="table_pembelian_normal">
                                 <thead class="sticky-top bg-white z-index-1">
                                     <tr>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No. Resi</th>
-                                        <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Alamat</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No WA/Handphone</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Status Pesanan</th>
-                                        <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Detail</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            No. Resi</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Pelanggan</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Alamat</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            No WA/Handphone</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Status Pesanan</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Detail</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table_pembelian_body">
+                                <tbody id="table_pembelian_normal_body">
                                 </tbody>
                             </table>
-                            <div class="text-center mt-5" id="noResultsMessage_pembelian" style="display: none;">
+                            <div class="text-center mt-5" id="noResultsMessage_pembelianNormal" style="display: none;">
+                                <p class="fw-light">Pesanan tidak ditemukan.</p>
+                            </div>
+                        </div>
+                        {{-- Pembelian Turbin --}}
+                        <div id="pembelianTurbin" class="table-responsive p-0 mb-5"
+                            style="min-height:380px; max-height: 380px; overflow-y: auto; display:  none;">
+                            <table class="table align-items-center mb-0" id="table_pembelian_turbin">
+                                <thead class="sticky-top bg-white z-index-1">
+                                    <tr>
+                                        <th rowspan="2"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Pelanggan</th>
+                                        <th colspan="3"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Tekanan Turbin</th>
+                                        <th rowspan="2"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Volume M<sup>3</sup></th>
+                                        <th rowspan="2"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Total Harga</th>
+                                        <th rowspan="2"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Rumus <br>Perhitungan</th>
+                                        <th rowspan="2"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Cetak <br>Invoice</th>
+                                        <th rowspan="2"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Status Pesanan</th>
+                                        <th rowspan="2"
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Detail</th>
+                                    </tr>
+                                    <tr>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Awal</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Akhir</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                            Selisih</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody id="table_pembelian_turbin_body">
+                                </tbody>
+                            </table>
+                            <div class="text-center mt-5" id="noResultsMessage_pembelianTurbin" style="display: none;">
                                 <p class="fw-light">Pesanan tidak ditemukan.</p>
                             </div>
                         </div>
@@ -331,11 +416,17 @@
                                 <div class="col-md-6 d-flex align-items-center text-dark">
                                     <span class="text-sm me-2">Menampilkan </span>
                                     <form action="{{ route('pembelian') }}" method="get" class="form-inline me-2">
-                                        <select name="perPage_riwayat" id="perPage_riwayat" class="form-control border rounded px-2" onchange="this.form.submit()">
-                                            <option value="10" {{ $perPage_riwayat == 10 ? 'selected' : '' }}>10</option>
-                                            <option value="50" {{ $perPage_riwayat == 50 ? 'selected' : '' }}>50</option>
-                                            <option value="100" {{ $perPage_riwayat == 100 ? 'selected' : '' }}>100</option>
-                                            <option value="{{ $riwayat_transaksis->total() }}" {{ $perPage_riwayat == $riwayat_transaksis->total() ? 'selected' : '' }}>Semua</option>
+                                        <select name="perPage_riwayat" id="perPage_riwayat"
+                                            class="form-control border rounded px-2" onchange="this.form.submit()">
+                                            <option value="10" {{ $perPage_riwayat == 10 ? 'selected' : '' }}>10
+                                            </option>
+                                            <option value="50" {{ $perPage_riwayat == 50 ? 'selected' : '' }}>50
+                                            </option>
+                                            <option value="100" {{ $perPage_riwayat == 100 ? 'selected' : '' }}>100
+                                            </option>
+                                            <option value="{{ $riwayat_transaksis->total() }}"
+                                                {{ $perPage_riwayat == $riwayat_transaksis->total() ? 'selected' : '' }}>
+                                                Semua</option>
                                         </select>
                                     </form>
                                     <span class="text-sm">data</span>
@@ -349,45 +440,70 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive p-0" style="min-height:200px; max-height: 380px; overflow-y: auto;">
+                            <div class="table-responsive p-0"
+                                style="min-height:200px; max-height: 380px; overflow-y: auto;">
                                 <table class="table align-items-center mb-0" id="table_riwayat_pembelian">
                                     <thead class="sticky-top bg-white z-index-1">
                                         <tr>
-                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No. Resi</th>
-                                            <th class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Pelanggan</th>
-                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Alamat</th>
-                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">No WA/Handphone</th>
-                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Status Pesanan</th>
-                                            <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Detail</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                No. Resi</th>
+                                            <th
+                                                class="ps-5 text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Pelanggan</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Alamat</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                No WA/Handphone</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Status Pesanan</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                                                Detail</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table_riwayat_pembelian_body" class="text-dark">
                                         @forelse ($riwayat_transaksis as $transaksi)
                                             <tr>
                                                 <td class="text-center">
-                                                    <p class="text-sm font-weight-bold mb-0">{{ $transaksi->resi_transaksi }}</p>
+                                                    <p class="text-sm font-weight-bold mb-0">
+                                                        {{ $transaksi->resi_transaksi }}</p>
                                                 </td>
                                                 <td class="">
-                                                    <p class="text-sm font-weight-bold mb-0">{{ $transaksi->pelanggan->nama_pemilik }}</p>
-                                                    <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->nama_perusahaan }}</p>
+                                                    <p class="text-sm font-weight-bold mb-0">
+                                                        {{ $transaksi->pelanggan->nama_pemilik }}</p>
+                                                    <p class="text-sm font-weight-light mb-0">
+                                                        {{ $transaksi->pelanggan->nama_perusahaan }}</p>
                                                 </td>
                                                 <td class="text-wrap">
-                                                    <p class="text-sm font-weight-light mb-0">{{ $transaksi->pelanggan->alamat }}</p>
+                                                    <p class="text-sm font-weight-light mb-0">
+                                                        {{ $transaksi->pelanggan->alamat }}</p>
                                                 </td>
                                                 <td class="">
                                                     <p class="text-sm mb-1">{{ $transaksi->pelanggan->no_hp }}</p>
                                                 </td>
                                                 <td class="text-center">
                                                     @if ($transaksi->tagihan->status_tagihan === 'Belum Bayar')
-                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>
+                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}"
+                                                            class="badge badge-sm bg-gradient-danger text-white">Belum
+                                                            Bayar</a>
                                                     @elseif($transaksi->tagihan->status_tagihan === 'Diproses')
-                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-info text-white">Diproses</a>
+                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}"
+                                                            class="badge badge-sm bg-gradient-info text-white">Diproses</a>
                                                     @else
-                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}" class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>
+                                                        <a href="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi) }}"
+                                                            class="badge badge-sm bg-gradient-success text-white">Sudah
+                                                            Bayar</a>
                                                     @endif
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="{{ url('/pembelian/more/pesanan/'.$transaksi->id_transaksi) }}" data-id="" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>
+                                                    <a href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi) }}"
+                                                        data-id=""
+                                                        class="badge badge-sm bg-gradient-success text-white">Detail
+                                                        Pesanan</a>
                                                 </td>
                                             </tr>
                                         @empty
@@ -397,59 +513,65 @@
                                                 </td>
                                             </tr>
                                         @endforelse
-                                    </tbody>                                
+                                    </tbody>
                                 </table>
-                                <div class="text-center mt-5" id="noResultsMessage_riwayat_pembelian" style="display: none;">
+                                <div class="text-center mt-5" id="noResultsMessage_riwayat_pembelian"
+                                    style="display: none;">
                                     <p class="fw-light">Pesanan tidak ditemukan.</p>
                                 </div>
                             </div>
                             {{-- Pagination --}}
                             <div class="pt-4 d-flex">
                                 <div class="col">
-                                    <p class="text-sm">Menampilkan {{ $riwayat_transaksis->firstItem() }} hingga {{ $riwayat_transaksis->lastItem() }} dari total {{ $riwayat_transaksis->total() }} data</p>
+                                    <p class="text-sm">Menampilkan {{ $riwayat_transaksis->firstItem() }} hingga
+                                        {{ $riwayat_transaksis->lastItem() }} dari total
+                                        {{ $riwayat_transaksis->total() }} data</p>
                                 </div>
                                 <div class="col">
                                     <ul class="pagination pagination-primary justify-content-end">
                                         @if ($riwayat_transaksis->onFirstPage())
                                             <li class="page-item disabled">
                                                 <a class="page-link" href="#" aria-label="Previous">
-                                                <span class="material-icons">
-                                                    keyboard_arrow_left
-                                                </span>
-                                                <span class="sr-only">Previous</span>
+                                                    <span class="material-icons">
+                                                        keyboard_arrow_left
+                                                    </span>
+                                                    <span class="sr-only">Previous</span>
                                                 </a>
                                             </li>
                                         @else
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ $riwayat_transaksis->previousPageUrl() }}" aria-label="Previous">
-                                                <span class="material-icons">
-                                                    keyboard_arrow_left
-                                                </span>
-                                                <span class="sr-only">Previous</span>
+                                                <a class="page-link" href="{{ $riwayat_transaksis->previousPageUrl() }}"
+                                                    aria-label="Previous">
+                                                    <span class="material-icons">
+                                                        keyboard_arrow_left
+                                                    </span>
+                                                    <span class="sr-only">Previous</span>
                                                 </a>
                                             </li>
                                         @endif
                                         @foreach ($riwayat_transaksis->getUrlRange(1, $riwayat_transaksis->lastPage()) as $page => $url)
-                                            <li class="page-item {{ $page == $riwayat_transaksis->currentPage() ? 'active' : '' }}">
+                                            <li
+                                                class="page-item {{ $page == $riwayat_transaksis->currentPage() ? 'active' : '' }}">
                                                 <a class="page-link" href="{{ $url }}">{{ $page }}</a>
                                             </li>
                                         @endforeach
                                         @if ($riwayat_transaksis->hasMorePages())
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ $riwayat_transaksis->nextPageUrl() }}" aria-label="Next">
-                                                <span class="material-icons">
-                                                    keyboard_arrow_right
-                                                </span>
-                                                <span class="sr-only">Next</span>
+                                                <a class="page-link" href="{{ $riwayat_transaksis->nextPageUrl() }}"
+                                                    aria-label="Next">
+                                                    <span class="material-icons">
+                                                        keyboard_arrow_right
+                                                    </span>
+                                                    <span class="sr-only">Next</span>
                                                 </a>
                                             </li>
                                         @else
                                             <li class="page-item disabled">
                                                 <a class="page-link" href="#" aria-label="Next">
-                                                <span class="material-icons">
-                                                    keyboard_arrow_right
-                                                </span>
-                                                <span class="sr-only">Next</span>
+                                                    <span class="material-icons">
+                                                        keyboard_arrow_right
+                                                    </span>
+                                                    <span class="sr-only">Next</span>
                                                 </a>
                                             </li>
                                         @endif
@@ -465,19 +587,21 @@
 
     {{-- Modal Harga Gas --}}
     @foreach ($data_gas as $gas)
-        <div class="modal fade" id="rincianGas" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
+        <div class="modal fade" id="rincianGas" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title font-weight-bold">Ubah Data Gas</h4>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ url('pembelian/gas/edit/'.$gas->id_gas) }}" method="POST">
+                        <form action="{{ url('pembelian/gas/edit/' . $gas->id_gas) }}" method="POST">
                             @csrf
                             <label>Harga Gas <span class="text-danger">*</span></label>
                             <div class="input-group mb-3 input-group-outline">
-                                <input name="harga_gas" type="number" class="form-control" placeholder="Masukkan harga gas"
-                                    aria-label="harga_gas" value="{{ $gas->harga_gas }}">
+                                <input name="harga_gas" type="number" class="form-control"
+                                    placeholder="Masukkan harga gas" aria-label="harga_gas"
+                                    value="{{ $gas->harga_gas }}">
                             </div>
                             <div class="text-center ">
                                 <button type="submit" name="submit" class="btn bg-gradient-primary w-100 mt-4 mb-0"
@@ -489,18 +613,19 @@
             </div>
         </div>
     @endforeach
-    
+
     {{-- Modal Rincian --}}
     @foreach ($transaksis as $transaksi)
-        <div class="modal fade" id="rincianModal{{ $transaksi->id_transaksi }}" tabindex="-1" role="dialog" aria-labelledby="modal-default{{ $transaksi->id_transaksi }}"
-            aria-hidden="true">
+        <div class="modal fade" id="rincianModal{{ $transaksi->id_transaksi }}" tabindex="-1" role="dialog"
+            aria-labelledby="modal-default{{ $transaksi->id_transaksi }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <img class="ms-2 position-absolute top-50 start-50 translate-middle d-sm-block"
                         src="{{ asset('assets/img/local/logo7.png') }}" height="150" alt="main_logo"
                         style="z-index: 0; opacity: 0.3; display:none;">
                     <div class="modal-header">
-                        <h6 class="modal-title text-uppercase" id="modal-title-default">Invoice {{ $transaksi->resi_transaksi }}</h6>
+                        <h6 class="modal-title text-uppercase" id="modal-title-default">Invoice
+                            {{ $transaksi->resi_transaksi }}</h6>
                     </div>
                     <div class="modal-body p-2" id="modal-body-content" style="max-height: 500px; overflow-y: auto;">
                         <div class="border border-2 py-3 px-2">
@@ -509,8 +634,8 @@
                                     <h1>INVOICE</h1>
                                 </div>
                                 <div class="col text-end mt-1 me-2">
-                                    <img class="ms-2" src="{{ asset('assets/img/local/logo5.png') }}"
-                                        height="50" alt="main_logo">
+                                    <img class="ms-2" src="{{ asset('assets/img/local/logo5.png') }}" height="50"
+                                        alt="main_logo">
                                 </div>
                             </div>
                             <hr class="border border-dark" style="width: 100%">
@@ -541,7 +666,8 @@
                                     <div class="row">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Jatuh Tempo</p>
                                         <p class="col-1 text-sm fw-bold text-dark mb-0">:</p>
-                                        <p class="col text-sm text-second mb-0">{{ date('d/m/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</p>
+                                        <p class="col text-sm text-second mb-0">
+                                            {{ date('d/m/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</p>
                                     </div>
                                     <div class="row mb-2">
                                         <p class="col-4 text-sm fw-bold text-dark mb-0">Admin</p>
@@ -578,13 +704,20 @@
                                                         @if ($pesanan->id_transaksi == $transaksi->id_transaksi)
                                                             <tr class="fw-light">
                                                                 <td class="text-center">
-                                                                    <p class="text-sm mb-0">tanggal : {{ date('d/m/Y', strtotime($pesanan->tanggal_pesanan)) }}</p>
-                                                                    <p class="text-sm mb-0">jam : {{ date('h:i', strtotime($pesanan->tanggal_pesanan)) }}</p>
+                                                                    <p class="text-sm mb-0">tanggal :
+                                                                        {{ date('d/m/Y', strtotime($pesanan->tanggal_pesanan)) }}
+                                                                    </p>
+                                                                    <p class="text-sm mb-0">jam :
+                                                                        {{ date('h:i', strtotime($pesanan->tanggal_pesanan)) }}
+                                                                    </p>
                                                                 </td>
                                                                 <td class="text-center">Gas Alam </td>
-                                                                <td class="text-center">{{ $pesanan->jumlah_bar }} bar / {{ $pesanan->jumlah_m3 }} m<sup>3</sup></td>
+                                                                <td class="text-center">{{ $pesanan->jumlah_bar }} bar /
+                                                                    {{ $pesanan->jumlah_m3 }} m<sup>3</sup></td>
                                                                 <td class="text-center">{{ $harga_gas }}</td>
-                                                                <td class="text-center">Rp.{{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</td>
+                                                                <td class="text-center">
+                                                                    Rp.{{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}
+                                                                </td>
                                                             </tr>
                                                         @endif
                                                     @endforeach
@@ -593,10 +726,12 @@
                                                         <td></td>
                                                         <td></td>
                                                         <td></td>
-                                                        <td colspan="5" class="fw-bold text-primary">Rp.{{ number_format($transaksi->tagihan->jumlah_tagihan, 0, ',', '.') }}</td>
+                                                        <td colspan="5" class="fw-bold text-primary">
+                                                            Rp.{{ number_format($transaksi->tagihan->jumlah_tagihan, 0, ',', '.') }}
+                                                        </td>
                                                     </tr>
                                                 </tbody>
-                                            </table>                                                
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -615,9 +750,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary shadow"
-                            data-bs-dismiss="modal">Close</button>
-                        <a href="{{ url('/pembelian/more/print/'.$transaksi->id_transaksi) }}" type="button" class="btn btn-primary">Print Invoice</a>
+                        <button type="button" class="btn btn-secondary shadow" data-bs-dismiss="modal">Close</button>
+                        <a href="{{ url('/pembelian/more/print/' . $transaksi->id_transaksi) }}" type="button"
+                            class="btn btn-primary">Print Invoice</a>
                     </div>
                 </div>
             </div>
@@ -625,17 +760,85 @@
     @endforeach
 @endsection
 @section('js')
+    {{-- Script Display Table --}}
+    <script>
+        // Fungsi untuk mengaktifkan Pembelian Normal
+        function activatePembelianNormal() {
+            document.getElementById('pembelianNormal').style.display = 'block';
+            document.getElementById('pembelianTurbin').style.display = 'none';
+            document.getElementById('searchInput_Pembelian_Normal').style.display = 'block';
+            document.getElementById('searchInput_Pembelian_Turbin').style.display = 'none';
+
+            // Tambahkan kelas aktif pada label kiri
+            document.getElementById('labelLeft').classList.remove('font-weight-bolder', 'text-primary');
+            document.getElementById('labelRight').classList.add('font-weight-bolder', 'text-primary');
+        }
+
+        // Fungsi untuk mengaktifkan Pembelian Turbin
+        function activatePembelianTurbin() {
+            document.getElementById('pembelianNormal').style.display = 'none';
+            document.getElementById('pembelianTurbin').style.display = 'block';
+            document.getElementById('searchInput_Pembelian_Normal').style.display = 'none';
+            document.getElementById('searchInput_Pembelian_Turbin').style.display = 'block';
+
+            // Tambahkan kelas aktif pada label kanan
+            document.getElementById('labelLeft').classList.add('font-weight-bolder', 'text-primary');
+            document.getElementById('labelRight').classList.remove('font-weight-bolder', 'text-primary');
+        }
+
+        // Fungsi utama untuk switch
+        function switchPurchaseType() {
+            const isNormal = document.getElementById('purchaseSwitch').checked;
+
+            // Simpan status switch ke localStorage
+            localStorage.setItem('purchaseType', isNormal ? 'normal' : 'turbin');
+
+            if (isNormal) {
+                activatePembelianNormal();
+            } else {
+                activatePembelianTurbin();
+            }
+        }
+
+        // Fungsi untuk memuat status switch saat halaman dimuat
+        function loadPurchaseType() {
+            const purchaseType = localStorage.getItem('purchaseType');
+
+            if (purchaseType === 'normal') {
+                document.getElementById('purchaseSwitch').checked = true;
+                activatePembelianNormal();
+            } else {
+                document.getElementById('purchaseSwitch').checked = false;
+                activatePembelianTurbin();
+            }
+        }
+    </script>
+
     {{-- Script search --}}
     <script>
         $(document).ready(function() {
-            $("#searchInput_Pembelian").on("keyup", function() {
+            $("#searchInput_Pembelian_Normal").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
-                $("#table_pembelian_body tr").filter(function() {
+                $("#table_pembelian_normal_body tr").filter(function() {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
 
-                var noResultsMessage = $("#noResultsMessage_pembelian");
-                if ($("#table_pembelian_body tr:visible").length === 0) {
+                var noResultsMessage = $("#noResultsMessage_pembelianNormal");
+                if ($("#table_pembelian_normal_body tr:visible").length === 0) {
+                    noResultsMessage.show();
+                } else {
+                    noResultsMessage.hide();
+                }
+            });
+
+            $("#searchInput_Pembelian_Turbin").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#table_pembelian_turbin_body tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+
+                var noResultsMessage = $("#noResultsMessage_pembelianTurbin");
+                if ($("#table_pembelian_turbin_body tr:visible").length === 0) {
                     noResultsMessage.show();
                 } else {
                     noResultsMessage.hide();
@@ -658,6 +861,7 @@
         });
     </script>
 
+    {{-- Script Nav --}}
     <script>
         function realtime_Nav() {
             $.ajax({
@@ -674,8 +878,8 @@
                     const pesananMasukElement = document.getElementById('pesanan_masuk');
                     pesananMasukElement.textContent = data.pesanan_masuk;
 
-                    const hargaGasElement = document.getElementById('harga_gas');
-                    hargaGasElement.textContent = 'Rp.' + data.harga_gas;
+                    // const hargaGasElement = document.getElementById('harga_gas');
+                    // hargaGasElement.textContent = 'Rp.' + data.harga_gas;
 
                 },
                 error: function(error) {
@@ -683,16 +887,20 @@
                 }
             });
         }
+    </script>
 
-        function realTime_Pembelian() { 
+    {{-- Script Table --}}
+    <script>
+        function realTime_Pembelian_Normal() {
             $.ajax({
                 url: '/pembelian/data',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    var table = $('#table_pembelian tbody');
+                    var table = $('#table_pembelian_normal tbody');
                     table.empty();
-                    if (!data.transaksis || data.transaksis.length === 0) {
+
+                    if (!data.transaksis_normal || data.transaksis_normal.length === 0) {
                         var row =
                             '<tr class="text-dark">' +
                             '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pembelian</td>' +
@@ -700,34 +908,123 @@
 
                         table.append(row);
                     } else {
-                        $.each(data.transaksis, function(index, transaksi) {
+                        $.each(data.transaksis_normal, function(index, transaksi) {
                             var statusBadge = getStatusBadge(transaksi);
                             var dateTimeString = transaksi.tanggal_transaksi;
                             var formattedDateTime = formatDateTime(dateTimeString);
 
-                            var row = 
-                            '<tr class="text-dark">' +
+                            var row =
+                                '<tr class="text-dark">' +
                                 '<td class="text-center">' +
-                                    '<p class="text-sm font-weight-bold mb-0">' + transaksi.resi_transaksi + '</p>' +
+                                '<p class="text-sm font-weight-bold mb-0">' + transaksi.resi_transaksi +
+                                '</p>' +
                                 '</td>' +
                                 '<td>' +
-                                    '<div class="ps-4">' +
-                                        '<h6 class="mb-1 text-sm">' + transaksi.pelanggan.nama_pemilik + '</h6>' +
-                                        '<p class="text-sm text-secondary mb-0">' + transaksi.pelanggan.nama_perusahaan +
-                                        '</p>' +
-                                    '</div>' +
+                                '<div class="ps-4">' +
+                                '<h6 class="mb-1 text-sm">' + transaksi.pelanggan.nama_pemilik +
+                                '</h6>' +
+                                '<p class="text-sm text-secondary mb-0">' + transaksi.pelanggan
+                                .nama_perusahaan +
+                                '</p>' +
+                                '</div>' +
                                 '</td>' +
                                 '<td class="text-wrap" style="max-width: 200px;">' +
-                                    '<p class="text-sm py-1 mb-0">' + transaksi.pelanggan.alamat + '</p>' +
+                                '<p class="text-sm py-1 mb-0">' + transaksi.pelanggan.alamat + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                    '<p class="text-sm mb-1">' + transaksi.pelanggan.no_hp + '</p>' +
+                                '<p class="text-sm mb-1">' + transaksi.pelanggan.no_hp + '</p>' +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                    statusBadge +
+                                statusBadge +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                    '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>' +
+                                '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>' +
+                                '</td>' +
+                                '</tr>';
+
+                            table.append(row);
+                        });
+                    }
+                    table.show();
+
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        function realTime_Pembelian_Turbin() {
+            $.ajax({
+                url: '/pembelian/data',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    var table = $('#table_pembelian_turbin tbody');
+                    table.empty();
+
+                    if (!data.transaksis_turbin || data.transaksis_turbin.length === 0) {
+                        var row =
+                            '<tr class="text-dark">' +
+                            '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pembelian</td>' +
+                            '</tr>';
+
+                        table.append(row);
+                    } else {
+                        $.each(data.transaksis_turbin, function(index, turbin) {
+                            var statusBadge = getStatusBadgeTurbin(turbin);
+                            var dateTimeString = turbin.transaksi.tanggal_transaksi;
+                            var formattedDateTime = formatDateTime(dateTimeString);
+                            var gasMasuk = turbin.pesanan_pertama.pengiriman.kapasitas_gas_masuk ?
+                                turbin.pesanan_pertama.pengiriman
+                                .kapasitas_gas_masuk : 0;
+                            var gasKeluar = turbin.pesanan_pertama.pengiriman.kapasitas_gas_keluar ?
+                                turbin.pesanan_pertama.pengiriman
+                                .kapasitas_gas_keluar : 0;
+                            var sisaGas = turbin.pesanan_pertama.pengiriman.sisa_gas ? turbin
+                                .pesanan_pertama.pengiriman
+                                .sisa_gas : 0;
+                            var m3 = turbin.pesanan_pertama.jumlah_m3 ? turbin.pesanan_pertama
+                                .jumlah_m3 : 0;
+                            var total_harga = formatRupiah(turbin.pesanan_pertama.harga_pesanan)
+
+                            var row =
+                                '<tr class="text-dark">' +
+                                '<td>' +
+                                '<div class="ps-4">' +
+                                '<h6 class="mb-1 text-sm">' + turbin.transaksi.pelanggan.nama_pemilik +
+                                '</h6>' +
+                                '<p class="text-sm text-secondary mb-0">' + turbin.transaksi.pelanggan
+                                .nama_perusahaan +
+                                '</p>' +
+                                '</div>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<p class="text-sm mb-1">' + gasMasuk + '</p>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<p class="text-sm mb-1">' + sisaGas + '</p>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<p class="text-sm mb-1">' + gasKeluar + '</p>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<p class="text-sm mb-1">' + m3 + '</p>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<p class="text-sm mb-1">' + total_harga + '</p>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<a href="<?php echo url("/pembelian/more/pesanan/pengiriman/' + turbin.pesanan_pertama.id_pesanan + '"); ?>" data-id="" class="badge badge-sm bg-gradient-primary text-white">Rumus</a>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<a href="<?php echo url("/pembelian/more/pesanan/' + turbin.transaksi.id_transaksi + '/invoice"); ?>" data-id="" target="blank" class="badge badge-sm bg-gradient-warning text-white">Invoice</a>' +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                statusBadge +
+                                '</td>' +
+                                '<td class="text-center">' +
+                                '<a href="<?php echo url("/pembelian/more/pesanan/' + turbin.transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>' +
                                 '</td>' +
                                 '</tr>';
 
@@ -827,30 +1124,71 @@
                 } else {
                     return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';
                 }
-            }else if (transaksi.tagihan.status_tagihan === 'Diproses') {
+            } else if (transaksi.tagihan.status_tagihan === 'Diproses') {
                 return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-info position-relative text-white">Konfirmasi<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
             } else {
                 return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>"  class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>';
             }
         }
 
+        function getStatusBadgeTurbin(turbin) {
+            if (turbin.transaksi.tagihan.status_tagihan === 'Belum Bayar') {
+                if (new Date(turbin.transaksi.tanggal_jatuh_tempo) < new Date()) {
+                    return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-dark text-white">Jatuh Tempo</a>';
+                } else {
+                    return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';
+                }
+            } else if (turbin.transaksi.tagihan.status_tagihan === 'Diproses') {
+                return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-info position-relative text-white">Konfirmasi<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
+            } else {
+                return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>"  class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>';
+            }
+        }
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                currencyDisplay: 'symbol',
+                minimumFractionDigits: 0
+            }).format(angka);
+        }
+    </script>
+
+    <script>
         $(document).ready(function() {
+            loadPurchaseType()
+            switchPurchaseType()
             realtime_Nav();
-            realTime_Pembelian();
+            realTime_Pembelian_Normal();
+            realTime_Pembelian_Turbin();
             // realTime_Riwayat_Pembelian();
         });
 
-        document.addEventListener("DOMContentLoaded", function(event) { 
+        document.addEventListener("DOMContentLoaded", function(event) {
+
             Echo.channel(`PesananBaru-channel`).listen('PesananBaruEvent', (e) => {
                 realtime_Nav();
-                realTime_Pembelian();
+                realTime_Pembelian_Normal();
+                realTime_Pembelian_Turbin();
                 // realTime_Riwayat_Pembelian();
             });
 
             Echo.channel(`BayarTagihan-channel`).listen('BayarTagihanEvent', (e) => {
                 realtime_Nav();
-                realTime_Pembelian();
+                realTime_Pembelian_Normal();
+                realTime_Pembelian_Turbin();
                 // realTime_Riwayat_Pembelian();
+            });
+
+            Echo.channel(`GasKeluar-channel`).listen('GasKeluarEvent', (e) => {
+                const jenisRumus = e.jenis_rumus;
+
+                if (jenisRumus === 'normal') {
+                    document.getElementById('labelNormal').style.display = 'block';
+                } else if (jenisRumus !== 'normal') {
+                    document.getElementById('labelTurbin').style.display = 'block';
+                }
             });
         });
     </script>

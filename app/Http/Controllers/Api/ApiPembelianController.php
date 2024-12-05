@@ -573,14 +573,14 @@ class ApiPembelianController extends Controller
                     'message' => 'Harap masukkan data gas masuk dahulu!',
                 ], 403);
 
-            // kondisi mencegah user mengupdate gas keluar sebelum sopir belum upload bukti gas keluar 
+                // kondisi mencegah user mengupdate gas keluar sebelum sopir belum upload bukti gas keluar 
             } else if ($pengiriman->bukti_gas_keluar == null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Harap menunggu data foto gas keluar dahulu!',
                 ], 403);
 
-            // jika tidak memenuhi semua kondisi maka semua data di update
+                // jika tidak memenuhi semua kondisi maka semua data di update
             } else {
                 $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
                 $pengiriman->kapasitas_gas_keluar = $validatedData['gas_masuk'] - $validatedData['sisa_gas'];
@@ -667,8 +667,14 @@ class ApiPembelianController extends Controller
             'bukti_gas_keluar' => 'required|image|mimes:jpeg,jpg,png',
         ]);
 
+        // Ambil id_pelanggan dari transaksi yang diberikan
+        $id_pelanggan = Transaksi::where('id_transaksi', $id_transaksi)
+            ->pluck('id_pelanggan')
+            ->first();
+
         // Ambil data transaksi lama
         $transaksi_lama = Transaksi::where('id_transaksi', '<', $id_transaksi)
+            ->where('id_pelanggan', $id_pelanggan)
             ->with('pesanan.pengiriman')
             ->orderBy('id_transaksi', 'desc')
             ->first();
@@ -681,8 +687,7 @@ class ApiPembelianController extends Controller
         }
 
         // Ambil pengiriman pertama dari transaksi lama
-        $pengiriman_pertama = $transaksi_lama->pesanan->first()->pengiriman->first();
-
+        $pengiriman_pertama = $transaksi_lama->pesanan->first()->pengiriman;
         if (!$pengiriman_pertama) {
             return response()->json([
                 'success' => false,
@@ -716,7 +721,8 @@ class ApiPembelianController extends Controller
         $pesanan = Pesanan::where('id_pesanan', $pengiriman_pertama->id_pesanan)->first();
         $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
         $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
-        broadcast(new GasKeluarEvent($nama_perusahaan));
+        $jenis_rumus = 'tubin';
+        broadcast(new GasKeluarEvent($nama_perusahaan, $jenis_rumus));
 
         return response()->json([
             'success' => true,

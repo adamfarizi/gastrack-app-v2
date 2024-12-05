@@ -428,7 +428,7 @@
                                                 @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
                                                     Gas Masuk 
                                                 @else
-                                                    Turbin Masuk
+                                                    Turbin Awal
                                                 @endif
                                                 <span style="color: red">*</span>
                                             </label>
@@ -469,7 +469,6 @@
                                         <div class="col-md-auto d-flex align-items-end">
                                             {{-- Fitur foto harus ada semua --}}
                                             @if (is_null($pengiriman->bukti_nota_pengisian) ||
-                                                    is_null($pengiriman->bukti_nota_sopir) ||
                                                     is_null($pengiriman->bukti_gas_masuk) ||
                                                     is_null($pengiriman->bukti_gas_keluar))
                                                 <button class="btn btn-icon btn-3 btn-primary m-0" type="submit"
@@ -528,40 +527,6 @@
                     @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
                         <div class="row mx-2">
                             <div class="border rounded col mt-2 p-3">
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <h6>Bukti Nota Pengisian</h6>
-                                        @if ($pengiriman->bukti_nota_pengisian == null)
-                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
-                                                style="background-color: #dee2e6; height: 50vh;">
-                                                <p class="text-white">Belum ada bukti</p>
-                                            </div>
-                                        @else
-                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
-                                                style="height: 50vh; background-color: #dee2e6;">
-                                                <img src="{{ asset('img/NotaPengisian/' . $pengiriman->bukti_nota_pengisian) }}"
-                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
-                                                    alt="Bukti Nota Pengisian">
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6>Bukti Nota Sopir</h6>
-                                        @if ($pengiriman->bukti_nota_sopir == null)
-                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
-                                                style="background-color: #dee2e6; height: 50vh;">
-                                                <p class="text-white">Belum ada bukti</p>
-                                            </div>
-                                        @else
-                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
-                                                style="height: 50vh; background-color: #dee2e6;">
-                                                <img src="{{ asset('img/NotaSopir/' . $pengiriman->bukti_nota_sopir) }}"
-                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
-                                                    alt="Bukti Nota Sopir">
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <h6>Bukti Gas Masuk</h6>
@@ -592,6 +557,40 @@
                                                 <img src="{{ asset('img/GasKeluar/' . $pengiriman->bukti_gas_keluar) }}"
                                                     class="img-fluid" style="max-height: 100%; object-fit: contain;"
                                                     alt="Bukti Gas Keluar">
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h6>Bukti Nota Pengisian</h6>
+                                        @if ($pengiriman->bukti_nota_pengisian == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/NotaPengisian/' . $pengiriman->bukti_nota_pengisian) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Nota Pengisian">
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Bukti Nota Sopir</h6>
+                                        @if ($pengiriman->bukti_nota_sopir == null)
+                                            <div class="d-flex justify-content-center align-items-center w-100 rounded text-center"
+                                                style="background-color: #dee2e6; height: 50vh;">
+                                                <p class="text-white">Belum ada bukti</p>
+                                            </div>
+                                        @else
+                                            <div class="d-flex rounded justify-content-center align-items-center w-100"
+                                                style="height: 50vh; background-color: #dee2e6;">
+                                                <img src="{{ asset('img/NotaSopir/' . $pengiriman->bukti_nota_sopir) }}"
+                                                    class="img-fluid" style="max-height: 100%; object-fit: contain;"
+                                                    alt="Bukti Nota Sopir">
                                             </div>
                                         @endif
                                     </div>

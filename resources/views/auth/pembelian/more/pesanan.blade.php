@@ -317,39 +317,53 @@
                             </div>
                             {{-- Export Tabel --}}
                             <div class="row col-6 p-0 m-0 justify-content-end">
-                                <div class="col-md-2 align-self-end px-0 mx-1">
-                                    <a id="exportPDF"
-                                        href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/invoice') }}"
-                                        class="btn btn-icon btn-3 btn-warning m-0 mt-2" type="button" target="_blank">
-                                        <span class="btn-inner--icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
-                                        <span class="btn-inner--text" style="font-size: 10px">Invoice</span>
-                                    </a>
-                                </div>
-                                <div class="col-md-2 align-self-end px-0 mx-0">
-                                    @if ($transaksi->pelanggan->jenis_rumus === 'normal')
+                                @if ($transaksi->pelanggan->jenis_rumus === 'normal')
+                                    <div class="col-md-2 align-self-end px-0 mx-1">
+                                        <a id="exportPDF"
+                                            href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/invoice') }}"
+                                            class="btn btn-icon btn-3 btn-warning m-0 mt-2" type="button"
+                                            target="_blank">
+                                            <span class="btn-inner--icon"><i
+                                                    class="fa-solid fa-file-invoice-dollar"></i></span>
+                                            <span class="btn-inner--text" style="font-size: 10px">Invoice</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-2 align-self-end px-0 mx-0">
                                         <a id="exportExcel"
                                             href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_excel') }}"
                                             class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button">
                                             <span class="btn-inner--icon"><i class="fa-regular fa-file-excel"></i></span>
                                             <span class="btn-inner--text">Excel</span>
                                         </a>
-                                    @else
+                                    </div>
+                                    <div class="col-md-2 align-self-end px-0 mx-0">
+                                        <a id="exportPDF"
+                                            href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_pdf') }}"
+                                            class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button"
+                                            target="_blank">
+                                            <span class="btn-inner--icon"><i class="fa-regular fa-file-pdf"></i></span>
+                                            <span class="btn-inner--text">PDF</span>
+                                        </a>
+                                    </div>
+                                @else
+                                    <div class="col-md-2 align-self-end px-0 mx-0">
                                         <a id="exportExcel"
                                             href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_excel_turbin') }}"
                                             class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button">
                                             <span class="btn-inner--icon"><i class="fa-regular fa-file-excel"></i></span>
                                             <span class="btn-inner--text">Excel</span>
                                         </a>
-                                    @endif
-                                </div>
-                                <div class="col-md-2 align-self-end px-0 mx-0">
-                                    <a id="exportPDF"
-                                        href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_pdf') }}"
-                                        class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button" target="_blank">
-                                        <span class="btn-inner--icon"><i class="fa-regular fa-file-pdf"></i></span>
-                                        <span class="btn-inner--text">PDF</span>
-                                    </a>
-                                </div>
+                                    </div>
+                                    <div class="col-md-2 align-self-end px-0 mx-0">
+                                        <a id="exportPDF"
+                                            href="{{ url('/pembelian/more/pesanan/' . $transaksi->id_transaksi . '/export_pdf') }}"
+                                            class="btn btn-icon btn-3 btn-primary m-0 mt-2" type="button"
+                                            target="_blank">
+                                            <span class="btn-inner--icon"><i class="fa-regular fa-file-pdf"></i></span>
+                                            <span class="btn-inner--text">PDF</span>
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         @if ($transaksi->pelanggan->jenis_rumus === 'normal')
@@ -417,7 +431,7 @@
                                                 class="text-center text-secondary text-sm font-weight-bolder">
                                                 0</td>
                                             <td id="totalHarga"
-                                                class="text-center text-secondary text-sm font-weight-bolder">
+                                                class="text-end text-secondary text-sm font-weight-bolder">
                                                 0</td>
                                             <td></td>
                                         </tr>
@@ -429,62 +443,32 @@
                             </div>
                         @else
                             {{-- Tabel --}}
-                            <div class="table-responsive p-0" style="min-height:380px; overflow-y: auto;">
+                            <div class="table-responsive p-0 mt-3" style="min-height:380px; overflow-y: auto;">
                                 <table class="table align-items-center mb-0" id="table_pesanan_turbin">
                                     <thead class="sticky-top bg-white z-index-1">
                                         <tr>
-                                            <th rowspan="2"
+                                            <th
                                                 class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
                                                 No</th>
-                                            <th rowspan="2"
+                                            <th
                                                 class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
                                                 Pelanggan</th>
-                                            <th rowspan="2"
+                                            <th
                                                 class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Hari</th>
-                                            <th rowspan="2"
+                                                Hari Pemesanan</th>
+                                            <th
                                                 class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Tanggal</th>
-                                            <th colspan="3"
+                                                Tanggal Pemesanan</th>
+                                            <th
                                                 class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Tekanan</th>
-                                            <th rowspan="2"
+                                                Waktu Pemesanan</th>
+                                            <th
                                                 class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Volume m<sup>3</sup></th>
-                                            <th rowspan="2"
-                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-10">
-                                                Total Harga</th>
-                                            <th rowspan="2"></th>
-                                        </tr>
-                                        <tr>
-                                            <th style="padding-inline: 2px;"
-                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Awal</th>
-                                            <th style="padding-inline: 2px;"
-                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Akhir</th>
-                                            <th style="padding-inline: 2px;"
-                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Selisih</th>
+                                                Diantar Oleh</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table_pesanan_turbin_body">
                                     </tbody>
-                                    <tfoot
-                                        style="border-top: 1px solid #f0f2f5; position: sticky; bottom: 0; z-index: 10; background-color: #ffffff;">
-                                        <tr>
-                                            <td colspan="7"
-                                                class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                                                Jumlah</td>
-                                            <td id="totalM3"
-                                                class="text-center text-secondary text-sm font-weight-bolder">
-                                                0</td>
-                                            <td id="totalHarga"
-                                                class="text-center text-secondary text-sm font-weight-bolder">
-                                                0</td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                                 <div class="text-center mt-5" id="noResultsMessage_pesanan" style="display: none;">
                                     <p class="fw-light">Pesanan tidak ditemukan.</p>
@@ -636,7 +620,7 @@
                                     '<td class="text-center">' +
                                     '<p class="text-sm mb-0">' + m3 + '</p>' +
                                     '</td>' +
-                                    '<td class="text-center">' +
+                                    '<td class="text-end">' +
                                     '<p class="text-sm mb-0">' + hargaFormatted + '</p>' +
                                     '</td>';
                                 if (transaksi.tagihan.status_tagihan === 'Belum Bayar') {
@@ -660,7 +644,7 @@
                         var table = $('#table_pesanan_turbin tbody');
                         table.empty();
 
-                        if (!data.pesanan_turbin || data.pesanan_turbin.length === 0) {
+                        if (!data.pesanans || data.pesanans.length === 0) {
                             var row =
                                 '<tr class="text-dark">' +
                                 '<td colspan="9" class="text-center fw-light text-secondary text-sm py-5">Tidak ada pesanan.</td>' +
@@ -668,65 +652,46 @@
 
                             table.append(row);
                         } else {
-                            var pesanan = data.pesanan_turbin;
-                            console.log(pesanan);
-                            
-                            var datetimeString = pesanan.tanggal_pesanan;
-                            var formatedDateTime = formatDateTime(datetimeString);
-                            var gasMasuk = pesanan.pengiriman.kapasitas_gas_masuk ? pesanan
-                                .pengiriman
-                                .kapasitas_gas_masuk : 0;
-                            var gasKeluar = pesanan.pengiriman.kapasitas_gas_keluar ? pesanan
-                                .pengiriman
-                                .kapasitas_gas_keluar : 0;
-                            var sisaGas = pesanan.pengiriman.sisa_gas ? pesanan.pengiriman
-                                .sisa_gas : 0;
-                            var m3 = pesanan.jumlah_m3 ? pesanan.jumlah_m3 : 0;
-                            var hargaPesanan = pesanan.harga_pesanan;
-                            var hargaFormatted = formatRupiah(hargaPesanan);
-                            var row =
-                                '<tr class="text-dark">' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + 1 + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + pesanan.transaksi.pelanggan
-                                .nama_perusahaan + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + formatedDateTime.hari + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + formatedDateTime.tanggal + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + gasMasuk + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + sisaGas + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + gasKeluar + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + m3 + '</p>' +
-                                '</td>' +
-                                '<td class="text-center">' +
-                                '<p class="text-sm mb-0">' + hargaFormatted + '</p>' +
-                                '</td>';
-                            if (transaksi.tagihan.status_tagihan === 'Belum Bayar') {
-                                row +=
+                            $.each(data.pesanans, function(index, pesanan) {
+                                var datetimeString = pesanan.tanggal_pesanan;
+                                var formatedDateTime = formatDateTime(datetimeString);
+                                var sopirText = pesanan.pengiriman.sopir ? pesanan.pengiriman.sopir
+                                    .nama : 'Belum Dikirim';
+                                var mobilText = pesanan.pengiriman.mobil ? pesanan.pengiriman.mobil
+                                    .nopol_mobil : 'Belum Dikirim';
+                                var row =
+                                    '<tr class="text-dark">' +
                                     '<td class="text-center">' +
-                                    '<a href="{{ url('/pembelian/more/pesanan/pengiriman/') }}/' +
-                                    pesanan.id_pesanan +
-                                    '" class="text-sm mb-0" title="Edit"><i class="fa fa-solid fa-pen" style="color: #252f40;"></i></a>' +
+                                    '<p class="text-sm mb-0">' + (index + 1) + '</p>' +
+                                    '</td>' +
+                                    '<td>' +
+                                    '<div class="text-center">' +
+                                    '<h6 class="mb-1 text-sm">' + pesanan.transaksi.pelanggan
+                                    .nama_pemilik +
+                                    '</h6>' +
+                                    '<p class="text-sm text-secondary mb-0">' + pesanan.transaksi
+                                    .pelanggan
+                                    .nama_perusahaan +
+                                    '</p>' +
+                                    '</div>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + formatedDateTime.hari + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + formatedDateTime.tanggal + '</p>' +
+                                    '</td>' +
+                                    '<td class="text-center">' +
+                                    '<p class="text-sm mb-0">' + formatedDateTime.jam + '</p>' +
+                                    '</td>' +
+                                    '<td>' +
+                                    '<div class="text-center">' +
+                                    '<h6 class="mb-1 text-sm">' + sopirText + '</h6>' +
+                                    '<p class="text-sm text-secondary mb-0">' + mobilText + '</p>' +
+                                    '</div>' +
                                     '</td>';
-                            }
-                            row += '</tr>';
-                            table.append(row);
-
-                            $('#totalHarga').text(formatRupiah(data.totalharga));
-                            $('#totalM3').text(parseFloat(data.totalm3).toFixed(2));
+                                table.append(row);
+                            });
                         }
 
                         table.show();
@@ -781,7 +746,6 @@
         $(document).ready(function() {
             realtime_Pesanan();
         });
-
 
         document.addEventListener("DOMContentLoaded", function(event) {
             Echo.channel(`PesananBaru-channel`).listen('PesananBaruEvent', (e) => {

@@ -341,7 +341,8 @@ class ApiSopirController extends Controller
         $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
         $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
         $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
-        broadcast(new GasKeluarEvent($nama_perusahaan));
+        $jenis_rumus = 'normal';
+        broadcast(new GasKeluarEvent($nama_perusahaan, $jenis_rumus));
 
         return response()->json([
             'success' => true,
@@ -964,7 +965,8 @@ class ApiSopirController extends Controller
         $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
         $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
         $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
-        broadcast(new GasKeluarEvent($nama_perusahaan));
+        $jenis_rumus = 'normal';
+        broadcast(new GasKeluarEvent($nama_perusahaan, $jenis_rumus));
 
         return response()->json([
             'success' => true,

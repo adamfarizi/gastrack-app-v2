@@ -58,24 +58,17 @@
         <table class="table table-sm table-bordered">
             <thead class="text-center" style="font-size: 12px">
                 <tr>
-                    <th class="px-0 align-middle" rowspan="2">No</th>
-                    <th class="px-0 align-middle" rowspan="2">Pelanggan</th>
-                    <th class="px-0 align-middle" rowspan="2">Hari</th>
-                    <th class="px-0 align-middle" rowspan="2">Tanggal</th>
-                    <th class="px-0 align-middle" colspan="3">Tekanan</th>
-                    <th class="px-0 align-middle" rowspan="2">Volume<br>LWC/m<sup>3</sup></th>
-                    <th class="px-0 align-middle" rowspan="2">Total Harga</th>
-                </tr>
-                <tr>
-                    <th class="px-0">Awal</th>
-                    <th class="px-0">Akhir</th>
-                    <th class="px-0">Selisih</th>
+                    <th class="px-0 align-middle">No</th>
+                    <th class="px-0 align-middle">Pelanggan</th>
+                    <th class="px-0 align-middle">Hari Pemesanan</th>
+                    <th class="px-0 align-middle">Tanggal Pemesanan</th>
+                    <th class="px-0 align-middle">Waktu Pemesanan</th>
+                    <th class="px-0 align-middle">Diantar Oleh</th>
                 </tr>
             </thead>
             <tbody style="font-size: 11px;">
-                @if ($pesanans_turbin)
+                @forelse ($pesanans_normal as $pesanan)
                     @php
-                        $pesanan = $pesanans_turbin;
                         // Daftar nama hari dan bulan dalam Bahasa Indonesia
                         $namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                         // Mengubah string tanggal ke timestamp
@@ -85,7 +78,7 @@
                     @endphp
                     <tr>
                         <td>
-                            <p>1</p>
+                            <p>{{ $loop->iteration }}</p>
                         </td>
                         <td>
                             <p>{{ $pesanan->transaksi->pelanggan->nama_perusahaan }}</p>
@@ -97,35 +90,20 @@
                             <p>{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('d-M-Y') }}</p>
                         </td>
                         <td>
-                            <p>{{ $pesanan->pengiriman->kapasitas_gas_masuk ?? 0 }}</p>
+                            <p>{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->format('H:i:s') }}</p>
                         </td>
                         <td>
-                            <p>{{ $pesanan->pengiriman->sisa_gas ?? 0 }}</p>
-                        </td>
-                        <td>
-                            <p>{{ $pesanan->pengiriman->kapasitas_gas_keluar ?? 0 }}</p>
-                        </td>
-                        <td>
-                            <p>{{ $pesanan->jumlah_m3 ?? 0 }}</p>
-                        </td>
-                        <td>
-                            <p>Rp {{ number_format($pesanan->harga_pesanan, 0, ',', '.') }}</p>
+                            <p>{{ $pesanan->pengiriman->sopir ? $pesanan->pengiriman->sopir->nama : 'Belum Dikirim' }}
+                            </p>
+                            <p>{{ $pesanan->pengiriman->mobil ? $pesanan->pengiriman->mobil->nopol_mobil : 'Belum Dikirim' }}
+                            </p>
                         </td>
                     </tr>
-                @else
+                @empty
                     <tr>
                         <td colspan="9" class="text-center">Tidak ada data pesanan.</td>
                     </tr>
-                @endif
-                <tr>
-                    <th class="text-center align-middle" colspan="7">Jumlah</th>
-                    <td class="align-middle">
-                        <p>{{ $totalJumlahM3 ?? 0 }}</p>
-                    </td>
-                    <td class="align-middle">
-                        <p>Rp {{ number_format($totalHargaPesanan, 0, ',', '.') }}</p>
-                    </td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
