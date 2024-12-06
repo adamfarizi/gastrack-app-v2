@@ -285,11 +285,6 @@
                         <div class="modal-body">
                             <form action="{{ url('/profil/edit/password/'.Auth::user()->id_admin) }}" method="post" role="form text-left">
                                 @csrf
-                                <label>Password</label>
-                                <div class="input-group input-group-outline mb-3">
-                                    <input name="old_password" type="password" class="form-control"
-                                        aria-label="old_password" value="" placeholder="Password Lama">
-                                </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>Password Baru</label>

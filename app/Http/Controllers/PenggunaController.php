@@ -34,7 +34,7 @@ class PenggunaController extends Controller
             'admins' => $admins,
         ], $data);
     }
-    
+
 
     public function tambah_pelanggan_action(Request $request)
     {
@@ -83,76 +83,45 @@ class PenggunaController extends Controller
 
     public function edit_pelanggan_action($id_pelanggan, Request $request)
     {
+        $request->validate([
+            'nama_perusahaan' => 'required|string|max:255',
+            'nama_pemilik' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'no_hp' => 'required|string|max:15',
+            'jenis_rumus' => 'required',
+            'jadwal_bayar' => 'required',
+            'harga_pelanggan' => 'required',
+            'bop' => 'required',
+            'alamat' => 'required|string',
+            'new_password' => 'nullable|confirmed|min:8', // Password baru bersifat opsional
+        ], [
+            'new_password.confirmed' => 'Konfirmasi password tidak sama!',
+            'new_password.min' => 'Password harus memiliki minimal 8 karakter!',
+        ]);
 
-        if ($request->old_password == null) {
-            $request->validate([
-                'nama_perusahaan' => 'required|string|max:255',
-                'nama_pemilik' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'no_hp' => 'required|string|max:15',
-                'jenis_rumus' => 'required',
-                'jadwal_bayar' => 'required',
-                'harga_pelanggan' => 'required',
-                'bop' => 'required',
-                'alamat' => 'required|string',
-            ]);
+        // Cari pelanggan berdasarkan ID
+        $pelanggan = Pelanggan::find($id_pelanggan);
 
-            $pelanggan = Pelanggan::find($id_pelanggan);
-            $pelanggan->nama_perusahaan = $request->input('nama_perusahaan');
-            $pelanggan->nama_pemilik = $request->input('nama_pemilik');
-            $pelanggan->email = $request->input('email');
-            $pelanggan->no_hp = $request->input('no_hp');
-            $pelanggan->jenis_rumus = $request->input('jenis_rumus');
-            $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
-            $pelanggan->harga_pelanggan = $request->input('harga_pelanggan');
-            $pelanggan->bop_pelanggan = $request->input('bop');
-            $pelanggan->alamat = $request->input('alamat');
-            $pelanggan->save();
+        // Perbarui data pelanggan
+        $pelanggan->nama_perusahaan = $request->input('nama_perusahaan');
+        $pelanggan->nama_pemilik = $request->input('nama_pemilik');
+        $pelanggan->email = $request->input('email');
+        $pelanggan->no_hp = $request->input('no_hp');
+        $pelanggan->jenis_rumus = $request->input('jenis_rumus');
+        $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
+        $pelanggan->harga_pelanggan = $request->input('harga_pelanggan');
+        $pelanggan->bop_pelanggan = $request->input('bop');
+        $pelanggan->alamat = $request->input('alamat');
 
-            return redirect()->route('pengguna')->with('success', 'Data berhasil diubah !');
-        } else {
-            $request->validate([
-                'nama_perusahaan' => 'required|string|max:255',
-                'nama_pemilik' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'no_hp' => 'required|string|max:15',
-                'jenis_rumus' => 'required',
-                'jadwal_bayar' => 'required',
-                'harga_pelanggan' => 'required',
-                'bop' => 'required',
-                'alamat' => 'required|string',
-                'old_password' => [
-                    'required',
-                    function ($attribute, $value, $fail) use ($id_pelanggan) {
-                        $pelanggan = Pelanggan::find($id_pelanggan);
-
-                        if (!Hash::check($value, $pelanggan->password)) {
-                            $fail('Password lama salah !');
-                        }
-                    },
-                ],
-                'new_password' => 'required|confirmed',
-            ], [
-                'old_password.required' => 'Masukkan password lama !',
-                'new_password.required' => 'Masukkan password baru !',
-                'new_password.confirmed' => 'Konfirmasi password tidak sama !',
-            ]);
-
-            $pelanggan = Pelanggan::find($id_pelanggan);
-            $pelanggan->nama_perusahaan = $request->input('nama_perusahaan');
-            $pelanggan->nama_pemilik = $request->input('nama_pemilik');
-            $pelanggan->email = $request->input('email');
-            $pelanggan->no_hp = $request->input('no_hp');
-            $pelanggan->jenis_rumus = $request->input('jenis_rumus');
-            $pelanggan->jenis_pembayaran = $request->input('jadwal_bayar');
-            $pelanggan->harga_pelanggan = $request->input('harga_pelanggan');
-            $pelanggan->bop_pelanggan = $request->input('bop');
-            $pelanggan->alamat = $request->input('alamat');
+        // Jika password baru diisi, perbarui password
+        if ($request->filled('new_password')) {
             $pelanggan->password = Hash::make($request->new_password);
-            $pelanggan->save();
-
-            return redirect()->route('pengguna')->with('success', 'Data berhasil diubah !');
         }
+
+        // Simpan perubahan
+        $pelanggan->save();
+
+        return redirect()->route('pengguna')->with('success', 'Data berhasil diubah!');
     }
 
     public function edit_pelanggan_status($id_pelanggan)
@@ -232,48 +201,31 @@ class PenggunaController extends Controller
 
     public function edit_admin_action($id_admin, Request $request)
     {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'new_password' => 'nullable|confirmed|min:8', // Password baru bersifat opsional
+        ], [
+            'new_password.confirmed' => 'Konfirmasi password tidak sama!',
+            'new_password.min' => 'Password harus memiliki minimal 8 karakter!',
+        ]);
 
-        if ($request->old_password == null) {
-            $request->validate([
-                'nama' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-            ]);
+        // Cari admin berdasarkan ID
+        $admin = User::find($id_admin);
 
-            $admin = User::find($id_admin);
-            $admin->nama = $request->input('nama');
-            $admin->email = $request->input('email');
-            $admin->save();
+        // Perbarui data admin
+        $admin->nama = $request->input('nama');
+        $admin->email = $request->input('email');
 
-            return redirect()->route('pengguna_admin')->with('success', 'Data berhasil diubah !');
-        } else {
-            $request->validate([
-                'nama' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'old_password' => [
-                    'required',
-                    function ($attribute, $value, $fail) use ($id_admin) {
-                        $admin = User::find($id_admin);
-
-                        if (!Hash::check($value, $admin->password)) {
-                            $fail('Password lama salah !');
-                        }
-                    },
-                ],
-                'new_password' => 'required|confirmed',
-            ], [
-                'old_password.required' => 'Masukkan password lama !',
-                'new_password.required' => 'Masukkan password baru !',
-                'new_password.confirmed' => 'Konfirmasi password tidak sama !',
-            ]);
-
-            $admin = User::find($id_admin);
-            $admin->nama = $request->input('nama');
-            $admin->email = $request->input('email');
+        // Jika password baru diisi, perbarui password
+        if ($request->filled('new_password')) {
             $admin->password = Hash::make($request->new_password);
-            $admin->save();
-
-            return redirect()->route('pengguna_admin')->with('success', 'Data berhasil diubah !');
         }
+
+        // Simpan perubahan
+        $admin->save();
+
+        return redirect()->route('pengguna_admin')->with('success', 'Data berhasil diubah!');
     }
 
     public function hapus_admin_action($id_admin)

@@ -311,10 +311,6 @@
                                     style="height: 70px; resize: none;" aria-label="alamat" value="">{{ $pelanggan->alamat }}</textarea>
                             </div>
                             <label>Password</label>
-                            <div class="input-group input-group-outline mb-3">
-                                <input name="old_password" type="password" class="form-control"
-                                    aria-label="old_password" value="" placeholder="Password Lama">
-                            </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="input-group input-group-outline mb-3">

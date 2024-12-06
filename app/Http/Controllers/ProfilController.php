@@ -38,27 +38,22 @@ class ProfilController extends Controller
     public function edit_password_action($id_admin, Request $request)
     {
         $request->validate([
-            'old_password' => [
-                'required',
-                function ($attribute, $value, $fail) use ($id_admin) {
-                    $admin = User::find($id_admin);
-
-                    if (!Hash::check($value, $admin->password)) {
-                        $fail('Password lama salah !');
-                    }
-                },
-            ],
-            'new_password' => 'required|confirmed',
+            'new_password' => 'required|confirmed|min:8',
         ], [
-            'old_password.required' => 'Masukkan password lama !',
-            'new_password.required' => 'Masukkan password baru !',
-            'new_password.confirmed' => 'Konfirmasi password tidak sama !',
+            'new_password.required' => 'Masukkan password baru!',
+            'new_password.confirmed' => 'Konfirmasi password tidak sama!',
+            'new_password.min' => 'Password harus memiliki minimal 8 karakter!',
         ]);
 
+        // Cari admin berdasarkan ID
         $admin = User::find($id_admin);
+
+        // Perbarui password dengan password baru
         $admin->password = Hash::make($request->new_password);
+
+        // Simpan perubahan
         $admin->save();
 
-        return redirect()->back()->with('success', 'Password berhasil diubah !');
+        return redirect()->back()->with('success', 'Password berhasil diubah!');
     }
 }
