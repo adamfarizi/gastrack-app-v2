@@ -820,7 +820,7 @@ class ApiPembelianController extends Controller
             'success' => true,
             'message' => 'Data pengiriman berhasil diupdate',
             'bukti_gas_masuk' => true,
-            'bukti_gas_keluar' => $transaksi_lama ? true : false,
+            'bukti_gas_keluar_lama' => $transaksi_lama ? true : false,
         ], 200);
     }
 
