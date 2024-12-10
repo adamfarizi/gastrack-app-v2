@@ -291,21 +291,26 @@
                                 <h4 class="card-title"> Pembelian</h4>
                                 <span class="mt-1 ms-3">
                                     <div class="d-flex align-items-center mt-1">
-                                        <label class="me-2 mb-0" for="purchaseSwitch" id="labelLeft" style="display: flex">
-                                            Turbin 
+                                        <label class="me-2 mb-0" for="purchaseSwitch" id="labelLeft"
+                                            style="display: flex">
+                                            Turbin
                                             <span class="text-primary ms-1 mt-1">
-                                                <i id="labelTurbin" style="display:none" class="fa-solid fa-circle-exclamation me-2"></i>
+                                                <i id="labelTurbin" style="display:none"
+                                                    class="fa-solid fa-circle-exclamation me-2"></i>
                                             </span>
                                         </label>
-                                        
+
                                         <div class="form-check form-switch me-2">
-                                            <input class="form-check-input" type="checkbox" id="purchaseSwitch" onchange="switchPurchaseType()" checked>
+                                            <input class="form-check-input" type="checkbox" id="purchaseSwitch"
+                                                onchange="switchPurchaseType()" checked>
                                         </div>
-                                        
-                                        <label class="mb-0" for="purchaseSwitch" id="labelRight" style="display: flex">
-                                            Normal 
+
+                                        <label class="mb-0" for="purchaseSwitch" id="labelRight"
+                                            style="display: flex">
+                                            Normal
                                             <span class="text-primary ms-1 mt-1">
-                                                <i id="labelNormal" style="display:none" class="fa-solid fa-circle-exclamation"></i>
+                                                <i id="labelNormal" style="display:none"
+                                                    class="fa-solid fa-circle-exclamation"></i>
                                             </span>
                                         </label>
                                     </div>
@@ -909,7 +914,10 @@
                         table.append(row);
                     } else {
                         $.each(data.transaksis_normal, function(index, transaksi) {
+                            console.log(transaksi.belum_dihitung);
+                            
                             var statusBadge = getStatusBadge(transaksi);
+                            var pesananButton = getPesananButton(transaksi);
                             var dateTimeString = transaksi.tanggal_transaksi;
                             var formattedDateTime = formatDateTime(dateTimeString);
 
@@ -938,7 +946,7 @@
                                 statusBadge +
                                 '</td>' +
                                 '<td class="text-center">' +
-                                '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" data-id="" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>' +
+                                pesananButton +
                                 '</td>' +
                                 '</tr>';
 
@@ -1125,7 +1133,7 @@
                     return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';
                 }
             } else if (transaksi.tagihan.status_tagihan === 'Diproses') {
-                return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-info position-relative text-white">Konfirmasi<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
+                return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-info position-relative text-white">Konfirmasi<span class="fa-solid fa-circle-exclamation position-absolute top-0 start-100 ps-1 translate-middle text-warning text-lg"></span></a>';
             } else {
                 return '<a href="<?php echo url("/pembelian/more/tagihan/' + transaksi.id_transaksi + '"); ?>"  class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>';
             }
@@ -1139,9 +1147,18 @@
                     return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';
                 }
             } else if (turbin.transaksi.tagihan.status_tagihan === 'Diproses') {
-                return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-info position-relative text-white">Konfirmasi<span class="material-symbols-outlined position-absolute top-0 start-100 translate-middle bg-warning border rounded-circle">info</span></a>';
+                return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-info position-relative text-white">Konfirmasi<span class="fa-solid fa-circle-exclamation position-absolute top-0 start-100 ps-1 translate-middle text-warning text-lg"></span></a>';
             } else {
                 return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>"  class="badge badge-sm bg-gradient-success text-white">Sudah Bayar</a>';
+            }
+        }
+
+        function getPesananButton(transaksi) {            
+            if (transaksi.belum_dihitung) {
+                return '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-success text-white position-relative">Detail Pesanan' +
+                    '<span class="fa-solid fa-circle-exclamation position-absolute top-0 start-100 translate-middle text-warning text-lg"></span></a>';
+            } else {
+                return '<a href="<?php echo url("/pembelian/more/pesanan/' + transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-success text-white">Detail Pesanan</a>';
             }
         }
 

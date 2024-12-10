@@ -55,6 +55,7 @@ class PembelianController extends Controller
         })->count();
         $gas = Gas::sum('harga_gas');
         $harga_gas = number_format($gas, 0, ',', '.');
+
         $transaksis_normal = Transaksi::with('pelanggan', 'tagihan')
             ->whereHas('pelanggan', function ($query) {
                 $query->whereIn('jenis_rumus', ['normal']);
@@ -64,6 +65,27 @@ class PembelianController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->get();
+        $transaksis_normal_belum_dihitung = Transaksi::with('pelanggan', 'pesanan.pengiriman')
+            ->whereHas('pelanggan', function ($query) {
+                $query->whereIn('jenis_rumus', ['normal']);
+            })
+            ->whereHas('pesanan', function ($query) {
+                $query->where('jumlah_bar', 0)
+                    ->where('jumlah_m3', 0);
+            })
+            ->whereHas('pesanan.pengiriman', function ($query) {
+                $query->whereNotNull('bukti_nota_sopir')
+                    ->whereNotNull('bukti_nota_pengisian')
+                    ->whereNotNull('bukti_gas_masuk')
+                    ->whereNotNull('bukti_gas_keluar')
+                    ->whereNull('kapasitas_gas_masuk')
+                    ->whereNull('kapasitas_gas_keluar');
+            })
+            ->pluck('id_transaksi')
+            ->toArray();
+        $transaksis_normal->each(function ($transaksi) use ($transaksis_normal_belum_dihitung) {
+            $transaksi->belum_dihitung = in_array($transaksi->id_transaksi, $transaksis_normal_belum_dihitung);
+        });
 
         $transaksis_turbin = Transaksi::with(['pelanggan', 'tagihan', 'pesanan', 'pesanan.pengiriman'])
             ->whereHas('pelanggan', function ($query) {
@@ -92,6 +114,7 @@ class PembelianController extends Controller
             'pesanan_masuk' => $pesanan_masuk,
             'harga_gas' => $harga_gas,
             'transaksis_normal' => $transaksis_normal,
+            'transaksis_normal_belum_dihitung' => $transaksis_normal_belum_dihitung,
             'transaksis_turbin' => $transaksis_turbin,
         ]);
     }

@@ -731,4 +731,97 @@ class ApiPembelianController extends Controller
         ], 200);
     }
 
+    public function uploadTurbin(Request $request, $id_transaksi)
+    {
+        // Validasi request
+        $request->validate([
+            'bukti_turbin' => 'required|image|mimes:jpeg,jpg,png',
+        ]);
+
+        // Ambil id_pelanggan dari transaksi yang diberikan
+        $id_pelanggan = Transaksi::where('id_transaksi', $id_transaksi)
+            ->pluck('id_pelanggan')
+            ->first();
+
+        // Ambil data transaksi lama
+        $transaksi_lama = Transaksi::where('id_transaksi', '<', $id_transaksi)
+            ->where('id_pelanggan', $id_pelanggan)
+            ->with('pesanan.pengiriman')
+            ->orderBy('id_transaksi', 'desc')
+            ->first();
+
+        $file = $request->file('bukti_turbin');
+        $originalFileName = $file->getClientOriginalName();
+
+        // Jika ada transaksi lama
+        if ($transaksi_lama) {
+            // Ambil pengiriman pertama dari transaksi lama
+            $pengiriman_lama = $transaksi_lama->pesanan->first()->pengiriman ?? null;
+
+            if ($pengiriman_lama) {
+                $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_lama->kode_pengiriman);
+                $fileNameGasKeluar = $nomor_resi . "_" . $originalFileName;
+
+                // Simpan file untuk gas keluar
+                $file->move(public_path('img/GasKeluar'), $fileNameGasKeluar);
+
+                // Update pengiriman lama dengan bukti gas keluar
+                $pengiriman_lama->update([
+                    'bukti_gas_keluar' => $fileNameGasKeluar,
+                ]);
+            }
+
+            // Notif Gas Diterima
+            $transaksi = Transaksi::find($transaksi_lama->id_transaksi);
+            $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
+            $jenis_rumus = 'turbin';
+            broadcast(new GasKeluarEvent($nama_perusahaan, $jenis_rumus));
+        }
+
+        // Update transaksi saat ini dengan bukti gas masuk
+        $pengiriman_baru = Transaksi::where('id_transaksi', $id_transaksi)
+            ->with('pesanan.pengiriman')
+            ->first()
+            ->pesanan
+            ->first()
+            ->pengiriman;
+
+        if (!$pengiriman_baru) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengiriman tidak ditemukan untuk transaksi ini!',
+            ], 422);
+        }
+
+        $nomor_resi = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
+        $fileNameGasMasuk = $nomor_resi . "_" . $originalFileName;
+
+        // Salin file yang sama ke folder `img/GasMasuk`
+        $sourcePath = public_path('img/GasKeluar/' . $fileNameGasKeluar);
+        $destinationPath = public_path('img/GasMasuk/' . $fileNameGasMasuk);
+
+        // Jika file berhasil dipindahkan sebelumnya, duplikasi ke folder baru
+        if (file_exists($sourcePath)) {
+            copy($sourcePath, $destinationPath);
+
+            // Update pengiriman baru dengan bukti gas masuk
+            $pengiriman_baru->update([
+                'bukti_gas_masuk' => $fileNameGasMasuk,
+            ]);
+        } else {
+            // Simpan file langsung ke `img/GasMasuk` jika file belum ada
+            $file->move(public_path('img/GasMasuk'), $fileNameGasMasuk);
+            $pengiriman_baru->update([
+                'bukti_gas_masuk' => $fileNameGasMasuk,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pengiriman berhasil diupdate',
+            'bukti_gas_masuk' => true,
+            'bukti_gas_keluar' => $transaksi_lama ? true : false,
+        ], 200);
+    }
+
 }

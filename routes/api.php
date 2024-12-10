@@ -47,6 +47,7 @@ Route::middleware(['auth:sanctum', 'check.pelanggan'])->group(function () {
     Route::post('/pelanggan/update_pengiriman_lwc/{id}', [ApiPembelianController::class, 'updatePengirimanLWC']);    
     Route::post('/pelanggan/update_gas_masuk/{id}', [ApiPembelianController::class, 'uploadGasMasuk']);    
     Route::post('/pelanggan/update_gas_keluar/{id}', [ApiPembelianController::class, 'uploadGasKeluar']);    
+    Route::post('/pelanggan/update_turbin/{id}', [ApiPembelianController::class, 'uploadTurbin']);    
     //? Pelanggan Baru
 });
 
