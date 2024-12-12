@@ -974,7 +974,7 @@
                     if (!data.transaksis_turbin || data.transaksis_turbin.length === 0) {
                         var row =
                             '<tr class="text-dark">' +
-                            '<td colspan="7" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pembelian</td>' +
+                            '<td colspan="10" class="text-center fw-light text-secondary text-sm pt-5">Tidak ada pembelian</td>' +
                             '</tr>';
 
                         table.append(row);
@@ -1141,7 +1141,7 @@
 
         function getStatusBadgeTurbin(turbin) {
             if (turbin.transaksi.tagihan.status_tagihan === 'Belum Bayar') {
-                if (new Date(turbin.transaksi.tanggal_jatuh_tempo) < new Date()) {
+                if (new Date(turbin.transaksi.tagihan.tanggal_jatuh_tempo) < new Date()) {
                     return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-dark text-white">Jatuh Tempo</a>';
                 } else {
                     return '<a href="<?php echo url("/pembelian/more/tagihan/' + turbin.transaksi.id_transaksi + '"); ?>" class="badge badge-sm bg-gradient-danger text-white">Belum Bayar</a>';

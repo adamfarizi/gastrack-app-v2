@@ -57,10 +57,19 @@ class ApiPembelianController extends Controller
             ], 422);
         }
 
-        $validator = Validator::make($request->all(), [
+        // Tentukan aturan validasi berdasarkan jenis_rumus
+        $rules = [
             'id_pelanggan' => 'required|exists:pelanggan,id_pelanggan',
-            'bukti_pesanan' => 'required|image|mimes:jpeg,jpg,png|max:2048',
-        ]);
+        ];
+
+        if ($pelangganAktif->jenis_rumus == 'normal') {
+            $rules['bukti_pesanan'] = 'required|image|mimes:jpeg,jpg,png|max:2048';
+        } else {
+            $rules['bukti_pesanan'] = 'image|mimes:jpeg,jpg,png|max:2048';
+        }
+
+        // Lakukan validasi
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json([
@@ -72,7 +81,7 @@ class ApiPembelianController extends Controller
             $tagihan_terbaru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                 ->orderBy('created_at', 'desc')
                 ->first();
-            // Cek apakah sudah pernah pesan
+            //! Cek apakah sudah pernah pesan, jika belum pernah maka membuat transaksi baru
             if (!$tagihan_terbaru) {
                 $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
                 //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
@@ -100,6 +109,7 @@ class ApiPembelianController extends Controller
                 $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                     ->orderBy('created_at', 'desc')
                     ->first();
+
                 $transaksi = new Transaksi([
                     'resi_transaksi' => $resi_transaksi,
                     'tanggal_transaksi' => now(),
@@ -112,8 +122,9 @@ class ApiPembelianController extends Controller
                 $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                     ->latest('created_at')
                     ->first();
+
                 $file = $request->file('bukti_pesanan');
-                $fileName = $file->getClientOriginalName();
+                $fileName = $transaksi->resi_transaksi . '_' . $file->getClientOriginalName();
                 $file->move(public_path('img/BuktiPesanan'), $fileName);
                 $pesanan = new Pesanan([
                     'tanggal_pesanan' => $tanggal_sekarang,
@@ -126,6 +137,7 @@ class ApiPembelianController extends Controller
                 $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
                     ->latest('created_at')
                     ->first();
+
                 $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
                 $pengiriman = new Pengiriman([
                     'kode_pengiriman' => $kode_pengiriman,
@@ -143,32 +155,36 @@ class ApiPembelianController extends Controller
                 broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
                 broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
 
-                //? If else jika pesanan baru maka Turbin harus upload gas masuk
-                if ($pelanggan->jenis_rumus === 'normal') {
+                //? Response untuk jenis_rumus turbin
+                if ($pelanggan->jenis_rumus === 'turbin') {
+                    //? Pemanggilan handleTurbinUpload jika jenis_rumus adalah turbin
+                    $uploadResult = $this->handleTurbinUpload($file, $fileName, $transaksi_baru->id_transaksi);
+
                     return response()->json([
                         'success' => true,
-                        'message' => 'Transaksi baru sudah ditambah !',
-                        'data_transaksi' => $transaksi_baru,
-                        'data_tagihan' => $tagihan_baru,
-                        'data_pesanan' => $pesanan,
-                        'data_pengiriman' => $pengiriman,
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Transaksi baru sudah ditambah !',
-                        'upload_gas_masuk' => true,
+                        'message' => 'Transaksi baru sudah ditambah!',
+                        'upload_result' => $uploadResult,
                         'data_transaksi' => $transaksi_baru,
                         'data_tagihan' => $tagihan_baru,
                         'data_pesanan' => $pesanan,
                         'data_pengiriman' => $pengiriman,
                     ], 200);
                 }
+
+                //? Response untuk jenis_rumus normal
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Transaksi baru sudah ditambah!',
+                    'data_transaksi' => $transaksi_baru,
+                    'data_tagihan' => $tagihan_baru,
+                    'data_pesanan' => $pesanan,
+                    'data_pengiriman' => $pengiriman,
+                ], 200);
             } else {
-                // Cek status pembayaran tagihan
+                //! Cek status pembayaran tagihan, jika sudah bayar membuat transaksi baru
                 if ($tagihan_terbaru->status_tagihan === 'Belum Bayar') {
                     $tanggal_sekarang = now();
-                    // Cek jatuh tempo
+                    //! Cek jatuh tempo, jika tidak jatuh tempo lanjut ke create pesanan di transaksi sekarang
                     if ($tanggal_sekarang > $tagihan_terbaru->tanggal_jatuh_tempo) {
                         $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
                         //! Pelanggan Turbin tetap bisa pesan meski lewat jatuh tempo, tetapi membuat transaksi baru
@@ -198,6 +214,7 @@ class ApiPembelianController extends Controller
                             $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                                 ->orderBy('created_at', 'desc')
                                 ->first();
+
                             $transaksi = new Transaksi([
                                 'resi_transaksi' => $resi_transaksi,
                                 'tanggal_transaksi' => now(),
@@ -210,8 +227,9 @@ class ApiPembelianController extends Controller
                             $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                                 ->latest('created_at')
                                 ->first();
+
                             $file = $request->file('bukti_pesanan');
-                            $fileName = $file->getClientOriginalName();
+                            $fileName = $transaksi->resi_transaksi . '_' . $file->getClientOriginalName();
                             $file->move(public_path('img/BuktiPesanan'), $fileName);
                             $pesanan = new Pesanan([
                                 'tanggal_pesanan' => $tanggal_sekarang,
@@ -224,6 +242,7 @@ class ApiPembelianController extends Controller
                             $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
                                 ->latest('created_at')
                                 ->first();
+
                             $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
                             $pengiriman = new Pengiriman([
                                 'kode_pengiriman' => $kode_pengiriman,
@@ -241,10 +260,13 @@ class ApiPembelianController extends Controller
                             broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
                             broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
 
+                            //? Pemanggilan handleTurbinUpload jika jenis_rumus adalah turbin
+                            $uploadResult = $this->handleTurbinUpload($file, $fileName, $transaksi_baru->id_transaksi);
+
                             return response()->json([
                                 'success' => true,
-                                'message' => 'Transaksi baru sudah ditambah masukkan Gas Akhir Pesanan Lama dan Gas Awal Pesanan Baru !',
-                                'upload_gas_keluar' => true,
+                                'message' => 'Transaksi baru sudah ditambah!',
+                                'upload_result' => $uploadResult,
                                 'data_transaksi' => $transaksi_baru,
                                 'data_tagihan' => $tagihan_baru,
                                 'data_pesanan' => $pesanan,
@@ -256,9 +278,14 @@ class ApiPembelianController extends Controller
                             ->latest('created_at')
                             ->first();
                         $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
-                        $file = $request->file('bukti_pesanan');
-                        $fileName = $file->getClientOriginalName();
-                        $file->move(public_path('img/BuktiPesanan'), $fileName);
+
+                        //? Default nilai untuk bukti_pesanan jika tidak upload bukti pesanan di turbin
+                        $fileName = '-';
+                        if ($request->hasFile('bukti_pesanan')) {
+                            $file = $request->file('bukti_pesanan');
+                            $fileName = $transaksi_terbaru->resi_transaksi . '_' . $file->getClientOriginalName();
+                            $file->move(public_path('img/BuktiPesanan'), $fileName);
+                        }
                         $pesanan = new Pesanan([
                             'tanggal_pesanan' => $tanggal_sekarang,
                             'id_transaksi' => $transaksi_terbaru->id_transaksi,
@@ -270,6 +297,7 @@ class ApiPembelianController extends Controller
                         $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_terbaru->id_transaksi)
                             ->latest('created_at')
                             ->first();
+
                         $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
                         $pengiriman = new Pengiriman([
                             'kode_pengiriman' => $kode_pengiriman,
@@ -322,6 +350,7 @@ class ApiPembelianController extends Controller
                     $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                         ->orderBy('created_at', 'desc')
                         ->first();
+
                     $transaksi = new Transaksi([
                         'resi_transaksi' => $resi_transaksi,
                         'tanggal_transaksi' => now(),
@@ -334,8 +363,9 @@ class ApiPembelianController extends Controller
                     $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
                         ->latest('created_at')
                         ->first();
+
                     $file = $request->file('bukti_pesanan');
-                    $fileName = $file->getClientOriginalName();
+                    $fileName = $transaksi->resi_transaksi . '_' . $file->getClientOriginalName();
                     $file->move(public_path('img/BuktiPesanan'), $fileName);
                     $pesanan = new Pesanan([
                         'tanggal_pesanan' => $tanggal_sekarang,
@@ -348,6 +378,7 @@ class ApiPembelianController extends Controller
                     $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
                         ->latest('created_at')
                         ->first();
+
                     $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
                     $pengiriman = new Pengiriman([
                         'kode_pengiriman' => $kode_pengiriman,
@@ -475,7 +506,7 @@ class ApiPembelianController extends Controller
 
         if ($request->hasFile('bukti_pembayaran')) {
             $file = $request->file('bukti_pembayaran');
-            $fileName = $file->getClientOriginalName();
+            $fileName = now()->format('YmdHis') . '_' . $file->getClientOriginalName();
             $file->move(public_path('img/BuktiPembayaran'), $fileName);
 
             $dikirim->update([
@@ -753,6 +784,8 @@ class ApiPembelianController extends Controller
         $file = $request->file('bukti_turbin');
         $originalFileName = $file->getClientOriginalName();
 
+        $fileNameGasKeluar = null;
+
         // Jika ada transaksi lama
         if ($transaksi_lama) {
             // Ambil pengiriman pertama dari transaksi lama
@@ -797,7 +830,7 @@ class ApiPembelianController extends Controller
         $fileNameGasMasuk = $nomor_resi . "_" . $originalFileName;
 
         // Salin file yang sama ke folder `img/GasMasuk`
-        $sourcePath = public_path('img/GasKeluar/' . $fileNameGasKeluar);
+        $sourcePath = $fileNameGasKeluar ? public_path('img/GasKeluar/' . $fileNameGasKeluar) : null;
         $destinationPath = public_path('img/GasMasuk/' . $fileNameGasMasuk);
 
         // Jika file berhasil dipindahkan sebelumnya, duplikasi ke folder baru
@@ -819,9 +852,72 @@ class ApiPembelianController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data pengiriman berhasil diupdate',
-            'bukti_gas_masuk' => true,
-            'bukti_gas_keluar_lama' => $transaksi_lama ? true : false,
+            'bukti_turbin_masuk' => true,
+            'bukti_turbin_keluar_lama' => $transaksi_lama ? true : false,
         ], 200);
+    }
+
+    public function handleTurbinUpload($file, $fileName, $id_transaksi)
+    {
+        $originalFileName = $file->getClientOriginalName();
+        // Ambil id_pelanggan dari transaksi yang diberikan
+        $id_pelanggan = Transaksi::where('id_transaksi', $id_transaksi)
+            ->pluck('id_pelanggan')
+            ->first();
+
+        // Ambil data transaksi lama
+        $transaksi_lama = Transaksi::where('id_transaksi', '<', $id_transaksi)
+            ->where('id_pelanggan', $id_pelanggan)
+            ->with('pesanan.pengiriman')
+            ->orderBy('id_transaksi', 'desc')
+            ->first();
+
+        // GasMasuk: Selalu pindahkan file ke folder GasMasuk
+        $pengiriman_baru = Transaksi::where('id_transaksi', $id_transaksi)
+            ->with('pesanan.pengiriman')
+            ->first()
+            ->pesanan
+            ->first()
+            ->pengiriman;
+
+        if (!$pengiriman_baru) {
+            return false;
+        }
+
+        $nomor_resi_baru = preg_replace('/[^0-9]/', '', $pengiriman_baru->kode_pengiriman);
+        $fileNameGasMasuk = $nomor_resi_baru . "_" . $originalFileName;
+
+        // Salin file dari BuktiPesanan ke GasMasuk
+        $sourcePath = public_path('img/BuktiPesanan/' . $fileName);
+        $destinationPath = public_path('img/GasMasuk/' . $fileNameGasMasuk);
+        copy($sourcePath, $destinationPath);
+
+        // Update pengiriman baru dengan bukti gas masuk
+        $pengiriman_baru->update([
+            'bukti_gas_masuk' => $fileNameGasMasuk,
+        ]);
+
+        // GasKeluar: Jika ada transaksi lama
+        if ($transaksi_lama) {
+            $pengiriman_lama = $transaksi_lama->pesanan->first()->pengiriman ?? null;
+
+            if ($pengiriman_lama) {
+                $nomor_resi_lama = preg_replace('/[^0-9]/', '', $pengiriman_lama->kode_pengiriman);
+                $fileNameGasKeluar = $nomor_resi_lama . "_" . $originalFileName;
+
+                // Salin file dari GasMasuk ke GasKeluar
+                $sourcePath = public_path('img/GasMasuk/' . $fileNameGasMasuk);
+                $destinationPath = public_path('img/GasKeluar/' . $fileNameGasKeluar);
+                copy($sourcePath, $destinationPath);
+
+                // Update pengiriman lama dengan bukti gas keluar
+                $pengiriman_lama->update([
+                    'bukti_gas_keluar' => $fileNameGasKeluar,
+                ]);
+            }
+        }
+
+        return true;
     }
 
 }
