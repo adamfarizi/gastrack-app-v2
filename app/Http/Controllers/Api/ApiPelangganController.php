@@ -466,24 +466,11 @@ class ApiPelangganController extends Controller
                 'message' => 'Data tidak ditemukan!',
             ], 422);
         } else {
-            $pesanan = Pesanan::where('id_transaksi', $id_transaksi)
-                ->join('pengiriman', 'pesanan.id_pesanan', '=', 'pengiriman.id_pesanan')->get();
-            Carbon::setLocale('id');
-
-            $formattedPesanan = $pesanan->map(function ($item) {
-                return [
-                    'tanggal_pesanan' => Carbon::parse($item->tanggal_pesanan)->isoFormat('DD MMM YYYY hh:mm'),
-                    'jumlah_bar' => $item->jumlah_bar,
-                    'jumlah_m3' => $item->jumlah_m3,
-                    'gas_awal' => $item->kapasitas_gas_masuk,
-                    'gas_keluar' => $item->sisa_gas,
-                    'harga_pesanan' => number_format($item->harga_pesanan, 0, ',', '.'),
-                ];
-            });
 
             $data = $transaksi
                 ->select(
                     'transaksi.resi_transaksi AS resi',
+                    'transaksi.id_pelanggan',
                     'pelanggan.nama_perusahaan AS pelanggan',
                     'pelanggan.no_hp',
                     'pelanggan.alamat AS alamat',
@@ -493,19 +480,89 @@ class ApiPelangganController extends Controller
                     'pesanan.harga_pesanan',
                 )->first();
 
-            $formattedData = [
-                'resi' => $data->resi,
-                'pelanggan' => $data->pelanggan,
-                'no_hp' => $data->no_hp,
-                'alamat' => $data->alamat,
-                'pesanan' => $formattedPesanan
-            ];
+            $data_pelanggan = Pelanggan::where('id_pelanggan', $data->id_pelanggan)->first();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Data berhasil ditemukan',
-                'data' => $formattedData,
-            ], 200);
+            if (!$data_pelanggan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pelanggan tidak ditemukan.',
+                ], 422);
+            } else {
+
+                if ($data_pelanggan->jenis_rumus == 'normal') {
+
+                    $pesanan = Pesanan::where('id_transaksi', $id_transaksi)
+                        ->join('pengiriman', 'pesanan.id_pesanan', '=', 'pengiriman.id_pesanan')->get();
+                    Carbon::setLocale('id');
+
+                    $formattedPesanan = $pesanan->map(function ($item) {
+                        return [
+                            'tanggal_pesanan' => Carbon::parse($item->tanggal_pesanan)->isoFormat('DD MMM YYYY hh:mm'),
+                            'jumlah_bar' => $item->jumlah_bar,
+                            'jumlah_m3' => $item->jumlah_m3,
+                            'gas_awal' => $item->kapasitas_gas_masuk,
+                            'gas_keluar' => $item->sisa_gas,
+                            'harga_pesanan' => number_format($item->harga_pesanan, 0, ',', '.'),
+                        ];
+                    });
+
+                    $formattedData = [
+                        'resi' => $data->resi,
+                        'pelanggan' => $data->pelanggan,
+                        'no_hp' => $data->no_hp,
+                        'alamat' => $data->alamat,
+                        'pesanan' => $formattedPesanan
+                    ];
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Data berhasil ditemukan',
+                        'data' => $formattedData,
+                    ], 200);
+
+                } else {
+
+                    $pesanan = Pesanan::where('id_transaksi', $id_transaksi)
+                        ->join('pengiriman', 'pesanan.id_pesanan', '=', 'pengiriman.id_pesanan')
+                        ->join('sopir', 'pengiriman.id_sopir', '=', 'sopir.id_sopir')->get();
+
+                    $pesanan_turbin_awal = Pesanan::where('id_transaksi', $id_transaksi)
+                        ->join('pengiriman', 'pesanan.id_pesanan', '=', 'pengiriman.id_pesanan')
+                        ->whereNotNull('pengiriman.bukti_gas_masuk')->first();
+
+                    $pesanan_turbin_akhir = Pesanan::where('id_transaksi', $id_transaksi)
+                        ->join('pengiriman', 'pesanan.id_pesanan', '=', 'pengiriman.id_pesanan')
+                        ->whereNotNull('pengiriman.bukti_gas_keluar')->first();
+
+                    Carbon::setLocale('id');
+
+                    $formattedPesanan = $pesanan->map(function ($item) {
+                        return [
+                            'tanggal_pesanan' => Carbon::parse($item->tanggal_pesanan)->isoFormat('DD MMM YYYY hh:mm'),
+                            'tanggal_dikirim' => Carbon::parse($item->waktu_pengiriman)->isoFormat('DD MMM YYYY hh:mm'),
+                            'tanggal_diterima' => Carbon::parse($item->waktu_diterima)->isoFormat('DD MMM YYYY hh:mm'),
+                            'mama_sopir' => $item->nama,
+                            'status_pengiriman' => $item->status_pengiriman,
+                        ];
+                    });
+
+                    $formattedData = [
+                        'resi' => $data->resi,
+                        'pelanggan' => $data->pelanggan,
+                        'no_hp' => $data->no_hp,
+                        'alamat' => $data->alamat,
+                        'turbin_awal' => $pesanan_turbin_awal?->bukti_gas_masuk,
+                        'turbin_akhir' => $pesanan_turbin_akhir?->bukti_gas_keluar,
+                        'pesanan' => $formattedPesanan
+                    ];
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Data berhasil ditemukan',
+                        'data' => $formattedData,
+                    ], 200);
+                }
+            }
         }
     }
 
@@ -563,106 +620,223 @@ class ApiPelangganController extends Controller
 
     public function getAllPesanan($id_pelanggan)
     {
-        $cek_data = Transaksi::where('id_pelanggan', $id_pelanggan)->first();
 
-        if (empty($cek_data)) {
-            $data = [
-                [
-                    "menu" => "Baru",
-                    "data" => [],
-                ],
-                [
-                    "menu" => "Dikirim",
-                    "data" => [],
-                ],
-                [
-                    "menu" => "Proses",
-                    "data" => [],
-                ],
-                [
-                    "menu" => "Selesai",
-                    "data" => [],
-                ],
-            ];
+        $data_pelanggan = Pelanggan::where('id_pelanggan', $id_pelanggan)->first();
 
+        if (!$data_pelanggan) {
             return response()->json([
                 'success' => false,
-                'message' => 'Belum ada transaksi',
-                'pesanan' => $data,
-            ], 200);
-        }
+                'message' => 'Pelanggan tidak ditemukan.',
+            ], 422);
+        } else {
 
-        $pesanan = Pesanan::whereHas('transaksi', function ($query) use ($id_pelanggan) {
-            $query->where('id_pelanggan', $id_pelanggan);
-        })->with(['pengiriman', 'pengiriman.sopir', 'pengiriman.mobil']);
+            $cek_data = Transaksi::where('id_pelanggan', $id_pelanggan)->first();
 
-        $pesananBaru = $pesanan->clone()
-            ->whereHas('pengiriman', function ($query) {
-                $query->whereNull('bukti_nota_pengisian')
-                    ->whereNull('bukti_gas_masuk')
-                    ->whereNull('bukti_gas_keluar');
-                // ->whereNull('id_sopir')
+            if (empty($cek_data)) {
+
+                if ($data_pelanggan->jenis_rumus == 'normal') {
+
+                    $data = [
+                        [
+                            "menu" => "Baru",
+                            "data" => [],
+                        ],
+                        [
+                            "menu" => "Dikirim",
+                            "data" => [],
+                        ],
+                        [
+                            "menu" => "Proses",
+                            "data" => [],
+                        ],
+                        [
+                            "menu" => "Selesai",
+                            "data" => [],
+                        ],
+                    ];
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Belum ada transaksi',
+                        'pesanan' => $data,
+                    ], 200);
+
+                } else {
+
+                    $data = [
+                        [
+                            "menu" => "Baru",
+                            "data" => [],
+                        ],
+                        [
+                            "menu" => "Proses",
+                            "data" => [],
+                        ],
+                        [
+                            "menu" => "Dikirim",
+                            "data" => [],
+                        ],
+                        [
+                            "menu" => "Selesai",
+                            "data" => [],
+                        ],
+                    ];
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Belum ada transaksi',
+                        'pesanan' => $data,
+                    ], 200);
+                }
+
+            } else {
+
+                if ($data_pelanggan->jenis_rumus == 'normal') {
+
+                    $pesanan = Pesanan::whereHas('transaksi', function ($query) use ($id_pelanggan) {
+                        $query->where('id_pelanggan', $id_pelanggan);
+                    })->with(['pengiriman', 'pengiriman.sopir', 'pengiriman.mobil']);
+
+                    $pesananBaru = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNull('bukti_nota_pengisian')
+                                ->whereNull('bukti_gas_masuk')
+                                ->whereNull('bukti_gas_keluar');
+                            // ->whereNull('id_sopir')
     
-            })
-            ->latest('created_at')
-            ->get();
+                        })
+                        ->latest('created_at')
+                        ->get();
 
-        $pesananDikirim = $pesanan->clone()
-            ->whereHas('pengiriman', function ($query) {
-                $query->whereNotNull('id_sopir')
-                    ->whereNotNull('bukti_nota_pengisian')
-                    ->whereNull('bukti_gas_masuk')
-                    ->whereNull('bukti_gas_keluar');
-            })
-            ->latest('created_at')
-            ->get();
+                    $pesananDikirim = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNotNull('id_sopir')
+                                ->whereNotNull('bukti_nota_pengisian')
+                                ->whereNull('bukti_gas_masuk')
+                                ->whereNull('bukti_gas_keluar');
+                        })
+                        ->latest('created_at')
+                        ->get();
 
-        $pesananProses = $pesanan->clone()
-            ->whereHas('pengiriman', function ($query) {
-                $query->whereNotNull('id_sopir')
-                    ->whereNotNull('bukti_nota_pengisian')
-                    ->whereNotNull('bukti_gas_masuk')
-                    ->whereNull('bukti_gas_keluar');
-            })
-            ->latest('created_at')
-            ->get();
+                    $pesananProses = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNotNull('id_sopir')
+                                ->whereNotNull('bukti_nota_pengisian')
+                                ->whereNotNull('bukti_gas_masuk')
+                                ->whereNull('bukti_gas_keluar');
+                        })
+                        ->latest('created_at')
+                        ->get();
 
-        $pesananSelesai = $pesanan->clone()
-            ->whereHas('pengiriman', function ($query) {
-                $query->whereNotNull('id_sopir')
-                    ->whereNotNull('bukti_nota_pengisian')
-                    ->whereNotNull('bukti_gas_masuk')
-                    ->whereNotNull('bukti_gas_keluar');
-            })
-            ->latest('created_at')
-            ->take(10)
-            ->get();
+                    $pesananSelesai = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNotNull('id_sopir')
+                                ->whereNotNull('bukti_nota_pengisian')
+                                ->whereNotNull('bukti_gas_masuk')
+                                ->whereNotNull('bukti_gas_keluar');
+                        })
+                        ->latest('created_at')
+                        ->take(10)
+                        ->get();
 
 
-        $data = [
-            [
-                "menu" => "Baru",
-                "data" => $pesananBaru->isEmpty() ? [] : $pesananBaru,
-            ],
-            [
-                "menu" => "Dikirim",
-                "data" => $pesananDikirim->isEmpty() ? [] : $pesananDikirim,
-            ],
-            [
-                "menu" => "Proses",
-                "data" => $pesananProses->isEmpty() ? [] : $pesananProses,
-            ],
-            [
-                "menu" => "Selesai",
-                "data" => $pesananSelesai->isEmpty() ? [] : $pesananSelesai,
-            ],
-        ];
+                    $data = [
+                        [
+                            "menu" => "Baru",
+                            "data" => $pesananBaru->isEmpty() ? [] : $pesananBaru,
+                        ],
+                        [
+                            "menu" => "Dikirim",
+                            "data" => $pesananDikirim->isEmpty() ? [] : $pesananDikirim,
+                        ],
+                        [
+                            "menu" => "Proses",
+                            "data" => $pesananProses->isEmpty() ? [] : $pesananProses,
+                        ],
+                        [
+                            "menu" => "Selesai",
+                            "data" => $pesananSelesai->isEmpty() ? [] : $pesananSelesai,
+                        ],
+                    ];
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data berhasil ditemukan',
-            'pesanan' => $data,
-        ], 200);
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Data berhasil ditemukan',
+                        'pesanan' => $data,
+                    ], 200);
+
+                } else {
+                    $pesanan = Pesanan::whereHas('transaksi', function ($query) use ($id_pelanggan) {
+                        $query->where('id_pelanggan', $id_pelanggan);
+                    })->with(['pengiriman', 'pengiriman.sopir', 'pengiriman.mobil']);
+
+                    $pesananBaru = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNull('id_sopir')
+                                ->whereNull('bukti_nota_pengisian');
+
+                        })
+                        ->latest('created_at')
+                        ->get();
+
+                    $pesananDikirim = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNotNull('id_sopir')
+                                ->whereNotNull('bukti_nota_pengisian')
+                                ->whereNotNull('waktu_pengiriman')
+                                ->whereNull('waktu_diterima');
+                        })
+                        ->latest('created_at')
+                        ->get();
+
+                    $pesananProses = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNotNull('id_sopir')
+                                ->whereNull('bukti_nota_pengisian');
+
+                        })
+                        ->latest('created_at')
+                        ->get();
+
+                    $pesananSelesai = $pesanan->clone()
+                        ->whereHas('pengiriman', function ($query) {
+                            $query->whereNotNull('id_sopir')
+                                ->whereNotNull('bukti_nota_pengisian')
+                                ->whereNotNull('waktu_pengiriman')
+                                ->whereNotNull('waktu_diterima');
+                        })
+                        ->latest('created_at')
+                        ->take(10)
+                        ->get();
+
+
+                    $data = [
+                        [
+                            "menu" => "Baru",
+                            "data" => $pesananBaru->isEmpty() ? [] : $pesananBaru,
+                        ],
+                        [
+                            "menu" => "Proses",
+                            "data" => $pesananProses->isEmpty() ? [] : $pesananProses,
+                        ],
+                        [
+                            "menu" => "Dikirim",
+                            "data" => $pesananDikirim->isEmpty() ? [] : $pesananDikirim,
+                        ],
+                        [
+                            "menu" => "Selesai",
+                            "data" => $pesananSelesai->isEmpty() ? [] : $pesananSelesai,
+                        ],
+                    ];
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Data berhasil ditemukan',
+                        'pesanan' => $data,
+                    ], 200);
+                }
+            }
+        }
     }
 
 }

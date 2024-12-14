@@ -282,7 +282,7 @@
                                             <option value="4"
                                                 {{ $pelanggan->jenis_pembayaran === '4' ? 'selected' : '' }}>4 Minggu
                                             </option>
-                                            <option value="4"
+                                            <option value="5"
                                                 {{ $pelanggan->jenis_pembayaran === '5' ? 'selected' : '' }}>1 Bulan
                                             </option>
                                         </select>

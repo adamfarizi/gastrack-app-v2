@@ -46,27 +46,10 @@ class ApiPembelianController extends Controller
 
     public function create_transaksi(Request $request)
     {
-        $pelangganAktif = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))
-            ->where('status', 'aktif')
-            ->first();
-
-        if (!$pelangganAktif) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pelanggan tidak aktif. Transaksi tidak dapat dilakukan.',
-            ], 422);
-        }
-
-        // Tentukan aturan validasi berdasarkan jenis_rumus
+        // Tentukan aturan validasi id_pelanggan
         $rules = [
             'id_pelanggan' => 'required|exists:pelanggan,id_pelanggan',
         ];
-
-        if ($pelangganAktif->jenis_rumus == 'normal') {
-            $rules['bukti_pesanan'] = 'required|image|mimes:jpeg,jpg,png|max:2048';
-        } else {
-            $rules['bukti_pesanan'] = 'image|mimes:jpeg,jpg,png|max:2048';
-        }
 
         // Lakukan validasi
         $validator = Validator::make($request->all(), $rules);
@@ -74,134 +57,361 @@ class ApiPembelianController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validasi gagal',
+                'message' => 'id pelanggan tidak ditemukan!',
                 'errors' => $validator->errors(),
             ], 422);
         } else {
-            $tagihan_terbaru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
-                ->orderBy('created_at', 'desc')
+            $pelangganAktif = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))
+                ->where('status', 'aktif')
                 ->first();
-            //! Cek apakah sudah pernah pesan, jika belum pernah maka membuat transaksi baru
-            if (!$tagihan_terbaru) {
-                $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
-                //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
-                // if ($pelanggan->jenis_rumus === 'normal') {
-                //     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
-                // } else {
-                //     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
-                // }
-                //? Jatuh tempo ada yang 1 bulan
-                if ($pelanggan->jenis_pembayaran == 5) {
-                    $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
-                } else {
-                    $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
-                }
 
-                $tagihan = new Tagihan([
-                    'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
-                    'status_tagihan' => 'Belum Bayar',
-                    'tanggal_pembayaran' => null,
-                    'bukti_pembayaran' => null,
-                    'id_pelanggan' => $request->input('id_pelanggan'),
-                ]);
-                $tagihan->save();
-                $resi_transaksi = 'GTK-' . now()->format('YmdHis') . Str::random(2);
-                $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
+            if (!$pelangganAktif) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pelanggan tidak aktif. Transaksi tidak dapat dilakukan.',
+                ], 422);
+            } else {
+                $tagihan_terbaru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
                     ->orderBy('created_at', 'desc')
                     ->first();
 
-                $transaksi = new Transaksi([
-                    'resi_transaksi' => $resi_transaksi,
-                    'tanggal_transaksi' => now(),
-                    'id_pelanggan' => $request->input('id_pelanggan'),
-                    'id_tagihan' => $tagihan_baru->id_tagihan,
-                    'id_admin' => 1,
-                ]);
-                $transaksi->save();
-                $tanggal_sekarang = now();
-                $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
-                    ->latest('created_at')
-                    ->first();
+                //! Cek apakah sudah pernah pesan, jika belum pernah maka membuat transaksi baru
+                if (!$tagihan_terbaru) {
 
-                $file = $request->file('bukti_pesanan');
-                $fileName = $transaksi->resi_transaksi . '_' . $file->getClientOriginalName();
-                $file->move(public_path('img/BuktiPesanan'), $fileName);
-                $pesanan = new Pesanan([
-                    'tanggal_pesanan' => $tanggal_sekarang,
-                    'id_transaksi' => $transaksi_baru->id_transaksi,
-                    'bukti_pesanan' => $fileName,
-                    'bop_pesanan' => $pelanggan->bop_pelanggan,
-                    'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
-                ]);
-                $pesanan->save();
-                $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
-                    ->latest('created_at')
-                    ->first();
+                    $rules_file['bukti_pesanan'] = 'required|image|mimes:jpeg,jpg,png|max:2048';
 
-                $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
-                $pengiriman = new Pengiriman([
-                    'kode_pengiriman' => $kode_pengiriman,
-                    'status_pengiriman' => 'Proses',
-                    'id_pesanan' => $pesanan_baru->id_pesanan,
-                ]);
-                $pengiriman->save();
+                    // Lakukan validasi
+                    $validator = Validator::make($request->all(), $rules_file);
 
-                // Broadcast
-                $nama_perusahaan = $pelanggan->nama_perusahaan;
-                $jumlah_pesanan = $request->input('jumlah_pesanan');
-                $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
-                $total_pesanan = 1;
-                broadcast(new PesananBaruEvent($nama_perusahaan));
-                broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
-                broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
-
-                //? Response untuk jenis_rumus turbin
-                if ($pelanggan->jenis_rumus === 'turbin') {
-                    //? Pemanggilan handleTurbinUpload jika jenis_rumus adalah turbin
-                    $uploadResult = $this->handleTurbinUpload($file, $fileName, $transaksi_baru->id_transaksi);
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Transaksi baru sudah ditambah!',
-                        'upload_result' => $uploadResult,
-                        'data_transaksi' => $transaksi_baru,
-                        'data_tagihan' => $tagihan_baru,
-                        'data_pesanan' => $pesanan,
-                        'data_pengiriman' => $pengiriman,
-                    ], 200);
-                }
-
-                //? Response untuk jenis_rumus normal
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Transaksi baru sudah ditambah!',
-                    'data_transaksi' => $transaksi_baru,
-                    'data_tagihan' => $tagihan_baru,
-                    'data_pesanan' => $pesanan,
-                    'data_pengiriman' => $pengiriman,
-                ], 200);
-            } else {
-                //! Cek status pembayaran tagihan, jika sudah bayar membuat transaksi baru
-                if ($tagihan_terbaru->status_tagihan === 'Belum Bayar') {
-                    $tanggal_sekarang = now();
-                    //! Cek jatuh tempo, jika tidak jatuh tempo lanjut ke create pesanan di transaksi sekarang
-                    if ($tanggal_sekarang > $tagihan_terbaru->tanggal_jatuh_tempo) {
-                        $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
-                        //! Pelanggan Turbin tetap bisa pesan meski lewat jatuh tempo, tetapi membuat transaksi baru
-                        if ($pelanggan->jenis_rumus === 'normal') {
+                    if ($validator->fails()) {
+                        if ($pelangganAktif->jenis_rumus == 'normal') {
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Anda memiliki tagihan yang belum dibayar !',
+                                'message' => 'Mohon unggah bukti pesanan!',
+                                'errors' => $validator->errors(),
                             ], 422);
                         } else {
-                            //? Pelanggan Turbin
-                            // $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Mohon unggah foto turbin meter saat ini, kemudian lakukan pesan ulang!',
+                                'errors' => $validator->errors(),
+                            ], 403);
+                        }
+                    } else {
+
+                        $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
+                        //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
+                        // if ($pelanggan->jenis_rumus === 'normal') {
+                        //     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                        // } else {
+                        //     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                        // }
+                        //? Jatuh tempo ada yang 1 bulan
+                        if ($pelanggan->jenis_pembayaran == 5) {
+                            $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                        } else {
+                            $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                        }
+
+                        $tagihan = new Tagihan([
+                            'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
+                            'status_tagihan' => 'Belum Bayar',
+                            'tanggal_pembayaran' => null,
+                            'bukti_pembayaran' => null,
+                            'id_pelanggan' => $request->input('id_pelanggan'),
+                        ]);
+                        $tagihan->save();
+                        $resi_transaksi = 'GTK-' . now()->format('YmdHis') . Str::random(2);
+                        $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+
+                        $transaksi = new Transaksi([
+                            'resi_transaksi' => $resi_transaksi,
+                            'tanggal_transaksi' => now(),
+                            'id_pelanggan' => $request->input('id_pelanggan'),
+                            'id_tagihan' => $tagihan_baru->id_tagihan,
+                            'id_admin' => 1,
+                        ]);
+                        $transaksi->save();
+                        $tanggal_sekarang = now();
+                        $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
+                            ->latest('created_at')
+                            ->first();
+
+                        $file = $request->file('bukti_pesanan');
+                        $fileName = $transaksi->resi_transaksi . '_' . $file->getClientOriginalName();
+                        $file->move(public_path('img/BuktiPesanan'), $fileName);
+                        $pesanan = new Pesanan([
+                            'tanggal_pesanan' => $tanggal_sekarang,
+                            'id_transaksi' => $transaksi_baru->id_transaksi,
+                            'bukti_pesanan' => $fileName,
+                            'bop_pesanan' => $pelanggan->bop_pelanggan,
+                            'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
+                        ]);
+                        $pesanan->save();
+                        $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
+                            ->latest('created_at')
+                            ->first();
+
+                        $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
+                        $pengiriman = new Pengiriman([
+                            'kode_pengiriman' => $kode_pengiriman,
+                            'status_pengiriman' => 'Proses',
+                            'id_pesanan' => $pesanan_baru->id_pesanan,
+                        ]);
+                        $pengiriman->save();
+
+                        // Broadcast
+                        $nama_perusahaan = $pelanggan->nama_perusahaan;
+                        $jumlah_pesanan = $request->input('jumlah_pesanan');
+                        $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
+                        $total_pesanan = 1;
+                        broadcast(new PesananBaruEvent($nama_perusahaan));
+                        broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
+                        broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
+
+                        //? Response untuk jenis_rumus turbin
+                        if ($pelanggan->jenis_rumus === 'turbin') {
+                            //? Pemanggilan handleTurbinUpload jika jenis_rumus adalah turbin
+                            $uploadResult = $this->handleTurbinUpload($file, $fileName, $transaksi_baru->id_transaksi);
+
+                            return response()->json([
+                                'success' => true,
+                                'message' => 'Transaksi baru sudah ditambah!',
+                                'upload_result' => $uploadResult,
+                                'data_transaksi' => $transaksi_baru,
+                                'data_tagihan' => $tagihan_baru,
+                                'data_pesanan' => $pesanan,
+                                'data_pengiriman' => $pengiriman,
+                            ], 200);
+                        }
+
+                        //? Response untuk jenis_rumus normal
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Transaksi baru sudah ditambah!',
+                            'data_transaksi' => $transaksi_baru,
+                            'data_tagihan' => $tagihan_baru,
+                            'data_pesanan' => $pesanan,
+                            'data_pengiriman' => $pengiriman,
+                        ], 200);
+                    }
+                } else {
+                    //! Cek status pembayaran tagihan, jika sudah bayar membuat transaksi baru
+                    if ($tagihan_terbaru->status_tagihan === 'Belum Bayar') {
+                        $tanggal_sekarang = now();
+                        //! Cek jatuh tempo, jika tidak jatuh tempo lanjut ke create pesanan di transaksi sekarang
+                        if ($tanggal_sekarang > $tagihan_terbaru->tanggal_jatuh_tempo) {
+                            $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
+                            //! Pelanggan Turbin tetap bisa pesan meski lewat jatuh tempo, tetapi membuat transaksi baru
+                            if ($pelanggan->jenis_rumus === 'normal') {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Anda memiliki tagihan yang belum dibayar !',
+                                ], 422);
+                            } else {
+                                //? Pelanggan Turbin
+                                // $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                                //? Jatuh tempo ada yang 1 bulan
+
+                                $rules_file['bukti_pesanan'] = 'required|image|mimes:jpeg,jpg,png|max:2048';
+
+                                // Lakukan validasi
+                                $validator = Validator::make($request->all(), $rules_file);
+
+                                if ($validator->fails()) {
+                                    return response()->json([
+                                        'success' => false,
+                                        'message' => 'Mohon unggah foto turbin meter saat ini, kemudian lakukan pesan ulang!',
+                                        'errors' => $validator->errors(),
+                                    ], 403);
+                                } else {
+
+                                    if ($pelanggan->jenis_pembayaran == 5) {
+                                        $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                                    } else {
+                                        $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                                    }
+                                    $tagihan = new Tagihan([
+                                        'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
+                                        'status_tagihan' => 'Belum Bayar',
+                                        'tanggal_pembayaran' => null,
+                                        'bukti_pembayaran' => null,
+                                        'id_pelanggan' => $request->input('id_pelanggan'),
+                                    ]);
+                                    $tagihan->save();
+                                    $resi_transaksi = 'GTK-' . now()->format('YmdHis') . Str::random(2);
+                                    $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+
+                                    $transaksi = new Transaksi([
+                                        'resi_transaksi' => $resi_transaksi,
+                                        'tanggal_transaksi' => now(),
+                                        'id_pelanggan' => $request->input('id_pelanggan'),
+                                        'id_tagihan' => $tagihan_baru->id_tagihan,
+                                        'id_admin' => 1,
+                                    ]);
+                                    $transaksi->save();
+                                    $tanggal_sekarang = now();
+                                    $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
+                                        ->latest('created_at')
+                                        ->first();
+
+                                    $file = $request->file('bukti_pesanan');
+                                    $fileName = $transaksi->resi_transaksi . '_' . $file->getClientOriginalName();
+                                    $file->move(public_path('img/BuktiPesanan'), $fileName);
+                                    $pesanan = new Pesanan([
+                                        'tanggal_pesanan' => $tanggal_sekarang,
+                                        'id_transaksi' => $transaksi_baru->id_transaksi,
+                                        'bukti_pesanan' => $fileName,
+                                        'bop_pesanan' => $pelanggan->bop_pelanggan,
+                                        'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
+                                    ]);
+                                    $pesanan->save();
+                                    $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
+                                        ->latest('created_at')
+                                        ->first();
+
+                                    $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
+                                    $pengiriman = new Pengiriman([
+                                        'kode_pengiriman' => $kode_pengiriman,
+                                        'status_pengiriman' => 'Proses',
+                                        'id_pesanan' => $pesanan_baru->id_pesanan,
+                                    ]);
+                                    $pengiriman->save();
+
+                                    // Broadcast
+                                    $nama_perusahaan = $pelanggan->nama_perusahaan;
+                                    $jumlah_pesanan = $request->input('jumlah_pesanan');
+                                    $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
+                                    $total_pesanan = 1;
+                                    broadcast(new PesananBaruEvent($nama_perusahaan));
+                                    broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
+                                    broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
+
+                                    //? Pemanggilan handleTurbinUpload jika jenis_rumus adalah turbin
+                                    $uploadResult = $this->handleTurbinUpload($file, $fileName, $transaksi_baru->id_transaksi);
+
+                                    return response()->json([
+                                        'success' => true,
+                                        'message' => 'Transaksi baru sudah ditambah!',
+                                        'upload_result' => $uploadResult,
+                                        'data_transaksi' => $transaksi_baru,
+                                        'data_tagihan' => $tagihan_baru,
+                                        'data_pesanan' => $pesanan,
+                                        'data_pengiriman' => $pengiriman,
+                                    ], 200);
+                                }
+                            }
+                        } else {
+
+                            if ($pelangganAktif->jenis_rumus == 'normal') {
+                                $rules_file['bukti_pesanan'] = 'required|image|mimes:jpeg,jpg,png|max:2048';
+                            } else {
+                                $rules_file['bukti_pesanan'] = 'image|mimes:jpeg,jpg,png|max:2048';
+                            }
+
+                            // Lakukan validasi
+                            $validator = Validator::make($request->all(), $rules_file);
+
+                            if ($validator->fails()) {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Mohon unggah bukti pesanan!',
+                                    'errors' => $validator->errors(),
+                                ], 422);
+                            } else {
+
+                                $transaksi_terbaru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
+                                    ->latest('created_at')
+                                    ->first();
+                                $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
+
+                                //? Default nilai untuk bukti_pesanan jika tidak upload bukti pesanan di turbin
+                                $fileName = '-';
+                                if ($request->hasFile('bukti_pesanan')) {
+                                    $file = $request->file('bukti_pesanan');
+                                    $fileName = $transaksi_terbaru->resi_transaksi . '_' . $file->getClientOriginalName();
+                                    $file->move(public_path('img/BuktiPesanan'), $fileName);
+                                }
+                                $pesanan = new Pesanan([
+                                    'tanggal_pesanan' => $tanggal_sekarang,
+                                    'id_transaksi' => $transaksi_terbaru->id_transaksi,
+                                    'bukti_pesanan' => $fileName,
+                                    'bop_pesanan' => $pelanggan->bop_pelanggan,
+                                    'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
+                                ]);
+                                $pesanan->save();
+                                $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_terbaru->id_transaksi)
+                                    ->latest('created_at')
+                                    ->first();
+
+                                $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
+                                $pengiriman = new Pengiriman([
+                                    'kode_pengiriman' => $kode_pengiriman,
+                                    'status_pengiriman' => 'Proses',
+                                    'id_pesanan' => $pesanan_baru->id_pesanan,
+                                ]);
+                                $pengiriman->save();
+
+                                // Broadcast
+                                $nama_perusahaan = $pelanggan->nama_perusahaan;
+                                $jumlah_pesanan = $request->input('jumlah_pesanan');
+                                $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
+                                $total_pesanan = 1;
+                                broadcast(new PesananBaruEvent($nama_perusahaan));
+                                broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
+                                broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
+
+                                return response()->json([
+                                    'success' => true,
+                                    'message' => 'Pesanan baru sudah ditambah !',
+                                    'data_pesanan' => $pesanan,
+                                    'data_tagihan' => $tagihan_terbaru,
+                                    'data_pengiriman' => $pengiriman,
+                                ], 200);
+                            }
+                        }
+                    } else {
+
+                        $rules_file['bukti_pesanan'] = 'required|image|mimes:jpeg,jpg,png|max:2048';
+
+                        // Lakukan validasi
+                        $validator = Validator::make($request->all(), $rules_file);
+
+                        if ($validator->fails()) {
+                            if ($pelangganAktif->jenis_rumus == 'normal') {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Mohon unggah bukti pesanan!',
+                                    'errors' => $validator->errors(),
+                                ], 422);
+                            } else {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Mohon unggah foto turbin meter saat ini, kemudian lakukan pesan ulang!',
+                                    'errors' => $validator->errors(),
+                                ], 403);
+                            }
+
+                        } else {
+
+                            $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
+                            //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
+                            // if ($pelanggan->jenis_rumus === 'normal') {
+                            //     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
+                            // } else {
+                            //     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
+                            // }
                             //? Jatuh tempo ada yang 1 bulan
                             if ($pelanggan->jenis_pembayaran == 5) {
                                 $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
                             } else {
                                 $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
                             }
+
                             $tagihan = new Tagihan([
                                 'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
                                 'status_tagihan' => 'Belum Bayar',
@@ -260,150 +470,16 @@ class ApiPembelianController extends Controller
                             broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
                             broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
 
-                            //? Pemanggilan handleTurbinUpload jika jenis_rumus adalah turbin
-                            $uploadResult = $this->handleTurbinUpload($file, $fileName, $transaksi_baru->id_transaksi);
-
                             return response()->json([
                                 'success' => true,
                                 'message' => 'Transaksi baru sudah ditambah!',
-                                'upload_result' => $uploadResult,
                                 'data_transaksi' => $transaksi_baru,
                                 'data_tagihan' => $tagihan_baru,
                                 'data_pesanan' => $pesanan,
                                 'data_pengiriman' => $pengiriman,
                             ], 200);
                         }
-                    } else {
-                        $transaksi_terbaru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
-                            ->latest('created_at')
-                            ->first();
-                        $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
-
-                        //? Default nilai untuk bukti_pesanan jika tidak upload bukti pesanan di turbin
-                        $fileName = '-';
-                        if ($request->hasFile('bukti_pesanan')) {
-                            $file = $request->file('bukti_pesanan');
-                            $fileName = $transaksi_terbaru->resi_transaksi . '_' . $file->getClientOriginalName();
-                            $file->move(public_path('img/BuktiPesanan'), $fileName);
-                        }
-                        $pesanan = new Pesanan([
-                            'tanggal_pesanan' => $tanggal_sekarang,
-                            'id_transaksi' => $transaksi_terbaru->id_transaksi,
-                            'bukti_pesanan' => $fileName,
-                            'bop_pesanan' => $pelanggan->bop_pelanggan,
-                            'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
-                        ]);
-                        $pesanan->save();
-                        $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_terbaru->id_transaksi)
-                            ->latest('created_at')
-                            ->first();
-
-                        $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
-                        $pengiriman = new Pengiriman([
-                            'kode_pengiriman' => $kode_pengiriman,
-                            'status_pengiriman' => 'Proses',
-                            'id_pesanan' => $pesanan_baru->id_pesanan,
-                        ]);
-                        $pengiriman->save();
-
-                        // Broadcast
-                        $nama_perusahaan = $pelanggan->nama_perusahaan;
-                        $jumlah_pesanan = $request->input('jumlah_pesanan');
-                        $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
-                        $total_pesanan = 1;
-                        broadcast(new PesananBaruEvent($nama_perusahaan));
-                        broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
-                        broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
-
-                        return response()->json([
-                            'success' => true,
-                            'message' => 'Pesanan baru sudah ditambah !',
-                            'data_pesanan' => $pesanan,
-                            'data_tagihan' => $tagihan_terbaru,
-                            'data_pengiriman' => $pengiriman,
-                        ], 200);
                     }
-                } else {
-                    $pelanggan = Pelanggan::where('id_pelanggan', $request->input('id_pelanggan'))->first();
-                    //? If else jatuh tempo untuk yang turbin menjadi addMonth 1
-                    // if ($pelanggan->jenis_rumus === 'normal') {
-                    //     $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
-                    // } else {
-                    //     $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
-                    // }
-                    //? Jatuh tempo ada yang 1 bulan
-                    if ($pelanggan->jenis_pembayaran == 5) {
-                        $tanggal_jatuh_tempo_baru = now()->addMonth()->format('Y-m-d');
-                    } else {
-                        $tanggal_jatuh_tempo_baru = now()->addWeeks($pelanggan->jenis_pembayaran)->format('Y-m-d');
-                    }
-
-                    $tagihan = new Tagihan([
-                        'tanggal_jatuh_tempo' => $tanggal_jatuh_tempo_baru,
-                        'status_tagihan' => 'Belum Bayar',
-                        'tanggal_pembayaran' => null,
-                        'bukti_pembayaran' => null,
-                        'id_pelanggan' => $request->input('id_pelanggan'),
-                    ]);
-                    $tagihan->save();
-                    $resi_transaksi = 'GTK-' . now()->format('YmdHis') . Str::random(2);
-                    $tagihan_baru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
-                        ->orderBy('created_at', 'desc')
-                        ->first();
-
-                    $transaksi = new Transaksi([
-                        'resi_transaksi' => $resi_transaksi,
-                        'tanggal_transaksi' => now(),
-                        'id_pelanggan' => $request->input('id_pelanggan'),
-                        'id_tagihan' => $tagihan_baru->id_tagihan,
-                        'id_admin' => 1,
-                    ]);
-                    $transaksi->save();
-                    $tanggal_sekarang = now();
-                    $transaksi_baru = Transaksi::where('id_pelanggan', $request->input('id_pelanggan'))
-                        ->latest('created_at')
-                        ->first();
-
-                    $file = $request->file('bukti_pesanan');
-                    $fileName = $transaksi->resi_transaksi . '_' . $file->getClientOriginalName();
-                    $file->move(public_path('img/BuktiPesanan'), $fileName);
-                    $pesanan = new Pesanan([
-                        'tanggal_pesanan' => $tanggal_sekarang,
-                        'id_transaksi' => $transaksi_baru->id_transaksi,
-                        'bukti_pesanan' => $fileName,
-                        'bop_pesanan' => $pelanggan->bop_pelanggan,
-                        'deskripsi_pesanan' => $request->input('deskripsi_pesanan'),
-                    ]);
-                    $pesanan->save();
-                    $pesanan_baru = Pesanan::where('id_transaksi', $transaksi_baru->id_transaksi)
-                        ->latest('created_at')
-                        ->first();
-
-                    $kode_pengiriman = 'GTK|SEND-' . now()->format('YmdHis') . Str::random(2);
-                    $pengiriman = new Pengiriman([
-                        'kode_pengiriman' => $kode_pengiriman,
-                        'status_pengiriman' => 'Proses',
-                        'id_pesanan' => $pesanan_baru->id_pesanan,
-                    ]);
-                    $pengiriman->save();
-
-                    // Broadcast
-                    $nama_perusahaan = $pelanggan->nama_perusahaan;
-                    $jumlah_pesanan = $request->input('jumlah_pesanan');
-                    $hari = Carbon::parse($pesanan_baru->tanggal_pesanan)->format('d M');
-                    $total_pesanan = 1;
-                    broadcast(new PesananBaruEvent($nama_perusahaan));
-                    broadcast(new Chart1Event($nama_perusahaan, $jumlah_pesanan, $hari));
-                    broadcast(new Chart4Event($nama_perusahaan, $total_pesanan));
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Transaksi baru sudah ditambah !',
-                        'data_transaksi' => $transaksi_baru,
-                        'data_tagihan' => $tagihan_baru,
-                        'data_pesanan' => $pesanan,
-                        'data_pengiriman' => $pengiriman,
-                    ], 200);
                 }
             }
         }

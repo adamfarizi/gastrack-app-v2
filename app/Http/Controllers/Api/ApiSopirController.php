@@ -357,12 +357,12 @@ class ApiSopirController extends Controller
             $pengiriman->status_pengiriman = 'Diterima';
             $pengiriman->push();
 
-        // Notif Gas Diterima
-        $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
-        $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
-        $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
-        $jenis_rumus = 'normal';
-        broadcast(new GasKeluarEvent($nama_perusahaan, $jenis_rumus));
+            // Notif Gas Diterima
+            $pesanan = Pesanan::where('id_pesanan', $pengiriman->id_pesanan)->first();
+            $transaksi = Transaksi::where('id_transaksi', $pesanan->id_transaksi)->first();
+            $nama_perusahaan = $transaksi->pelanggan->nama_perusahaan;
+            $jenis_rumus = 'normal';
+            broadcast(new GasKeluarEvent($nama_perusahaan, $jenis_rumus));
 
             return response()->json([
                 'success' => true,
@@ -921,22 +921,23 @@ class ApiSopirController extends Controller
                     'success' => false,
                     'message' => 'Status Sopir dan Mobil sudah tersedia!',
                 ], 422);
+            } else {
+
+                $pelanggan = $pengiriman->pesanan->transaksi->pelanggan;
+                if ($pelanggan->jenis_rumus === 'turbin') {
+                    $pengiriman->waktu_diterima = now();
+                    $pengiriman->status_pengiriman = 'Diterima';
+                }
+
+                $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+                $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+                $pengiriman->push();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Pesanan telah selesai dikirim!',
+                ], 200);
             }
-
-            $pelanggan = $pengiriman->pesanan->transaksi->pelanggan;
-            if ($pelanggan->jenis_rumus === 'turbin') {
-                $pengiriman->waktu_diterima = now();
-                $pengiriman->status_pengiriman = 'Diterima';
-            }
-
-            $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
-            $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
-            $pengiriman->push();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Status Sopir dan Mobil berhasil diupdate',
-            ], 200);
         }
     }
 
