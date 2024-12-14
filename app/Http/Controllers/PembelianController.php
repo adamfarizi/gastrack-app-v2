@@ -225,33 +225,29 @@ class PembelianController extends Controller
         if (!$transaksi) {
             return redirect()->back()->with('error', 'Transaksi tidak ditemukan !');
         } else {
-            if ($transaksi->pelanggan->jenis_rumus === "turbin") {
-                return redirect()->back()->with('error', 'Pelanggan Turbin tidak bisa perpanjang !');
+            $hari_ini = Carbon::now();
+            $tanggal_jatuh_tempo_sekarang = Carbon::parse($transaksi->tagihan->tanggal_jatuh_tempo);
+
+            // Cek jika sudah H+2 dan seterusnya dari jatuh tempo
+            if ($hari_ini->greaterThanOrEqualTo($tanggal_jatuh_tempo_sekarang->copy()->addDays(2))) {
+                return redirect()->back()->with('error', 'Tidak bisa perpanjang, sudah lebih dari batas perpanjang!');
+            }
+
+            // Cek jika sudah pernah perpanjang
+            if ($transaksi->tagihan->tanggal_jatuh_tempo_lama == null) {
+
+                $tanggal_lama = $transaksi->tagihan->tanggal_jatuh_tempo;
+                $transaksi->tagihan->tanggal_jatuh_tempo_lama = $tanggal_lama;
+                $transaksi->tagihan->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
+                $transaksi->tagihan->save();
+
+                return redirect()->back()->with('success', 'Jatuh tempo berhasil diperpanjang !');
             } else {
-                // Cek jika jatuh tempo tinggal 1 hari
-                $hari_ini = Carbon::now();
-                $tanggal_jatuh_tempo_sekarang = Carbon::parse($transaksi->tagihan->tanggal_jatuh_tempo);
 
-                // Cek jika jatuh tempo adalah besok (hari ini + 1 hari)
-                if ($tanggal_jatuh_tempo_sekarang->isSameDay($hari_ini->copy()->addDay())) {
-                    return redirect()->back()->with('error', 'Tidak bisa perpanjang, besok sudah jatuh tempo!');
-                }
+                $transaksi->tagihan->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
+                $transaksi->tagihan->save();
 
-                // Cek jika jatuh tempo adalah hari ini
-                if ($hari_ini->isSameDay($tanggal_jatuh_tempo_sekarang)) {
-                    return redirect()->back()->with('error', 'Tidak bisa perpanjang, hari ini sudah jatuh tempo!');
-                }
-
-                if ($transaksi->tagihan->tanggal_jatuh_tempo_lama == null) {
-                    $tanggal_lama = $transaksi->tagihan->tanggal_jatuh_tempo;
-                    $transaksi->tagihan->tanggal_jatuh_tempo_lama = $tanggal_lama;
-                    $transaksi->tagihan->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
-                    $transaksi->tagihan->save();
-
-                    return redirect()->back()->with('success', 'Jatuh tempo berhasil diperpanjang !');
-                } else {
-                    return redirect()->back()->with('error', 'Tidak bisa perpanjang lebih dari sekali !');
-                }
+                return redirect()->back()->with('success', 'Jatuh tempo berhasil diperpanjang !');
             }
         }
     }

@@ -244,7 +244,7 @@
                                         <p class="col-4 fw-bold text-dark mb-0">Jatuh Tempo</p>
                                         <p class="col fw-bold text-dark mb-0">: 
                                             <span class="ms-1 col fw-light text-second">{{ date('d/M/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</span>
-                                            <span class="ms-1 col fw-light text-second"><a type="button" data-bs-toggle="modal" data-bs-target="#perpanjang"><i class="fa-solid fa-clock-rotate-left"></i></a></span>
+                                            <span class="ms-1 col fw-light text-second"><a type="button" data-bs-toggle="modal" data-bs-target="#perpanjang"><i class="fa-solid fa-pen-to-square"></i></a></span>
                                         </p>
                                     </div>
                                 @else
@@ -258,6 +258,7 @@
                                         <p class="col-4 fw-bold text-dark mb-0 pe-0">Perpanjang Jatuh Tempo</p>
                                         <p class="col fw-bold text-dark mb-0">: 
                                             <span class="ms-1 col fw-light text-second">{{ date('d/M/Y', strtotime($transaksi->tagihan->tanggal_jatuh_tempo)) }}</span>
+                                            <span class="ms-1 col fw-light text-second"><a type="button" data-bs-toggle="modal" data-bs-target="#perpanjang"><i class="fa-solid fa-pen-to-square"></i></a></span>
                                         </p>
                                     </div>
                                 @endif
@@ -336,7 +337,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title font-weight-bold">Perpanjang Jatuh Tempo Pembayaran</h4>
+                        <h4 class="modal-title font-weight-bold">Update Jatuh Tempo Pembayaran</h4>
                     </div>
                     <div class="modal-body">
                         <form action="{{ url('/pembelian/more/tagihan/' . $transaksi->id_transaksi . '/perpanjang') }}" method="POST">
@@ -367,7 +368,7 @@
         var x = setInterval(function() {
             // Tanggal sekarang
             var sekarang = new Date().getTime();
-
+            
             // Hitung selisih waktu
             var selisih = tanggalJatuhTempo - sekarang;
 
