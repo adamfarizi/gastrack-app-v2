@@ -112,6 +112,7 @@ class ApiSopirController extends Controller
                     'pengiriman.id_pengiriman',
                     'pengiriman.kode_pengiriman AS resi',
                     'pelanggan.koordinat',
+                    'pelanggan.jenis_rumus',
                     'pelanggan.nama_perusahaan',
                     'pelanggan.alamat AS alamat_perusahaan',
                     'pesanan.jumlah_bar',
@@ -732,6 +733,7 @@ class ApiSopirController extends Controller
                     'transaksi.resi_transaksi AS resi',
                     'pelanggan.koordinat',
                     'pelanggan.nama_perusahaan',
+                    'pelanggan.jenis_rumus',
                     'pelanggan.alamat AS alamat_perusahaan',
                     'pesanan.tanggal_pesanan AS tanggal_pemesanaan',
                     'pesanan.bukti_pesanan',
@@ -913,30 +915,38 @@ class ApiSopirController extends Controller
             ], 422);
         } else {
 
-            $status_sopir = $pengiriman->sopir->ketersediaan_sopir;
-            $status_mobil = $pengiriman->mobil->ketersediaan_mobil;
-
-            if ($status_sopir === 'tersedia' && $status_mobil === 'tersedia') {
+            if ($pengiriman->bukti_nota_pengisian == null) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Status Sopir dan Mobil sudah tersedia!',
+                    'message' => 'Mohon unggah nota pengisian dahulu!',
                 ], 422);
             } else {
 
-                $pelanggan = $pengiriman->pesanan->transaksi->pelanggan;
-                if ($pelanggan->jenis_rumus === 'turbin') {
-                    $pengiriman->waktu_diterima = now();
-                    $pengiriman->status_pengiriman = 'Diterima';
+                $status_sopir = $pengiriman->sopir->ketersediaan_sopir;
+                $status_mobil = $pengiriman->mobil->ketersediaan_mobil;
+
+                if ($status_sopir === 'tersedia' && $status_mobil === 'tersedia') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Status Sopir dan Mobil sudah tersedia!',
+                    ], 422);
+                } else {
+
+                    $pelanggan = $pengiriman->pesanan->transaksi->pelanggan;
+                    if ($pelanggan->jenis_rumus === 'turbin') {
+                        $pengiriman->waktu_diterima = now();
+                        $pengiriman->status_pengiriman = 'Diterima';
+                    }
+
+                    $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
+                    $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
+                    $pengiriman->push();
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Pesanan telah selesai dikirim!',
+                    ], 200);
                 }
-
-                $pengiriman->sopir->ketersediaan_sopir = 'tersedia';
-                $pengiriman->mobil->ketersediaan_mobil = 'tersedia';
-                $pengiriman->push();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Pesanan telah selesai dikirim!',
-                ], 200);
             }
         }
     }
