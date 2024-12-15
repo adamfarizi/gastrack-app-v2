@@ -599,7 +599,7 @@ class ApiPembelianController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Data berhasil diubah',
+            'message' => 'Bukti pembayaran berhasil diunggah, tunggu konfirmasi dari admin dahulu!',
             'datauser' => $dikirim,
         ], 200);
     }
