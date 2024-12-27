@@ -803,7 +803,6 @@ class ApiSopirController extends Controller
         } else {
             $sopir = Sopir::where('id_sopir', $request->id_sopir)
                 ->where('ketersediaan_sopir', 'tersedia')
-                ->where('status_sopir', 'aktif')
                 ->first();
 
             $mobil = Mobil::where('id_mobil', $request->id_mobil)
@@ -817,31 +816,39 @@ class ApiSopirController extends Controller
                     'message' => 'Anda hanya dapat mengirim satu pesanan!',
                 ], 422);
             } else {
-                if (!$mobil) {
+                if ($sopir->status_sopir = 'tidak aktif') {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Mobil tidak tersedia!',
+                        'message' => 'Akun Anda dinonaktifkan!',
                     ], 422);
+
                 } else {
-                    $bop_pelanggan = $pengiriman->pesanan->transaksi->pelanggan->bop_pelanggan;
+                    if (!$mobil) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Kendaraan sedang dalam perbaikan!',
+                        ], 422);
+                    } else {
+                        $bop_pelanggan = $pengiriman->pesanan->transaksi->pelanggan->bop_pelanggan;
 
-                    $sopir->ketersediaan_sopir = 'tidak tersedia';
-                    $sopir->bop_sopir = $sopir->bop_sopir + $bop_pelanggan;
-                    $sopir->save();
+                        $sopir->ketersediaan_sopir = 'tidak tersedia';
+                        $sopir->bop_sopir = $sopir->bop_sopir + $bop_pelanggan;
+                        $sopir->save();
 
-                    $mobil->ketersediaan_mobil = 'tidak tersedia';
-                    $mobil->save();
+                        $mobil->ketersediaan_mobil = 'tidak tersedia';
+                        $mobil->save();
 
-                    $pengiriman->status_pengiriman = 'Dikirim';
-                    $pengiriman->id_sopir = $request->id_sopir;
-                    $pengiriman->id_mobil = $request->id_mobil;
-                    $pengiriman->save();
+                        $pengiriman->status_pengiriman = 'Dikirim';
+                        $pengiriman->id_sopir = $request->id_sopir;
+                        $pengiriman->id_mobil = $request->id_mobil;
+                        $pengiriman->save();
 
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Pesanan berhasil dipilih, lakukan pengiriman!',
-                        'data' => $pengiriman,
-                    ], 200);
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Pesanan berhasil dipilih, lakukan pengiriman!',
+                            'data' => $pengiriman,
+                        ], 200);
+                    }
                 }
             }
         }
