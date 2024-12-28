@@ -798,8 +798,8 @@ class ApiSopirController extends Controller
         if (!$pengiriman) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data pesanan sudah dikirim!',
-            ], 422);
+                'message' => 'Pesanan sudah dikirim!',
+            ], 403);
         } else {
             $sopir = Sopir::where('id_sopir', $request->id_sopir)
                 ->where('ketersediaan_sopir', 'tersedia')
@@ -814,7 +814,7 @@ class ApiSopirController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda hanya dapat mengirim satu pesanan!',
-                ], 422);
+                ], 403);
             } else {
                 if ($sopir->status_sopir = 'tidak aktif') {
                     return response()->json([
@@ -827,7 +827,7 @@ class ApiSopirController extends Controller
                         return response()->json([
                             'success' => false,
                             'message' => 'Kendaraan sedang dalam perbaikan!',
-                        ], 422);
+                        ], 403);
                     } else {
                         $bop_pelanggan = $pengiriman->pesanan->transaksi->pelanggan->bop_pelanggan;
 
