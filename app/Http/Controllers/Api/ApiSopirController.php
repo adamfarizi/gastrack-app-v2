@@ -816,7 +816,7 @@ class ApiSopirController extends Controller
                     'message' => 'Anda hanya dapat mengirim satu pesanan!',
                 ], 403);
             } else {
-                if ($sopir->status_sopir = 'tidak aktif') {
+                if ($sopir->status_sopir == 'tidak aktif') {
                     return response()->json([
                         'success' => false,
                         'message' => 'Akun Anda dinonaktifkan!',
