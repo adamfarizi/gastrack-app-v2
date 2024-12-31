@@ -68,7 +68,7 @@ class ApiPembelianController extends Controller
             if (!$pelangganAktif) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pelanggan tidak aktif. Transaksi tidak dapat dilakukan.',
+                    'message' => 'Gagal membuat pesanan, akun Anda telah dinonaktifkan',
                 ], 422);
             } else {
                 $tagihan_terbaru = Tagihan::where('id_pelanggan', $request->input('id_pelanggan'))
@@ -178,7 +178,7 @@ class ApiPembelianController extends Controller
 
                             return response()->json([
                                 'success' => true,
-                                'message' => 'Transaksi baru sudah ditambah!',
+                                'message' => 'Pesanan baru berhasil dibuat!',
                                 'upload_result' => $uploadResult,
                                 'data_transaksi' => $transaksi_baru,
                                 'data_tagihan' => $tagihan_baru,
@@ -190,7 +190,7 @@ class ApiPembelianController extends Controller
                         //? Response untuk jenis_rumus normal
                         return response()->json([
                             'success' => true,
-                            'message' => 'Transaksi baru sudah ditambah!',
+                            'message' => 'Pesanan baru berhasil dibuat!',
                             'data_transaksi' => $transaksi_baru,
                             'data_tagihan' => $tagihan_baru,
                             'data_pesanan' => $pesanan,
@@ -208,7 +208,7 @@ class ApiPembelianController extends Controller
                             if ($pelanggan->jenis_rumus === 'normal') {
                                 return response()->json([
                                     'success' => false,
-                                    'message' => 'Anda memiliki tagihan yang belum dibayar !',
+                                    'message' => 'Anda memiliki tagihan yang belum dibayar!',
                                 ], 422);
                             } else {
                                 //? Pelanggan Turbin
@@ -296,7 +296,7 @@ class ApiPembelianController extends Controller
 
                                     return response()->json([
                                         'success' => true,
-                                        'message' => 'Transaksi baru sudah ditambah!',
+                                        'message' => 'Pesanan baru berhasil dibuat!',
                                         'upload_result' => $uploadResult,
                                         'data_transaksi' => $transaksi_baru,
                                         'data_tagihan' => $tagihan_baru,
@@ -367,7 +367,7 @@ class ApiPembelianController extends Controller
 
                                 return response()->json([
                                     'success' => true,
-                                    'message' => 'Pesanan baru sudah ditambah !',
+                                    'message' => 'Pesanan berhasil dibuat!',
                                     'data_pesanan' => $pesanan,
                                     'data_tagihan' => $tagihan_terbaru,
                                     'data_pengiriman' => $pengiriman,
@@ -472,7 +472,7 @@ class ApiPembelianController extends Controller
 
                             return response()->json([
                                 'success' => true,
-                                'message' => 'Transaksi baru sudah ditambah!',
+                                'message' => 'Pesanan baru berhasil dibuat!',
                                 'data_transaksi' => $transaksi_baru,
                                 'data_tagihan' => $tagihan_baru,
                                 'data_pesanan' => $pesanan,
