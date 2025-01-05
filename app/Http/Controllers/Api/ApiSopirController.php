@@ -683,7 +683,7 @@ class ApiSopirController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada riwayat penarikan!',
-            ], 404);
+            ], 422);
         } else {
             return response()->json([
                 'success' => true,
