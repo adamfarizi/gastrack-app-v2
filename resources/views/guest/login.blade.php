@@ -88,11 +88,6 @@
                                     <div class="text-center">
                                         <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2 toast-btn" data-target="dangerToast">Masuk</button>
                                     </div>
-                                    <p class="mt-4 text-sm text-center">
-                                        Belum punya akun ?
-                                        <a href="{{ url('/signup') }}"
-                                            class="text-primary text-gradient font-weight-bold">Daftar</a>
-                                    </p>
                                 </form>
                             </div>
                         </div>

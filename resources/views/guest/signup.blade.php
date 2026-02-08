@@ -96,11 +96,6 @@
                                     <div class="text-center">
                                         <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Daftar</button>
                                     </div>
-                                    <p class="mt-4 text-sm text-center">
-                                        Sudah punya akun ?
-                                        <a href="{{ url('/') }}"
-                                            class="text-primary text-gradient font-weight-bold">Masuk</a>
-                                    </p>
                                 </form>
                             </div>
                         </div>
