@@ -1497,7 +1497,8 @@ class LaporanController extends Controller
         // Mulai query untuk masing-masing kategori data
         $queryPenjualan = Pesanan::whereHas('pengiriman', function ($query) {
             $query->where('status_pengiriman', 'Diterima');
-        });
+        })
+            ->where('harga_pesanan', '!=', 0);
         $queryModalTambahan = Keuangan::where('jenis', 'debet');
         $queryKasKeluar = Keuangan::where('jenis', 'kredit');
         // $queryBOP = Pesanan::query();
@@ -1606,7 +1607,8 @@ class LaporanController extends Controller
         // Mulai query untuk masing-masing kategori data
         $queryPenjualan = Pesanan::whereHas('pengiriman', function ($query) {
             $query->where('status_pengiriman', 'Diterima');
-        });
+        })
+            ->where('harga_pesanan', '!=', 0);
         $queryModalTambahan = Keuangan::where('jenis', 'debet');
         $queryKasKeluar = Keuangan::where('jenis', 'kredit');
         // $queryBOP = Pesanan::query();
