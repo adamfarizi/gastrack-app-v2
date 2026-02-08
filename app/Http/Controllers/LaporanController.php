@@ -1393,7 +1393,7 @@ class LaporanController extends Controller
         $queryPenjualan = Pesanan::whereHas('pengiriman', function ($query) {
             $query->where('status_pengiriman', 'Diterima');
         })
-            ->where('harga_pesanan', '!=' 0);
+            ->where('harga_pesanan', '!=', 0);
         $queryModalTambahan = Keuangan::where('jenis', 'debet');
         $queryKasKeluar = Keuangan::where('jenis', 'kredit');
         // $queryBOP = Pesanan::query();
