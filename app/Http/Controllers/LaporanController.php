@@ -1392,10 +1392,13 @@ class LaporanController extends Controller
         // Mulai query untuk masing-masing kategori data
         $queryPenjualan = Pesanan::whereHas('pengiriman', function ($query) {
             $query->where('status_pengiriman', 'Diterima');
-        });
+        })
+            ->where('harga_pesanan', '!=' 0);
         $queryModalTambahan = Keuangan::where('jenis', 'debet');
         $queryKasKeluar = Keuangan::where('jenis', 'kredit');
-        $queryBOP = Pesanan::query();
+        // $queryBOP = Pesanan::query();
+
+        $queryBOP = Penarikanbop::query();
 
         // Tambahkan filter tanggal jika ada
         if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
@@ -1405,7 +1408,8 @@ class LaporanController extends Controller
             $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            // $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
         } else {
             $tanggal_awal = Carbon::today();
             $tanggal_akhir_full_day = Carbon::today()->endOfDay();
@@ -1413,7 +1417,8 @@ class LaporanController extends Controller
             $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            // $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
         }
 
         // Dapatkan data dari setiap query
@@ -1461,11 +1466,11 @@ class LaporanController extends Controller
         // Data BOP (Pengeluaran)
         foreach ($dataBOP as $index => $bop) {
             $mergedData[] = [
-                'tanggal' => $bop->tanggal_pesanan,
+                'tanggal' => $bop->tanggal_penarikan,
                 'kategori' => 'Kredit',
                 'keterangan' => 'Penarikan BOP',
                 'debet' => 0,
-                'kredit' => $bop->bop_pesanan,
+                'kredit' => $bop->jumlah_penarikan,
             ];
         }
 
