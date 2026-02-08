@@ -423,7 +423,7 @@
                                     @method('PUT')
                                     <h6>Tekanan</h6>
                                     <div class="row mb-4">
-                                        <div class="col-md-2"">
+                                        <div class="col-md-2">
                                             <label class="form-label">
                                                 @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
                                                     Gas Masuk 
@@ -438,7 +438,7 @@
                                                 <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-2"">
+                                        <div class="col-md-2">
                                             <label class="form-label">
                                                 @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
                                                     Gas Akhir 
@@ -452,7 +452,7 @@
                                                 <span class="input-group-text m-0 p-0 me-3 mt-2 opacity-5">bar</span>
                                             </div>
                                         </div>
-                                        <div class="col-md-2"">
+                                        <div class="col-md-2">
                                             <label class="form-label">
                                                 @if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal')
                                                     Selsisi Gas 

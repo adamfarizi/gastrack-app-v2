@@ -681,16 +681,17 @@ class PembelianController extends Controller
             'sisa_gas' => 'required|numeric',
         ]);
 
-        $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
-        $pengiriman->sisa_gas = $validatedData['sisa_gas'];
-        $pengiriman->kapasitas_gas_keluar = $pengiriman->kapasitas_gas_masuk - $pengiriman->sisa_gas;
-        $pengiriman->save();
-
-        $pesanan = $pengiriman->pesanan;
-        $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
-
         // Hitung m3
         if ($pengiriman->pesanan->transaksi->pelanggan->jenis_rumus === 'normal') {
+
+            $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
+            $pengiriman->sisa_gas = $validatedData['sisa_gas'];
+            $pengiriman->kapasitas_gas_keluar = $pengiriman->kapasitas_gas_masuk - $pengiriman->sisa_gas;
+            $pengiriman->save();
+
+            $pesanan = $pengiriman->pesanan;
+            $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
+
             // Rumus Normal
             $specific_gravity = $pesanan->spesific_gravity;
             $CO2 = $pesanan->CO2;
@@ -721,6 +722,15 @@ class PembelianController extends Controller
             $pesanan->jumlah_m3 = $hitung_m3['data']['m3'];
 
         } else {
+
+            $pengiriman->kapasitas_gas_masuk = $validatedData['gas_masuk'];
+            $pengiriman->sisa_gas = $validatedData['sisa_gas'];
+            $pengiriman->kapasitas_gas_keluar = $pengiriman->sisa_gas - $pengiriman->kapasitas_gas_masuk;
+            $pengiriman->save();
+
+            $pesanan = $pengiriman->pesanan;
+            $pesanan->jumlah_bar = $pengiriman->kapasitas_gas_keluar;
+
             // Rumus Turbin
             $temperature = $pesanan->temperature;
             $pressure = $pesanan->pengiriman->kapasitas_gas_keluar;
