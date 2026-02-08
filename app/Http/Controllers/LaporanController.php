@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Mpdf\Mpdf;
 use Carbon\Carbon;
 use App\Models\Pesanan;
 use App\Models\Keuangan;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\Transaksi;
 use App\Models\Pengiriman;
 use App\Models\Penarikanbop;
 use Illuminate\Http\Request;
@@ -1397,29 +1395,22 @@ class LaporanController extends Controller
         $queryModalTambahan = Keuangan::where('jenis', 'debet');
         $queryKasKeluar = Keuangan::where('jenis', 'kredit');
         // $queryBOP = Pesanan::query();
-
         $queryBOP = Penarikanbop::query();
 
         // Tambahkan filter tanggal jika ada
         if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
             $tanggal_awal = $request->tanggal_awal;
             $tanggal_akhir_full_day = Carbon::parse($request->tanggal_akhir)->endOfDay();
-
-            $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            // $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
         } else {
             $tanggal_awal = Carbon::today();
             $tanggal_akhir_full_day = Carbon::today()->endOfDay();
-
-            $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            // $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
         }
+
+        $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+        $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
+        $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
+        // $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+        $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
 
         // Dapatkan data dari setiap query
         $dataPenjualan = $queryPenjualan->get();
@@ -1509,7 +1500,8 @@ class LaporanController extends Controller
         });
         $queryModalTambahan = Keuangan::where('jenis', 'debet');
         $queryKasKeluar = Keuangan::where('jenis', 'kredit');
-        $queryBOP = Pesanan::query();
+        // $queryBOP = Pesanan::query();
+        $queryBOP = Penarikanbop::query();
 
         // Tambahkan filter tanggal jika ada
         if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
@@ -1520,7 +1512,8 @@ class LaporanController extends Controller
             $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            // $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
         } else {
             $tanggal_awal = Carbon::today()->format('Y-m-d');
             $tanggal_akhir = Carbon::today()->format('Y-m-d');
@@ -1529,7 +1522,8 @@ class LaporanController extends Controller
             $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
             $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            // $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+            $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
         }
 
         // Dapatkan data dari setiap query
@@ -1577,11 +1571,11 @@ class LaporanController extends Controller
         // Data BOP (Pengeluaran)
         foreach ($dataBOP as $index => $bop) {
             $mergedData[] = [
-                'tanggal' => $bop->tanggal_pesanan,
+                'tanggal' => $bop->tanggal_penarikan,
                 'kategori' => 'Kredit',
                 'keterangan' => 'Penarikan BOP',
                 'debet' => 0,
-                'kredit' => $bop->bop_pesanan,
+                'kredit' => $bop->jumlah_penarikan,
             ];
         }
 
@@ -1607,7 +1601,7 @@ class LaporanController extends Controller
         return $pdf->stream($nama_file);
     }
 
-    public function excelBukuBesar(Request $request)
+    private function mergeDataExcel($request)
     {
         // Mulai query untuk masing-masing kategori data
         $queryPenjualan = Pesanan::whereHas('pengiriman', function ($query) {
@@ -1615,36 +1609,28 @@ class LaporanController extends Controller
         });
         $queryModalTambahan = Keuangan::where('jenis', 'debet');
         $queryKasKeluar = Keuangan::where('jenis', 'kredit');
-        $queryBOP = Pesanan::query();
+        // $queryBOP = Pesanan::query();
+        $queryBOP = Penarikanbop::query();
 
         // Tambahkan filter tanggal jika ada
         if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
             $tanggal_awal = $request->tanggal_awal;
-            $tanggal_akhir = $request->tanggal_akhir;
             $tanggal_akhir_full_day = Carbon::parse($request->tanggal_akhir)->endOfDay();
-
-            $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
         } else {
             $tanggal_awal = Carbon::today()->format('Y-m-d');
-            $tanggal_akhir = Carbon::today()->format('Y-m-d');
             $tanggal_akhir_full_day = Carbon::today()->endOfDay();
-
-            $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
-            $queryBOP->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
         }
+
+        $queryPenjualan->whereBetween('tanggal_pesanan', [$tanggal_awal, $tanggal_akhir_full_day]);
+        $queryModalTambahan->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
+        $queryKasKeluar->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir_full_day]);
+        $queryBOP->whereBetween('tanggal_penarikan', [$tanggal_awal, $tanggal_akhir_full_day]);
 
         // Dapatkan data dari setiap query
         $dataPenjualan = $queryPenjualan->get();
         $dataModalTambahan = $queryModalTambahan->get();
         $dataKasKeluar = $queryKasKeluar->get();
         $dataBOP = $queryBOP->get();
-
-        // Gabungkan data dalam satu array
         $mergedData = [];
 
         // Data Penjualan (Pemasukan)
@@ -1690,6 +1676,14 @@ class LaporanController extends Controller
                 'kredit' => $bop->bop_pesanan,
             ];
         }
+
+        return $mergedData;
+    }
+
+    public function excelBukuBesar(Request $request)
+    {
+        // Gabungkan data dalam satu array
+        $mergedData = $this->mergeDataExcel($request);
 
         // Urutkan berdasarkan tanggal
         usort($mergedData, function ($a, $b) {
