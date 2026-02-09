@@ -614,7 +614,7 @@ class ApiPembelianController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada tagihan',
-            ], 422);
+            ], 200);
         } else {
             $formattedJumlahTagihan = number_format($pelanggan->jumlah_tagihan, 0, ',', '.');
             Carbon::setLocale('id');
