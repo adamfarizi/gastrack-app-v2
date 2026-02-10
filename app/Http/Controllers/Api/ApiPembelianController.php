@@ -611,7 +611,7 @@ class ApiPembelianController extends Controller
 
         $pelanggan = Tagihan::where('id_pelanggan', $id)
             ->where('status_tagihan', "Belum Bayar")
-            ->first();
+            ->first(); 
 
         if (empty($pelanggan)) {
             return response()->json([
