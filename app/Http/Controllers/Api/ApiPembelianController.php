@@ -606,29 +606,25 @@ class ApiPembelianController extends Controller
 
     public function index_tagihanPelanggan(string $id)
     {
+            
+        Carbon::setLocale('id');
+        
         $pelanggan = Tagihan::where('id_pelanggan', $id)
             ->where('status_tagihan', "Belum Bayar")
             ->first();
 
-        if (empty($pelanggan)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak ada tagihan',
-            ], 200);
-        } else {
+        if (!empty($pelanggan)) {
             $formattedJumlahTagihan = number_format($pelanggan->jumlah_tagihan, 0, ',', '.');
-            Carbon::setLocale('id');
             $formattedTanggalJatuhTempo = Carbon::parse($pelanggan->tanggal_jatuh_tempo)->isoFormat('DD MMMM YYYY');
-
-            // Update data pelanggan dengan format baru
             $pelanggan->tanggal_jatuh_tempo = $formattedTanggalJatuhTempo;
             $pelanggan->jumlah_tagihan = $formattedJumlahTagihan;
-            return response()->json([
-                'success' => true,
-                'message' => 'Data berhasil ditemukan',
-                'data' => $pelanggan,
-            ], 200);
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data tagihan pelanggan',
+            'data' => $pelanggan,
+        ], 200);
     }
 
     public function updatePengirimanLWC(Request $request, $id_pesanan)
