@@ -606,19 +606,25 @@ class ApiPembelianController extends Controller
 
     public function index_tagihanPelanggan(string $id)
     {
-            
+
         Carbon::setLocale('id');
-        
+
         $pelanggan = Tagihan::where('id_pelanggan', $id)
             ->where('status_tagihan', "Belum Bayar")
             ->first();
 
-        if (!empty($pelanggan)) {
-            $formattedJumlahTagihan = number_format($pelanggan->jumlah_tagihan, 0, ',', '.');
-            $formattedTanggalJatuhTempo = Carbon::parse($pelanggan->tanggal_jatuh_tempo)->isoFormat('DD MMMM YYYY');
-            $pelanggan->tanggal_jatuh_tempo = $formattedTanggalJatuhTempo;
-            $pelanggan->jumlah_tagihan = $formattedJumlahTagihan;
+        if (empty($pelanggan)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada tagihan',
+                'data' => $pelanggan,
+            ], 422);
         }
+
+        $formattedJumlahTagihan = number_format($pelanggan->jumlah_tagihan, 0, ',', '.');
+        $formattedTanggalJatuhTempo = Carbon::parse($pelanggan->tanggal_jatuh_tempo)->isoFormat('DD MMMM YYYY');
+        $pelanggan->tanggal_jatuh_tempo = $formattedTanggalJatuhTempo;
+        $pelanggan->jumlah_tagihan = $formattedJumlahTagihan;
 
         return response()->json([
             'success' => true,
