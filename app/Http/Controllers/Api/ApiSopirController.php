@@ -121,7 +121,7 @@ class ApiSopirController extends Controller
                     'pesanan.deskripsi_pesanan AS pesan',
                     'pesanan.bukti_pesanan AS bukti_pesanan',
                     'sopir.ketersediaan_sopir AS ketersediaan_sopir',
-                    'mobil.ketersediaan_mobil AS ketersediaan_mobil',
+                    'mobil.ketersediaan_mobil AS ketersediaan_mobil'
                 )->first();
 
             if ($data) {
@@ -256,6 +256,7 @@ class ApiSopirController extends Controller
                     $pengiriman_baru->save();
 
                     $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
+                    
                     if ($mobilDitinggal) {
                         $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
                         $pengiriman_baru->sopir->save();

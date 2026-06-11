@@ -626,6 +626,13 @@ class ApiPembelianController extends Controller
         $pelanggan->tanggal_jatuh_tempo = $formattedTanggalJatuhTempo;
         $pelanggan->jumlah_tagihan = $formattedJumlahTagihan;
 
+        // if (!empty($pelanggan)) {
+        //     $formattedJumlahTagihan = number_format($pelanggan->jumlah_tagihan, 0, ',', '.');
+        //     $formattedTanggalJatuhTempo = Carbon::parse($pelanggan->tanggal_jatuh_tempo)->isoFormat('DD MMMM YYYY');
+        //     $pelanggan->tanggal_jatuh_tempo = $formattedTanggalJatuhTempo;
+        //     $pelanggan->jumlah_tagihan = $formattedJumlahTagihan;
+        // }
+
         return response()->json([
             'success' => true,
             'message' => 'Data tagihan pelanggan',
