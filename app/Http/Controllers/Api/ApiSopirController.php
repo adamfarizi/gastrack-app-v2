@@ -111,6 +111,7 @@ class ApiSopirController extends Controller
                 ->select(
                     'pengiriman.id_pengiriman',
                     'pengiriman.kode_pengiriman AS resi',
+                    'pengiriman.jenis_pengiriman',
                     'pelanggan.koordinat',
                     'pelanggan.jenis_rumus',
                     'pelanggan.nama_perusahaan',
@@ -756,7 +757,7 @@ class ApiSopirController extends Controller
                     'pesanan.bukti_pesanan',
                     'pesanan.deskripsi_pesanan',
                 )
-                ->orderByDesc('pengiriman.created_at')
+                ->orderBy('pengiriman.created_at', 'asc')
                 ->get();
 
             if ($data) {
