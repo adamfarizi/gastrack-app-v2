@@ -125,7 +125,7 @@ class ApiSopirController extends Controller
                 )->first();
 
             if ($data) {
-                if ($data->ketersediaan_sopir == 'tidak tersedia' && $data->ketersediaan_mobil == 'tidak tersedia') {
+                if ($data->ketersediaan_sopir == 'tidak tersedia' && $data->ketersediaan_mobil == 'tidak tersedia' && $data->jenis_pengiriman == 'inject') {
                     $formattedTanggal = Carbon::parse($data->tanggal_pemesanaan)->isoFormat('DD MMMM YYYY');
                     $data->tanggal_pemesanaan = $formattedTanggal;
                     return response()->json([
@@ -199,7 +199,8 @@ class ApiSopirController extends Controller
         // Validasi request
         $request->validate([
             'bukti_gas_masuk' => 'required|image|mimes:jpeg,jpg,png',
-            'mobil_ditinggal' => 'required|in:true,false'
+            'mobil_ditinggal' => 'required|in:true,false',
+            'jenis_pengiriman' => 'required|in:true,false'
         ]);
 
         $id_pelanggan = Pengiriman::where('id_pengiriman', $id_pengiriman)
@@ -215,6 +216,8 @@ class ApiSopirController extends Controller
                 $query->where('id_pelanggan', $id_pelanggan);
             })
             ->with('sopir', 'mobil')
+            ->whereExists('bukti_nota_pengisian')
+            ->whereExists('bukti_gas_masuk')
             ->whereNull('bukti_gas_keluar')
             ->orderBy('id_pengiriman', 'desc')
             ->first();
@@ -252,20 +255,33 @@ class ApiSopirController extends Controller
                         ]);
                     }
 
-                    $pengiriman_baru->waktu_pengiriman = now();
-                    $pengiriman_baru->save();
+                    $jenisPengiriman = filter_var($request->jenis_pengiriman, FILTER_VALIDATE_BOOLEAN);
 
-                    $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
-                    
-                    if ($mobilDitinggal) {
+                    //jika bernilai true artinya pengiriman berupa injection
+                    if ($jenisPengiriman) {
+                        $pengiriman_baru->jenis_pengiriman = 'inject';
+
+                    } else {
+                        $pengiriman_baru->jenis_pengiriman = 'kirim';
+
+                        $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
+
+                        //jika mobil tidak ditinggal pengiriman tetap selesai namun status di sediakan kembali
+                        if (!$mobilDitinggal) {
+                            $pengiriman_baru->mobil->ketersediaan_mobil = 'tersedia';
+                            $pengiriman_baru->mobil->save();
+                        }
+
                         $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
                         $pengiriman_baru->sopir->save();
                     }
 
+                    $pengiriman_baru->waktu_pengiriman = now();
+                    $pengiriman_baru->save();
+
                     return response()->json([
                         'success' => true,
-                        'message' => 'Bukti gas masuk berhasil diunggah',
-                        'mobil_ditinggal' => $mobilDitinggal
+                        'message' => 'Foto gas masuk berhasil diunggah'
                     ], 200);
                 }
             }
@@ -273,7 +289,7 @@ class ApiSopirController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Masukkan Gas Keluar pesanan sebelumnya dahulu!',
+                'message' => 'Masukkan foto gas keluar pesanan sebelumnya dahulu!',
                 'data_lama' => $pengiriman_lama
             ], 403);
         }

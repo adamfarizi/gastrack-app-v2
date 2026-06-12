@@ -22,7 +22,7 @@ class CreatePengirimanTable extends Migration
             $table->string('kapasitas_gas_keluar')->nullable();
             $table->string('bukti_gas_keluar')->nullable();
             $table->enum('status_pengiriman', ['Proses', 'Dikirim', 'Diterima'])->default('Proses');
-            $table->string('sisa_gas')->nullable();;
+            $table->string('sisa_gas')->nullable();
             $table->unsignedBigInteger('id_pesanan')->nullable();
             $table->unsignedBigInteger('id_sopir')->nullable();
             $table->unsignedBigInteger('id_mobil')->nullable();
