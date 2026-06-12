@@ -125,7 +125,7 @@ class ApiSopirController extends Controller
                 )->first();
 
             if ($data) {
-                if ($data->ketersediaan_sopir == 'tidak tersedia' && $data->ketersediaan_mobil == 'tidak tersedia' && $data->jenis_pengiriman == 'inject') {
+                if ($data->ketersediaan_sopir == 'tidak tersedia' && ($data->ketersediaan_mobil == 'tidak tersedia' || $data->jenis_pengiriman == 'inject')) {
                     $formattedTanggal = Carbon::parse($data->tanggal_pemesanaan)->isoFormat('DD MMMM YYYY');
                     $data->tanggal_pemesanaan = $formattedTanggal;
                     return response()->json([
@@ -216,8 +216,8 @@ class ApiSopirController extends Controller
                 $query->where('id_pelanggan', $id_pelanggan);
             })
             ->with('sopir', 'mobil')
-            ->whereExists('bukti_nota_pengisian')
-            ->whereExists('bukti_gas_masuk')
+            ->whereNotNull('bukti_nota_pengisian')
+            ->whereNotNull('bukti_gas_masuk')
             ->whereNull('bukti_gas_keluar')
             ->orderBy('id_pengiriman', 'desc')
             ->first();
