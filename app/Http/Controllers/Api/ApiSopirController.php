@@ -225,25 +225,38 @@ class ApiSopirController extends Controller
 
         // dd($pengiriman_lama);
 
-        if (!$pengiriman_lama) {
-            // Ambil pengiriman sekarang
-            $pengiriman_baru = Pengiriman::where('id_pengiriman', $id_pengiriman)
-                ->first();
 
-            if (!$pengiriman_baru) {
+        // Ambil pengiriman sekarang
+        $pengiriman_baru = Pengiriman::where('id_pengiriman', $id_pengiriman)
+            ->first();
+
+        if (!$pengiriman_baru) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan!',
+            ], 422);
+        } else {
+
+            if ($pengiriman_baru->bukti_nota_pengisian == null) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Data tidak ditemukan!',
+                    'message' => 'Harap masukkan bukti nota pengisian dahulu!',
                 ], 422);
+
             } else {
 
-                if ($pengiriman_baru->bukti_nota_pengisian == null) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Harap masukkan bukti nota pengisian dahulu!',
-                    ], 422);
+                $jenisPengiriman = filter_var($request->jenis_pengiriman, FILTER_VALIDATE_BOOLEAN);
 
+                //jika bernilai true artinya pengiriman berupa injection
+                if ($jenisPengiriman) {
+                    $pengiriman_baru->jenis_pengiriman = 'inject';
                 } else {
+                    $pengiriman_baru->jenis_pengiriman = 'kirim';
+                }
+
+                $pengiriman_baru->save();
+
+                if (!$pengiriman_lama) {
 
                     if ($request->hasFile('bukti_gas_masuk')) {
                         $file = $request->file('bukti_gas_masuk');
@@ -256,14 +269,12 @@ class ApiSopirController extends Controller
                         ]);
                     }
 
-                    $jenisPengiriman = filter_var($request->jenis_pengiriman, FILTER_VALIDATE_BOOLEAN);
-
-                    //jika bernilai true artinya pengiriman berupa injection
                     if ($jenisPengiriman) {
-                        $pengiriman_baru->jenis_pengiriman = 'inject';
+
+                        $pengiriman_baru->waktu_pengiriman = now();
+                        $pengiriman_baru->save();
 
                     } else {
-                        $pengiriman_baru->jenis_pengiriman = 'kirim';
 
                         $mobilDitinggal = filter_var($request->mobil_ditinggal, FILTER_VALIDATE_BOOLEAN);
 
@@ -275,24 +286,24 @@ class ApiSopirController extends Controller
 
                         $pengiriman_baru->sopir->ketersediaan_sopir = 'tersedia';
                         $pengiriman_baru->sopir->save();
-                    }
 
-                    $pengiriman_baru->waktu_pengiriman = now();
-                    $pengiriman_baru->save();
+                        $pengiriman_baru->waktu_pengiriman = now();
+                        $pengiriman_baru->save();
+                    }
 
                     return response()->json([
                         'success' => true,
                         'message' => 'Foto gas masuk berhasil diunggah'
                     ], 200);
+
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Masukkan foto gas keluar pesanan sebelumnya dahulu!',
+                        'data_lama' => $pengiriman_lama
+                    ], 403);
                 }
             }
-
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Masukkan foto gas keluar pesanan sebelumnya dahulu!',
-                'data_lama' => $pengiriman_lama
-            ], 403);
         }
     }
 
