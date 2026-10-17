@@ -130,7 +130,7 @@
                         <span class="nav-link-text ms-1">Pelanggan</span>
                     </a>
                 </li>
-                @if (Auth::user()->role == 'Super Admin')
+                @if (Auth::user()->role == 'Super Admin' || Auth::user()->role == 'Developer')
                     <li class="nav-item">
                         <a class="nav-link text-white active bg-gradient-primary " href="{{ url('/pengguna_admin') }}">
                             <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center">

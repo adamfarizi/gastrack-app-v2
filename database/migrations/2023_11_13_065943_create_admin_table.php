@@ -13,7 +13,7 @@ class CreateAdminTable extends Migration
             $table->id('id_admin');
             $table->string('nama');
             $table->string('email')->unique();
-            $table->enum('role',['Super Admin','Admin'])->default('Admin');
+            $table->enum('role',['Super Admin','Admin','Developer'])->default('Admin');
             $table->string('password');
             $table->timestamps();
         });
